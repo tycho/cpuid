@@ -12,10 +12,6 @@ typedef struct {
 
 BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx);
 
-static inline BOOL cpuid_native(cpu_regs_t *regs) {
-	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
-};
-
 const char *reg_to_str(cpu_regs_t *regs);
 
 #endif

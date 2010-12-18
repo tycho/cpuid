@@ -2,6 +2,7 @@
 #include "cpuid.h"
 #include "vendor.h"
 #include "feature.h"
+#include "cache.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,9 @@ uint32_t extmax = 0;
 
 cpu_signature_t sig;
 cpu_vendor_t vendor = VENDOR_UNKNOWN;
+
+/* Makes a lot of calls easier to do. */
+static inline BOOL cpuid_native(cpu_regs_t *regs) { return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx); }
 
 typedef void(*cpu_std_handler)(cpu_regs_t *);
 
@@ -182,10 +186,10 @@ void run_cpuid()
 	}
 }
 
-// EAX = 0000 0000
+/* EAX = 0000 0000 */
 void handle_std_base(cpu_regs_t *regs)
 {
-	uint8_t buf[13];
+	char buf[13];
 	stdmax = regs->eax;
 	memcpy(&buf[0], &regs->ebx, sizeof(uint32_t));
 	memcpy(&buf[4], &regs->edx, sizeof(uint32_t));
@@ -199,7 +203,7 @@ void handle_std_base(cpu_regs_t *regs)
 		vendor = VENDOR_UNKNOWN;
 }
 
-// EAX = 0000 0001
+/* EAX = 0000 0001 */
 void handle_std_features(cpu_regs_t *regs)
 {
 	*(uint32_t *)(&sig) = regs->eax;
@@ -209,17 +213,17 @@ void handle_std_features(cpu_regs_t *regs)
 	printf("\n");
 }
 
-// EAX = 0000 0002
+/* EAX = 0000 0002 */
 void handle_std_cache(cpu_regs_t *regs)
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	printf("Cache descriptors:\n");
-	print_caches(regs, sig);
+	print_caches(regs, &sig);
 	for (i = 1; i < m; i++) {
 		ZERO_REGS(regs);
 		regs->eax = 2;
 		cpuid_native(regs);
-		print_caches(regs, sig);
+		print_caches(regs, &sig);
 	}
 	printf("\n");
 }
@@ -241,13 +245,13 @@ void handle_dump_std_04(cpu_regs_t *regs)
 	}
 }
 
-// EAX = 0000 000B
+/* EAX = 0000 000B */
 void handle_dump_std_0B(cpu_regs_t *regs)
 {
 	uint32_t i = 0;
 	while (1) {
 		ZERO_REGS(regs);
-		regs->eax = 4;
+		regs->eax = 0xb;
 		regs->ecx = i;
 		cpuid_native(regs);
 		if (!(regs->eax || regs->ebx))
@@ -258,20 +262,20 @@ void handle_dump_std_0B(cpu_regs_t *regs)
 	}
 }
 
-// EAX = 8000 0000
+/* EAX = 8000 0000 */
 void handle_ext_base(cpu_regs_t *regs)
 {
 	extmax = regs->eax;
 }
 
-// EAX = 0000 0001
+/* EAX = 0000 0001 */
 void handle_ext_features(cpu_regs_t *regs)
 {
 	print_features(regs, 0x80000001, vendor);
 	printf("\n");
 }
 
-int main(int argc, char **argv)
+int main(unused int argc, unused char **argv)
 {
 	dump_cpuid();
 	printf("\n");

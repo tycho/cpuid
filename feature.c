@@ -194,6 +194,9 @@ void print_features(cpu_regs_t *regs, uint32_t level, cpu_vendor_t vendor)
 		case REG_EDX:
 			reg = regs->edx;
 			break;
+		default:
+			abort();
+			break;
 		}
 		if ((vendor & p->m_vendor) != 0 && (reg & p->m_bitmask) != 0) {
 			printf("  %-11s", p->m_name);
