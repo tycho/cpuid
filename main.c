@@ -204,6 +204,7 @@ void handle_std_features(cpu_regs_t *regs)
 {
 	memcpy(&sig, &regs->eax, sizeof(uint32_t));
 	print_features(regs, 0x00000001, vendor);
+	printf("\n");
 }
 
 // EAX = 0000 0002
@@ -218,6 +219,7 @@ void handle_std_cache(cpu_regs_t *regs)
 		cpuid_native(regs);
 		print_caches(regs, sig);
 	}
+	printf("\n");
 }
 
 // EAX = 0000 0004
@@ -264,11 +266,13 @@ void handle_ext_base(cpu_regs_t *regs)
 void handle_ext_features(cpu_regs_t *regs)
 {
 	print_features(regs, 0x80000001, vendor);
+	printf("\n");
 }
 
 int main(int argc, char **argv)
 {
 	dump_cpuid();
+	printf("\n");
 	run_cpuid();
 	return 0;
 }
