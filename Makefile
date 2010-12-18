@@ -2,7 +2,7 @@ all: cpuid
 
 CC := gcc
 CFLAGS := -O2
-OBJECTS := amd.o cpuid.o feature.o intel.o main.o 
+OBJECTS := cache.o cpuid.o feature.o main.o
 
 cpuid: $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS)

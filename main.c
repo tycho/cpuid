@@ -10,12 +10,14 @@
 uint32_t stdmax = 0;
 uint32_t extmax = 0;
 
+cpu_signature_t sig;
 cpu_vendor_t vendor = VENDOR_UNKNOWN;
 
 typedef void(*cpu_std_handler)(cpu_regs_t *);
 
 void handle_std_base(cpu_regs_t *regs);
 void handle_std_features(cpu_regs_t *regs);
+void handle_std_cache(cpu_regs_t *regs);
 
 void handle_ext_base(cpu_regs_t *regs);
 void handle_ext_features(cpu_regs_t *regs);
@@ -27,7 +29,7 @@ cpu_std_handler std_handlers[] =
 {
 	handle_std_base, /* 00 */
 	handle_std_features, /* 01 */
-	NULL, /* 02 */
+	handle_std_cache, /* 02 */
 	NULL, /* 03 */
 	NULL, /* 04 */
 	NULL, /* 05 */
@@ -200,7 +202,22 @@ void handle_std_base(cpu_regs_t *regs)
 // EAX = 0000 0001
 void handle_std_features(cpu_regs_t *regs)
 {
+	memcpy(&sig, &regs->eax, sizeof(uint32_t));
 	print_features(regs, 0x00000001, vendor);
+}
+
+// EAX = 0000 0002
+void handle_std_cache(cpu_regs_t *regs)
+{
+	uint8_t i, m = regs->eax & 0xFF;
+	printf("Cache descriptors:\n");
+	print_caches(regs, sig);
+	for (i = 1; i < m; i++) {
+		ZERO_REGS(regs);
+		regs->eax = 2;
+		cpuid_native(regs);
+		print_caches(regs, sig);
+	}
 }
 
 // EAX = 0000 0004
