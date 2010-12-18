@@ -202,7 +202,9 @@ void handle_std_base(cpu_regs_t *regs)
 // EAX = 0000 0001
 void handle_std_features(cpu_regs_t *regs)
 {
-	memcpy(&sig, &regs->eax, sizeof(uint32_t));
+	*(uint32_t *)(&sig) = regs->eax;
+	printf("Family: %d\nModel: %d\nStepping: %d\n\n",
+		sig.family + sig.extfamily, sig.model + (sig.extmodel << 4), sig.stepping);
 	print_features(regs, 0x00000001, vendor);
 	printf("\n");
 }
