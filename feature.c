@@ -196,7 +196,7 @@ void print_features(cpu_regs_t *regs, uint32_t level, cpu_vendor_t vendor)
 			break;
 		}
 		if ((vendor & p->m_vendor) != 0 && (reg & p->m_bitmask) != 0) {
-			printf("  %-12s", p->m_name);
+			printf("  %-11s", p->m_name);
 			count++;
 			if (count == 6) {
 				count = 0;
