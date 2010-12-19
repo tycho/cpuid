@@ -404,8 +404,9 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 	l2cache_feat_t *feat = (l2cache_feat_t *)&regs->ecx;
 
 	printf("L2 cache:\n"
-	       "  %dKB, %s associativity, %d byte line size\n\n",
-		feat->size,
+	       "  %d%cB, %s associativity, %d byte line size\n\n",
+		feat->size > 1024 ? feat->size / 1024 : feat->size,
+		feat->size > 1024 ? 'M' : 'K',
 		assoc[feat->assoc] ? assoc[feat->assoc] : "Unknown",
 		feat->linesize);
 }
