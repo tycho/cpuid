@@ -333,7 +333,7 @@ void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state)
 	*(uint32_t *)&state->procname[base+12] = regs->edx;
 
 	if (base == 32) {
-		state->procname[48] = 0;
+		state->procname[47] = 0;
 		squeeze(state->procname);
 		printf("Processor Name: %s\n\n", state->procname);
 	}
