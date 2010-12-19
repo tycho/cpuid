@@ -309,14 +309,14 @@ void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state)
 	state->extmax = regs->eax;
 }
 
-/* EAX = 0000 0001 */
+/* EAX = 8000 0001 */
 void handle_ext_features(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	print_features(regs, 0x80000001, state->vendor);
 	printf("\n");
 }
 
-/* EAX = 0000 0002 */
+/* EAX = 8000 0002 */
 void handle_ext_pname2(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	memset(state->procname, 0, sizeof(state->procname));
@@ -326,7 +326,7 @@ void handle_ext_pname2(cpu_regs_t *regs, cpuid_state_t *state)
 	*(uint32_t *)&state->procname[12] = regs->edx;
 }
 
-/* EAX = 0000 0003 */
+/* EAX = 8000 0003 */
 void handle_ext_pname3(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	*(uint32_t *)&state->procname[16] = regs->eax;
@@ -335,7 +335,7 @@ void handle_ext_pname3(cpu_regs_t *regs, cpuid_state_t *state)
 	*(uint32_t *)&state->procname[28] = regs->edx;
 }
 
-/* EAX = 0000 0004 */
+/* EAX = 8000 0004 */
 void handle_ext_pname4(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	*(uint32_t *)&state->procname[32] = regs->eax;
