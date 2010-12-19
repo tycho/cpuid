@@ -4,6 +4,6 @@
 #include "cpuid.h"
 #include "feature.h"
 
-void print_caches(cpu_regs_t *regs, const cpu_signature_t *sig);
+void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig);
 
 #endif

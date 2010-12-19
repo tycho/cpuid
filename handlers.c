@@ -142,13 +142,15 @@ void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
+	if (state->vendor != VENDOR_INTEL)
+		return;
 	printf("Cache descriptors:\n");
-	print_caches(regs, &state->sig);
+	print_intel_caches(regs, &state->sig);
 	for (i = 1; i < m; i++) {
 		ZERO_REGS(regs);
 		regs->eax = 2;
 		cpuid_native(regs, state);
-		print_caches(regs, &state->sig);
+		print_intel_caches(regs, &state->sig);
 	}
 	printf("\n");
 }
@@ -284,16 +286,16 @@ static const char *amd_associativity(uint8_t assoc)
 void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 {
 	typedef struct {
-		uint8_t dtlb_assoc;
-		uint8_t dtlb_ent;
-		uint8_t itlb_assoc;
 		uint8_t itlb_ent;
+		uint8_t itlb_assoc;
+		uint8_t dtlb_ent;
+		uint8_t dtlb_assoc;
 	} amd_l1_tlb_t;
 	typedef struct {
-		uint8_t size;
-		uint8_t assoc;
-		uint8_t linespertag;
 		uint8_t linesize;
+		uint8_t linespertag;
+		uint8_t assoc;
+		uint8_t size;
 	} amd_l1_cache_t;
 	amd_l1_tlb_t *tlb;
 	amd_l1_cache_t *cache;
@@ -303,32 +305,43 @@ void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 		return;
 
 	tlb = (amd_l1_tlb_t *)&regs->eax;
-	printf("L1 TLBs:\n"
-	       "  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-	       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
-	printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-	       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
+	printf("L1 TLBs:\n");
+
+	if (tlb->dtlb_ent)
+		printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
+		       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
+	if (tlb->itlb_ent)
+		printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
+		       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
 
 	tlb = (amd_l1_tlb_t *)&regs->ebx;
-	printf("  Data TLB (4KB pages): %d entries, %s\n",
-	       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
-	printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-	       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
+	if (tlb->dtlb_ent)
+		printf("  Data TLB (4KB pages): %d entries, %s\n",
+		       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
+	if (tlb->itlb_ent)
+		printf("  Instruction TLB (4KB pages): %d entries, %s\n",
+		       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
+
+	printf("\n");
 
 	cache = (amd_l1_cache_t *)&regs->ecx;
-	printf("L1 caches:\n"
-	       "  Data: %dKB, %s, %d lines per tag, %d byte line size\n",
-	       cache->size,
-	       amd_associativity(cache->assoc),
-	       cache->linespertag,
-	       cache->linesize);
+	if (cache->size)
+		printf("L1 caches:\n"
+		       "  Data: %dKB, %s, %d lines per tag, %d byte line size\n",
+		       cache->size,
+		       amd_associativity(cache->assoc),
+		       cache->linespertag,
+		       cache->linesize);
 
 	cache = (amd_l1_cache_t *)&regs->edx;
-	printf("  Instruction: %dKB, %s, %d lines per tag, %d byte line size\n",
-	       cache->size,
-	       amd_associativity(cache->assoc),
-	       cache->linespertag,
-	       cache->linesize);
+	if (cache->size)
+		printf("  Instruction: %dKB, %s, %d lines per tag, %d byte line size\n",
+		       cache->size,
+		       amd_associativity(cache->assoc),
+		       cache->linespertag,
+		       cache->linesize);
+
+	printf("\n");
 }
 
 /* EAX = 8000 0006 */
@@ -392,52 +405,63 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 		};
 
 		typedef struct {
-			uint8_t  dtlb_assoc:4;
-			uint16_t dtlb_size:12;
-			uint8_t  itlb_assoc:4;
 			uint16_t itlb_size:12;
+			uint8_t  itlb_assoc:4;
+			uint16_t dtlb_size:12;
+			uint8_t  dtlb_assoc:4;
 		} l2_tlb_t;
 		typedef struct {
-			uint16_t size;
-			uint8_t  assoc:4;
-			uint8_t  linespertag:4;
 			uint8_t  linesize;
+			uint8_t  linespertag:4;
+			uint8_t  assoc:4;
+			uint16_t size;
 		} l2_cache_t;
 		typedef struct {
-			uint16_t size:14;
-			uint8_t  reserved:2;
-			uint8_t  linespertag:4;
 			uint8_t  linesize;
+			uint8_t  linespertag:4;
+			uint8_t  reserved:2;
+			uint16_t size:14;
 		} l3_cache_t;
 
 		l2_tlb_t *tlb;
 		l2_cache_t *l2_cache;
 		l3_cache_t *l3_cache;
 
+		printf("L2 TLBs:\n");
+
 		tlb = (l2_tlb_t *)&regs->eax;
-		printf("L2 TLBs:\n"
-		       "  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
-		printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
+		if (tlb->dtlb_size)
+			printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
+			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
+		if (tlb->itlb_size)
+			printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
+			       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
 
 		tlb = (l2_tlb_t *)&regs->ebx;
-		printf("  Data TLB (4KB pages): %d entries, %s\n",
-		       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
-		printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-		       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
+		if (tlb->dtlb_size)
+			printf("  Data TLB (4KB pages): %d entries, %s\n",
+			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
+		if (tlb->itlb_size)
+			printf("  Instruction TLB (4KB pages): %d entries, %s\n",
+			       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
+
+		printf("\n");
 
 		l2_cache = (l2_cache_t *)&regs->ecx;
-		printf("L2 cache: %dKB, %s, %d lines per tag, %d byte line size\n",
-		       l2_cache->size,
-		       assoc[l2_cache->assoc] ? assoc[l2_cache->assoc] : "unknown associativity",
-		       l2_cache->linespertag,
-		       l2_cache->linesize);
+		if (l2_cache->size)
+			printf("L2 cache: %dKB, %s, %d lines per tag, %d byte line size\n",
+			       l2_cache->size,
+			       assoc[l2_cache->assoc] ? assoc[l2_cache->assoc] : "unknown associativity",
+			       l2_cache->linespertag,
+			       l2_cache->linesize);
 
 		l3_cache = (l3_cache_t *)&regs->edx;
-		printf("L3 cache: %dKB, %d lines per tag, %d byte line size\n",
-		       l3_cache->size,
-		       l3_cache->linespertag,
-		       l3_cache->linesize);
+		if (l3_cache->size)
+			printf("L3 cache: %dKB, %d lines per tag, %d byte line size\n",
+			       l3_cache->size,
+			       l3_cache->linespertag,
+			       l3_cache->linesize);
+
+		printf("\n");
 	}
 }

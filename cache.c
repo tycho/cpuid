@@ -266,7 +266,7 @@ static const char *descs[] = {
     /* ff */ NULL
 };
 
-void print_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
+void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
 {
 	uint8_t buf[16], i;
 	*(uint32_t *)&buf[0x0] = regs->eax >> 8;
