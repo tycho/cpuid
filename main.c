@@ -3,6 +3,7 @@
 #include "vendor.h"
 #include "feature.h"
 #include "cache.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>

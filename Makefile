@@ -1,7 +1,7 @@
 all: cpuid
 
 CC := gcc
-CFLAGS := -std=gnu89 -pedantic -Wall -Wextra -O2 -fno-strict-aliasing
+CFLAGS := -O2 -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Werror
 OBJECTS := cache.o cpuid.o feature.o main.o util.o
 
 cpuid: $(OBJECTS)
