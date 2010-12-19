@@ -205,9 +205,9 @@ void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	char buf[13];
 	state->stdmax = regs->eax;
-	memcpy(&buf[0], &regs->ebx, sizeof(uint32_t));
-	memcpy(&buf[4], &regs->edx, sizeof(uint32_t));
-	memcpy(&buf[8], &regs->ecx, sizeof(uint32_t));
+	*(uint32_t *)(&buf[0]) = regs->ebx;
+	*(uint32_t *)(&buf[4]) = regs->edx;
+	*(uint32_t *)(&buf[8]) = regs->ecx;
 	buf[12] = 0;
 	if (strcmp(buf, "GenuineIntel") == 0)
 		state->vendor = VENDOR_INTEL;
