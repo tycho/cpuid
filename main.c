@@ -4,7 +4,6 @@
 #include "feature.h"
 #include "cache.h"
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -311,26 +310,6 @@ void handle_ext_features(cpu_regs_t *regs)
 {
 	print_features(regs, 0x80000001, vendor);
 	printf("\n");
-}
-
-static void squeeze(char *str)
-{
-	int r; /* next character to be read */
-	int w; /* next character to be written */
-
-	r=w=0;
-	while (str[r])
-	{
-		if (isspace(str[r]) || iscntrl(str[r]))
-		{
-			if (w > 0 && !isspace(str[w-1]))
-				str[w++] = ' ';
-		}
-		else
-			str[w++] = str[r];
-		r++;
-	}
-	str[w] = 0;
 }
 
 /* EAX = 0000 0002 */
