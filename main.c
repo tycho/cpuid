@@ -228,7 +228,7 @@ void handle_std_cache(cpu_regs_t *regs)
 	printf("\n");
 }
 
-// EAX = 0000 0004
+/* EAX = 0000 0004 */
 void handle_dump_std_04(cpu_regs_t *regs)
 {
 	uint32_t i = 0;
