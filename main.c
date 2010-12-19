@@ -151,7 +151,12 @@ void dump_cpuid(cpuid_state_t *state)
 			std_dump_handlers[i](&cr_tmp, state);
 		else
 			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-				i, cr_tmp.eax, cr_tmp.ebx, cr_tmp.ecx, cr_tmp.edx, reg_to_str(&cr_tmp));
+				state->last_leaf.eax,
+				cr_tmp.eax,
+				cr_tmp.ebx,
+				cr_tmp.ecx,
+				cr_tmp.edx,
+				reg_to_str(&cr_tmp));
 	}
 	
 	for (i = 0x80000000; i <= state->extmax; i++) {
@@ -162,7 +167,12 @@ void dump_cpuid(cpuid_state_t *state)
 			ext_dump_handlers[i - 0x80000000](&cr_tmp, state);
 		else
 			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-				i, cr_tmp.eax, cr_tmp.ebx, cr_tmp.ecx, cr_tmp.edx, reg_to_str(&cr_tmp));
+				state->last_leaf.eax,
+				cr_tmp.eax,
+				cr_tmp.ebx,
+				cr_tmp.ecx,
+				cr_tmp.edx,
+				reg_to_str(&cr_tmp));
 	}
 	printf("\n");
 }
@@ -260,7 +270,13 @@ void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state)
 		regs->ecx = i;
 		cpuid_native(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
-			4, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
+			state->last_leaf.eax,
+			state->last_leaf.ecx,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx,
+			reg_to_str(regs));
 		if (!(regs->eax & 0xF))
 			break;
 		i++;
@@ -290,8 +306,17 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state)
 		regs->eax = 0xb;
 		regs->ecx = i;
 		cpuid_native(regs, state);
-		printf("  Bits to shift: %d\n  Logical at this level: %d\n  Level number: %d\n  Level type: %d (%s)\n  x2APIC ID: %d\n\n",
-			regs->eax & 0x1f, regs->ebx & 0xffff, regs->ecx & 0xff, (regs->ecx >> 8) & 0xff, x2apic_level_type((regs->ecx >> 8) & 0xff), regs->edx );
+		printf("  Bits to shift: %d\n"
+		       "  Logical at this level: %d\n"
+		       "  Level number: %d\n"
+		       "  Level type: %d (%s)\n"
+		       "  x2APIC ID: %d\n\n",
+			regs->eax & 0x1f,
+			regs->ebx & 0xffff,
+			regs->ecx & 0xff,
+			(regs->ecx >> 8) & 0xff,
+			x2apic_level_type((regs->ecx >> 8) & 0xff),
+			regs->edx);
 		if (!(regs->eax || regs->ebx))
 			break;
 		i++;
@@ -308,7 +333,13 @@ void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state)
 		regs->ecx = i;
 		cpuid_native(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
-			0xB, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
+			state->last_leaf.eax,
+			state->last_leaf.ecx,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx,
+			reg_to_str(regs));
 		if (!(regs->eax || regs->ebx))
 			break;
 		i++;
