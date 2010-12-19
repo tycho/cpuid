@@ -38,6 +38,7 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_ext_l2cachefeat(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
@@ -70,7 +71,7 @@ cpu_std_handler ext_handlers[] =
 	handle_ext_pname, /* 03 */
 	handle_ext_pname, /* 04 */
 	NULL, /* 05 */
-	NULL, /* 06 */
+	handle_ext_l2cachefeat, /* 06 */
 	NULL, /* 07 */
 	NULL, /* 08 */
 	NULL, /* 09 */
@@ -369,6 +370,44 @@ void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state)
 		squeeze(state->procname);
 		printf("Processor Name: %s\n\n", state->procname);
 	}
+}
+
+/* EAX = 8000 0006 */
+void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
+{
+	static const char *assoc[] = {
+		/* 0x00 */ "Disabled",
+		/* 0x01 */ "Direct mapped",
+		/* 0x02 */ "2-way",
+		/* 0x03 */ NULL,
+		/* 0x04 */ "4-way",
+		/* 0x05 */ NULL,
+		/* 0x06 */ "8-way",
+		/* 0x07 */ NULL,
+		/* 0x08 */ "16-way",
+		/* 0x09 */ NULL,
+		/* 0x0A */ NULL,
+		/* 0x0B */ NULL,
+		/* 0x0C */ NULL,
+		/* 0x0D */ NULL,
+		/* 0x0E */ NULL,
+		/* 0x0F */ "Fully associative"
+	};
+
+	typedef struct {
+		uint8_t linesize;
+		uint8_t reserved1:4;
+		uint8_t assoc:4;
+		uint16_t size;
+	} l2cache_feat_t;
+
+	l2cache_feat_t *feat = (l2cache_feat_t *)&regs->ecx;
+
+	printf("L2 cache:\n"
+	       "  %dKB, %s associativity, %d byte line size\n\n",
+		feat->size,
+		assoc[feat->assoc] ? assoc[feat->assoc] : "Unknown",
+		feat->linesize);
 }
 
 int main(unused int argc, unused char **argv)
