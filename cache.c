@@ -269,21 +269,10 @@ static const char *descs[] = {
 void print_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
 {
 	uint8_t buf[16], i;
-	buf[0x0] = (regs->eax >> 8) & 0xff;
-	buf[0x1] = (regs->eax >> 16) & 0xff;
-	buf[0x2] = (regs->eax >> 24) & 0xff;
-	buf[0x3] = (regs->ebx) & 0xff;
-	buf[0x4] = (regs->ebx >> 8) & 0xff;
-	buf[0x5] = (regs->ebx >> 16) & 0xff;
-	buf[0x6] = (regs->ebx >> 24) & 0xff;
-	buf[0x7] = (regs->ecx) & 0xff;
-	buf[0x8] = (regs->ecx >> 8) & 0xff;
-	buf[0x9] = (regs->ecx >> 16) & 0xff;
-	buf[0xA] = (regs->ecx >> 24) & 0xff;
-	buf[0xB] = (regs->edx) & 0xff;
-	buf[0xC] = (regs->edx >> 8) & 0xff;
-	buf[0xD] = (regs->edx >> 16) & 0xff;
-	buf[0xE] = (regs->edx >> 24) & 0xff;
+	*(uint32_t *)&buf[0x0] = regs->eax >> 8;
+	*(uint32_t *)&buf[0x3] = regs->ebx;
+	*(uint32_t *)&buf[0x7] = regs->ecx;
+	*(uint32_t *)&buf[0xB] = regs->edx;
 	for (i = 0; i < 0xF; i++) {
 		if (!descs[buf[i]]) {
 			if (buf[i] == 0x49) {
