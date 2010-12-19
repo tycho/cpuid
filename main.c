@@ -4,6 +4,7 @@
 #include "feature.h"
 #include "cache.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +14,7 @@ uint32_t extmax = 0;
 
 cpu_signature_t sig;
 cpu_vendor_t vendor = VENDOR_UNKNOWN;
+char procname[48];
 
 /* Makes a lot of calls easier to do. */
 static inline BOOL cpuid_native(cpu_regs_t *regs) { return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx); }
@@ -26,6 +28,9 @@ void handle_std_x2apic(cpu_regs_t *regs);
 
 void handle_ext_base(cpu_regs_t *regs);
 void handle_ext_features(cpu_regs_t *regs);
+void handle_ext_pname2(cpu_regs_t *regs);
+void handle_ext_pname3(cpu_regs_t *regs);
+void handle_ext_pname4(cpu_regs_t *regs);
 
 void handle_dump_std_04(cpu_regs_t *regs);
 void handle_dump_std_0B(cpu_regs_t *regs);
@@ -54,9 +59,9 @@ cpu_std_handler ext_handlers[] =
 {
 	handle_ext_base, /* 00 */
 	handle_ext_features, /* 01 */
-	NULL, /* 02 */
-	NULL, /* 03 */
-	NULL, /* 04 */
+	handle_ext_pname2, /* 02 */
+	handle_ext_pname3, /* 03 */
+	handle_ext_pname4, /* 04 */
 	NULL, /* 05 */
 	NULL, /* 06 */
 	NULL, /* 07 */
@@ -306,6 +311,57 @@ void handle_ext_features(cpu_regs_t *regs)
 {
 	print_features(regs, 0x80000001, vendor);
 	printf("\n");
+}
+
+static void squeeze(char *str)
+{
+	int r; /* next character to be read */
+	int w; /* next character to be written */
+
+	r=w=0;
+	while (str[r])
+	{
+		if (isspace(str[r]) || iscntrl(str[r]))
+		{
+			if (w > 0 && !isspace(str[w-1]))
+				str[w++] = ' ';
+		}
+		else
+			str[w++] = str[r];
+		r++;
+	}
+	str[w] = 0;
+}
+
+/* EAX = 0000 0002 */
+void handle_ext_pname2(cpu_regs_t *regs)
+{
+	memset(procname, 0, sizeof(procname));
+	*(uint32_t *)&procname[0] = regs->eax;
+	*(uint32_t *)&procname[4] = regs->ebx;
+	*(uint32_t *)&procname[8] = regs->ecx;
+	*(uint32_t *)&procname[12] = regs->edx;
+}
+
+/* EAX = 0000 0003 */
+void handle_ext_pname3(cpu_regs_t *regs)
+{
+	*(uint32_t *)&procname[16] = regs->eax;
+	*(uint32_t *)&procname[20] = regs->ebx;
+	*(uint32_t *)&procname[24] = regs->ecx;
+	*(uint32_t *)&procname[28] = regs->edx;
+}
+
+/* EAX = 0000 0004 */
+void handle_ext_pname4(cpu_regs_t *regs)
+{
+	*(uint32_t *)&procname[32] = regs->eax;
+	*(uint32_t *)&procname[36] = regs->ebx;
+	*(uint32_t *)&procname[40] = regs->ecx;
+	*(uint32_t *)&procname[44] = regs->edx;
+	procname[48] = 0;
+	squeeze(procname);
+	printf("Processor Name: %s\n\n", procname);
 }
 
 int main(unused int argc, unused char **argv)
