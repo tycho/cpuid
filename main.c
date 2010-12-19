@@ -36,9 +36,7 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_ext_features(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_pname2(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_pname3(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_pname4(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
@@ -67,9 +65,9 @@ cpu_std_handler ext_handlers[] =
 {
 	handle_ext_base, /* 00 */
 	handle_ext_features, /* 01 */
-	handle_ext_pname2, /* 02 */
-	handle_ext_pname3, /* 03 */
-	handle_ext_pname4, /* 04 */
+	handle_ext_pname, /* 02 */
+	handle_ext_pname, /* 03 */
+	handle_ext_pname, /* 04 */
 	NULL, /* 05 */
 	NULL, /* 06 */
 	NULL, /* 07 */
@@ -322,34 +320,22 @@ void handle_ext_features(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 8000 0002 */
-void handle_ext_pname2(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state)
 {
-	memset(state->procname, 0, sizeof(state->procname));
-	*(uint32_t *)&state->procname[0] = regs->eax;
-	*(uint32_t *)&state->procname[4] = regs->ebx;
-	*(uint32_t *)&state->procname[8] = regs->ecx;
-	*(uint32_t *)&state->procname[12] = regs->edx;
-}
+	uint32_t base = (state->last_leaf.eax - 0x80000002) * 16;
+	if (base == 0)
+		memset(state->procname, 0, sizeof(state->procname));
 
-/* EAX = 8000 0003 */
-void handle_ext_pname3(cpu_regs_t *regs, cpuid_state_t *state)
-{
-	*(uint32_t *)&state->procname[16] = regs->eax;
-	*(uint32_t *)&state->procname[20] = regs->ebx;
-	*(uint32_t *)&state->procname[24] = regs->ecx;
-	*(uint32_t *)&state->procname[28] = regs->edx;
-}
+	*(uint32_t *)&state->procname[base] = regs->eax;
+	*(uint32_t *)&state->procname[base+4] = regs->ebx;
+	*(uint32_t *)&state->procname[base+8] = regs->ecx;
+	*(uint32_t *)&state->procname[base+12] = regs->edx;
 
-/* EAX = 8000 0004 */
-void handle_ext_pname4(cpu_regs_t *regs, cpuid_state_t *state)
-{
-	*(uint32_t *)&state->procname[32] = regs->eax;
-	*(uint32_t *)&state->procname[36] = regs->ebx;
-	*(uint32_t *)&state->procname[40] = regs->ecx;
-	*(uint32_t *)&state->procname[44] = regs->edx;
-	state->procname[48] = 0;
-	squeeze(state->procname);
-	printf("Processor Name: %s\n\n", state->procname);
+	if (base == 32) {
+		state->procname[48] = 0;
+		squeeze(state->procname);
+		printf("Processor Name: %s\n\n", state->procname);
+	}
 }
 
 int main(unused int argc, unused char **argv)
