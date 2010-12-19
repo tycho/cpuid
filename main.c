@@ -30,13 +30,13 @@ static inline BOOL cpuid_native(cpu_regs_t *regs, cpuid_state_t *state)
 
 typedef void(*cpu_std_handler)(cpu_regs_t *, cpuid_state_t *);
 
+void handle_features(cpu_regs_t *regs, cpuid_state_t *state);
+
 void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_std_features(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_features(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
@@ -45,7 +45,7 @@ void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
 cpu_std_handler std_handlers[] = 
 {
 	handle_std_base, /* 00 */
-	handle_std_features, /* 01 */
+	handle_features, /* 01 */
 	handle_std_cache, /* 02 */
 	NULL, /* 03 */
 	NULL, /* 04 */
@@ -65,7 +65,7 @@ cpu_std_handler std_handlers[] =
 cpu_std_handler ext_handlers[] = 
 {
 	handle_ext_base, /* 00 */
-	handle_ext_features, /* 01 */
+	handle_features, /* 01 */
 	handle_ext_pname, /* 02 */
 	handle_ext_pname, /* 03 */
 	handle_ext_pname, /* 04 */
@@ -217,13 +217,21 @@ void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state)
 		state->vendor = VENDOR_UNKNOWN;
 }
 
-/* EAX = 0000 0001 */
-void handle_std_features(cpu_regs_t *regs, cpuid_state_t *state)
+/* EAX = 8000 0001 | EAX = 0000 0001 */
+void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 {
-	*(uint32_t *)(&state->sig) = regs->eax;
-	printf("Family: %d\nModel: %d\nStepping: %d\n\n",
-		state->sig.family + state->sig.extfamily, state->sig.model + (state->sig.extmodel << 4), state->sig.stepping);
-	print_features(regs, 0x00000001, state->vendor);
+	if (state->last_leaf.eax == 0x00000001) {
+		*(uint32_t *)(&state->sig) = regs->eax;
+		printf("Signature: 0x%08x\n"
+		       "Family: %d\n"
+		       "Model: %d\n"
+		       "Stepping: %d\n\n",
+			*(uint32_t *)&state->sig,
+			state->sig.family + state->sig.extfamily,
+			state->sig.model + (state->sig.extmodel << 4),
+			state->sig.stepping);
+	}
+	print_features(regs, state->last_leaf.eax, state->vendor);
 	printf("\n");
 }
 
@@ -311,13 +319,6 @@ void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state)
 void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	state->extmax = regs->eax;
-}
-
-/* EAX = 8000 0001 */
-void handle_ext_features(cpu_regs_t *regs, cpuid_state_t *state)
-{
-	print_features(regs, 0x80000001, state->vendor);
-	printf("\n");
 }
 
 /* EAX = 8000 0002 */
