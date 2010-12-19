@@ -293,3 +293,4 @@ void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
 		printf("  %s\n", descs[buf[i]]);
 	}
 }
+
