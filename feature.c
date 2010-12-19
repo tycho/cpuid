@@ -58,7 +58,7 @@ static const cpu_feature_t features [] = {
 	{ 0x00000001, REG_EDX, 0x80000000, VENDOR_INTEL             , "PBE"},
 
 	{ 0x00000001, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD, "SSE3"},
-	{ 0x00000001, REG_ECX, 0x00000002, VENDOR_INTEL             , "PCLMULDQ"},
+	{ 0x00000001, REG_ECX, 0x00000002, VENDOR_INTEL | VENDOR_AMD, "PCLMULQDQ"},
 	{ 0x00000001, REG_ECX, 0x00000004, VENDOR_INTEL             , "DTES64"},
 	{ 0x00000001, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD, "MONITOR"},
 	{ 0x00000001, REG_ECX, 0x00000010, VENDOR_INTEL             , "DS-CPL"},
@@ -69,7 +69,7 @@ static const cpu_feature_t features [] = {
 	{ 0x00000001, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD, "SSSE3"},
 	{ 0x00000001, REG_ECX, 0x00000400, VENDOR_INTEL             , "CNXT-ID"},
 /*	{ 0x00000001, REG_ECX, 0x00000800, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000001, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x00001000,                VENDOR_AMD, "FMA"},
 	{ 0x00000001, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD, "CX16"},
 	{ 0x00000001, REG_ECX, 0x00004000, VENDOR_INTEL             , "xTPR"},
 	{ 0x00000001, REG_ECX, 0x00008000, VENDOR_INTEL             , "PDCM"},
@@ -77,7 +77,7 @@ static const cpu_feature_t features [] = {
 /*	{ 0x00000001, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000001, REG_ECX, 0x00040000, VENDOR_INTEL             , "DCA"},
 	{ 0x00000001, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD, "SSE4.1"},
-	{ 0x00000001, REG_ECX, 0x00100000, VENDOR_INTEL             , "SSE4.2"},
+	{ 0x00000001, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD, "SSE4.2"},
 	{ 0x00000001, REG_ECX, 0x00200000, VENDOR_INTEL             , "x2APIC"},
 	{ 0x00000001, REG_ECX, 0x00400000, VENDOR_INTEL             , "MOVBE"},
 	{ 0x00000001, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD, "POPCNT"},
@@ -85,10 +85,10 @@ static const cpu_feature_t features [] = {
 	{ 0x00000001, REG_ECX, 0x02000000, VENDOR_INTEL             , "AES"},
 	{ 0x00000001, REG_ECX, 0x04000000, VENDOR_INTEL             , "XSAVE"},
 	{ 0x00000001, REG_ECX, 0x08000000, VENDOR_INTEL             , "OSXSAVE"},
-/*	{ 0x00000001, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000001, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x10000000,                VENDOR_AMD, "AVX"},
+	{ 0x00000001, REG_ECX, 0x20000000,                VENDOR_AMD, "F16C"},
 /*	{ 0x00000001, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000001, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x80000000,                VENDOR_AMD, "RAZ"},
 
 /*  Extended (8000_0001h) */
 /*	{ 0x80000001, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
@@ -118,7 +118,7 @@ static const cpu_feature_t features [] = {
 /*	{ 0x80000001, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000001, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x80000001, REG_EDX, 0x02000000,                VENDOR_AMD, "FFXSR"},
-/*	{ 0x80000001, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x80000001, REG_EDX, 0x04000000,                VENDOR_AMD, "P1GB"},
 	{ 0x80000001, REG_EDX, 0x08000000,                VENDOR_AMD, "RDTSCP"},
 /*	{ 0x80000001, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x80000001, REG_EDX, 0x20000000, VENDOR_INTEL             , "EM64T"},
@@ -137,18 +137,18 @@ static const cpu_feature_t features [] = {
 	{ 0x80000001, REG_ECX, 0x00000100,                VENDOR_AMD, "3DNP"},
 	{ 0x80000001, REG_ECX, 0x00000200,                VENDOR_AMD, "OSVW"},
 	{ 0x80000001, REG_ECX, 0x00000400,                VENDOR_AMD, "IBS"},
-	{ 0x80000001, REG_ECX, 0x00000800,                VENDOR_AMD, "SSE5"},
+	{ 0x80000001, REG_ECX, 0x00000800,                VENDOR_AMD, "XOP"},
 	{ 0x80000001, REG_ECX, 0x00001000,                VENDOR_AMD, "SKINIT"},
 	{ 0x80000001, REG_ECX, 0x00002000,                VENDOR_AMD, "WDT"},
 /*	{ 0x80000001, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000001, REG_ECX, 0x00008000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000001, REG_ECX, 0x00010000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x80000001, REG_ECX, 0x00008000,                VENDOR_AMD, "LWP"},
+	{ 0x80000001, REG_ECX, 0x00010000,                VENDOR_AMD, "FMA4"},
 /*	{ 0x80000001, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000001, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000001, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x80000001, REG_ECX, 0x00080000,                VENDOR_AMD, "NID"},
 /*	{ 0x80000001, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000001, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000001, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x80000001, REG_ECX, 0x00200000,                VENDOR_AMD, "TBM"},
+	{ 0x80000001, REG_ECX, 0x00400000,                VENDOR_AMD, "TOPO"},
 /*	{ 0x80000001, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000001, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000001, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
