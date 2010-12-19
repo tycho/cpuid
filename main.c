@@ -237,10 +237,10 @@ void handle_dump_std_04(cpu_regs_t *regs)
 		regs->eax = 4;
 		regs->ecx = i;
 		cpuid_native(regs);
-		if (!(regs->eax & 0xF))
-			break;
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			4, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
+		if (!(regs->eax & 0xF))
+			break;
 		i++;
 	}
 }
@@ -254,10 +254,10 @@ void handle_dump_std_0B(cpu_regs_t *regs)
 		regs->eax = 0xb;
 		regs->ecx = i;
 		cpuid_native(regs);
-		if (!(regs->eax || regs->ebx))
-			break;
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			0xB, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
+		if (!(regs->eax || regs->ebx))
+			break;
 		i++;
 	}
 }
