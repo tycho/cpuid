@@ -22,6 +22,7 @@ typedef void(*cpu_std_handler)(cpu_regs_t *);
 void handle_std_base(cpu_regs_t *regs);
 void handle_std_features(cpu_regs_t *regs);
 void handle_std_cache(cpu_regs_t *regs);
+void handle_std_x2apic(cpu_regs_t *regs);
 
 void handle_ext_base(cpu_regs_t *regs);
 void handle_ext_features(cpu_regs_t *regs);
@@ -42,7 +43,7 @@ cpu_std_handler std_handlers[] =
 	NULL, /* 08 */
 	NULL, /* 09 */
 	NULL, /* 0A */
-	NULL, /* 0B */
+	handle_std_x2apic, /* 0B */
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
@@ -243,6 +244,38 @@ void handle_dump_std_04(cpu_regs_t *regs)
 			break;
 		i++;
 	}
+}
+
+/* EAX = 0000 000B */
+static const char *x2apic_level_type(uint8_t type)
+{
+	const char *types[] = {
+		"Invalid",
+		"Thread",
+		"Core",
+		"Unknown"
+	};
+	if (type > 2) type = 3;
+	return types[type];
+}
+
+/* EAX = 0000 000B */
+void handle_std_x2apic(cpu_regs_t *regs)
+{
+	uint32_t i = 0;
+	printf("Processor Topology:\n");
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0xb;
+		regs->ecx = i;
+		cpuid_native(regs);
+		printf("  Bits to shift: %d\n  Logical at this level: %d\n  Level number: %d\n  Level type: %d (%s)\n  x2APIC ID: %d\n\n",
+			regs->eax & 0x1f, regs->ebx & 0xffff, regs->ecx & 0xff, (regs->ecx >> 8) & 0xff, x2apic_level_type((regs->ecx >> 8) & 0xff), regs->edx );
+		if (!(regs->eax || regs->ebx))
+			break;
+		i++;
+	}
+	printf("\n");
 }
 
 /* EAX = 0000 000B */
