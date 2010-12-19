@@ -1,0 +1,7 @@
+"cpuid" is a very simple C program, designed to dump and extract information
+from the x86 CPUID instruction.
+
+cpuid is capable of dumping all CPUID leaves (except any unknown leaves which
+require special ECX values to dump all information). cpuid can only decode
+certain leaves, but this functionality will be expanded as the CPUID
+specifications provided by AMD and Intel change.
