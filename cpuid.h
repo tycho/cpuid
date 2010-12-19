@@ -12,6 +12,11 @@ typedef struct {
 
 BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx);
 
+#include "state.h"
+
+/* Makes a lot of calls easier to do. */
+BOOL cpuid_native(cpu_regs_t *regs, cpuid_state_t *state);
+
 const char *reg_to_str(cpu_regs_t *regs);
 
 #endif

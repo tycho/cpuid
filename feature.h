@@ -1,6 +1,9 @@
 #ifndef __feature_h
 #define __feature_h
 
+#include "cpuid.h"
+#include "vendor.h"
+
 typedef struct {
 	uint8_t stepping:4;
 	uint8_t model:4;

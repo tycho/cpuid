@@ -108,3 +108,9 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 }
 
 #endif
+
+BOOL cpuid_native(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	memcpy(&state->last_leaf, regs, sizeof(cpu_regs_t));
+	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
+}
