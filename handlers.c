@@ -449,16 +449,18 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 
 		l2_cache = (l2_cache_t *)&regs->ecx;
 		if (l2_cache->size)
-			printf("L2 cache: %dKB, %s, %d lines per tag, %d byte line size\n",
-			       l2_cache->size,
+			printf("L2 cache: %d%cB, %s, %d lines per tag, %d byte line size\n",
+			       l2_cache->size > 1024 ? l2_cache->size / 1024 : l2_cache->size,
+			       l2_cache->size > 1024 ? 'M' : 'K',
 			       assoc[l2_cache->assoc] ? assoc[l2_cache->assoc] : "unknown associativity",
 			       l2_cache->linespertag,
 			       l2_cache->linesize);
 
 		l3_cache = (l3_cache_t *)&regs->edx;
 		if (l3_cache->size)
-			printf("L3 cache: %dKB, %d lines per tag, %d byte line size\n",
-			       l3_cache->size,
+			printf("L3 cache: %d%cB, %d lines per tag, %d byte line size\n",
+			       l3_cache->size > 1024 ? l3_cache->size / 1024 : l3_cache->size,
+			       l3_cache->size > 1024 ? 'M' : 'K',
 			       l3_cache->linespertag,
 			       l3_cache->linesize);
 
