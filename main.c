@@ -12,6 +12,7 @@ typedef struct
 {
 	uint32_t stdmax;
 	uint32_t extmax;
+	cpu_regs_t last_leaf;
 	cpu_signature_t sig;
 	cpu_vendor_t vendor;
 	char procname[48];
@@ -20,7 +21,11 @@ typedef struct
 #define INIT_CPUID_STATE(x) { memset((x), 0, sizeof(cpuid_state_t)); }
 
 /* Makes a lot of calls easier to do. */
-static inline BOOL cpuid_native(cpu_regs_t *regs) { return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx); }
+static inline BOOL cpuid_native(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	memcpy(&state->last_leaf, regs, sizeof(cpu_regs_t));
+	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
+}
 
 typedef void(*cpu_std_handler)(cpu_regs_t *, cpuid_state_t *);
 
@@ -131,18 +136,18 @@ void dump_cpuid(cpuid_state_t *state)
 	/* Kind of a kludge, but we have to handle the stdmax and
 	   extmax before we can do a full dump */
 	ZERO_REGS(&cr_tmp);
-	cpuid_native(&cr_tmp);
+	cpuid_native(&cr_tmp, state);
 	std_handlers[0](&cr_tmp, state);
 
 	ZERO_REGS(&cr_tmp);
 	cr_tmp.eax = 0x80000000;
-	cpuid_native(&cr_tmp);
+	cpuid_native(&cr_tmp, state);
 	ext_handlers[0](&cr_tmp, state);
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp);
+		cpuid_native(&cr_tmp, state);
 		if (HAS_HANDLER(std_dump_handlers, i))
 			std_dump_handlers[i](&cr_tmp, state);
 		else
@@ -153,7 +158,7 @@ void dump_cpuid(cpuid_state_t *state)
 	for (i = 0x80000000; i <= state->extmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp);
+		cpuid_native(&cr_tmp, state);
 		if (HAS_HANDLER(ext_dump_handlers, i - 0x80000000))
 			ext_dump_handlers[i - 0x80000000](&cr_tmp, state);
 		else
@@ -171,18 +176,18 @@ void run_cpuid(cpuid_state_t *state)
 	/* Kind of a kludge, but we have to handle the stdmax and
 	   extmax before we can do a full dump */
 	ZERO_REGS(&cr_tmp);
-	cpuid_native(&cr_tmp);
+	cpuid_native(&cr_tmp, state);
 	std_handlers[0](&cr_tmp, state);
 
 	ZERO_REGS(&cr_tmp);
 	cr_tmp.eax = 0x80000000;
-	cpuid_native(&cr_tmp);
+	cpuid_native(&cr_tmp, state);
 	ext_handlers[0](&cr_tmp, state);
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp);
+		cpuid_native(&cr_tmp, state);
 		if (HAS_HANDLER(std_handlers, i))
 			std_handlers[i](&cr_tmp, state);
 	}
@@ -190,7 +195,7 @@ void run_cpuid(cpuid_state_t *state)
 	for (i = 0x80000000; i <= state->extmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp);
+		cpuid_native(&cr_tmp, state);
 		if (HAS_HANDLER(ext_handlers, i - 0x80000000))
 			ext_handlers[i - 0x80000000](&cr_tmp, state);
 	}
@@ -232,7 +237,7 @@ void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state)
 	for (i = 1; i < m; i++) {
 		ZERO_REGS(regs);
 		regs->eax = 2;
-		cpuid_native(regs);
+		cpuid_native(regs, state);
 		print_caches(regs, &state->sig);
 	}
 	printf("\n");
@@ -246,7 +251,7 @@ void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 4;
 		regs->ecx = i;
-		cpuid_native(regs);
+		cpuid_native(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			4, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
 		if (!(regs->eax & 0xF))
@@ -277,7 +282,7 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
 		regs->ecx = i;
-		cpuid_native(regs);
+		cpuid_native(regs, state);
 		printf("  Bits to shift: %d\n  Logical at this level: %d\n  Level number: %d\n  Level type: %d (%s)\n  x2APIC ID: %d\n\n",
 			regs->eax & 0x1f, regs->ebx & 0xffff, regs->ecx & 0xff, (regs->ecx >> 8) & 0xff, x2apic_level_type((regs->ecx >> 8) & 0xff), regs->edx );
 		if (!(regs->eax || regs->ebx))
@@ -294,7 +299,7 @@ void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
 		regs->ecx = i;
-		cpuid_native(regs);
+		cpuid_native(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			0xB, i, regs->eax, regs->ebx, regs->ecx, regs->edx, reg_to_str(regs));
 		if (!(regs->eax || regs->ebx))
