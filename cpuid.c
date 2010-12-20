@@ -95,7 +95,7 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 		 "popfl"               /* Restore original value.  */
 		 : "=&r" (pre_change), "=&r" (post_change)
 		 : "ir" (id_flag));
-	if ((pre_change ^ post_change) & id_flag) == 0)
+	if (((pre_change ^ post_change) & id_flag) == 0)
 		return FALSE;
 #endif
 	asm volatile("cpuid"
