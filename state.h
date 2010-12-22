@@ -15,6 +15,6 @@ typedef struct
 	char procname[48];
 } cpuid_state_t;
 
-#define INIT_CPUID_STATE(x) { memset((x), 0, sizeof(cpuid_state_t)); }
+#define INIT_CPUID_STATE(x) { memset((x), 0, sizeof(cpuid_state_t)); (x)->extmax = 0x80000000; }
 
 #endif

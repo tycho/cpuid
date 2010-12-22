@@ -15,17 +15,6 @@ void dump_cpuid(cpuid_state_t *state)
 {
 	uint32_t i;
 	cpu_regs_t cr_tmp;
-	
-	/* Kind of a kludge, but we have to handle the stdmax and
-	   extmax before we can do a full dump */
-	ZERO_REGS(&cr_tmp);
-	cpuid_native(&cr_tmp, state);
-	std_handlers[0](&cr_tmp, state);
-
-	ZERO_REGS(&cr_tmp);
-	cr_tmp.eax = 0x80000000;
-	cpuid_native(&cr_tmp, state);
-	ext_handlers[0](&cr_tmp, state);
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
@@ -65,17 +54,6 @@ void run_cpuid(cpuid_state_t *state)
 {
 	uint32_t i;
 	cpu_regs_t cr_tmp;
-	
-	/* Kind of a kludge, but we have to handle the stdmax and
-	   extmax before we can do a full dump */
-	ZERO_REGS(&cr_tmp);
-	cpuid_native(&cr_tmp, state);
-	std_handlers[0](&cr_tmp, state);
-
-	ZERO_REGS(&cr_tmp);
-	cr_tmp.eax = 0x80000000;
-	cpuid_native(&cr_tmp, state);
-	ext_handlers[0](&cr_tmp, state);
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);

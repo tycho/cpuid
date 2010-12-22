@@ -64,7 +64,7 @@ cpu_std_handler ext_handlers[] =
 
 cpu_std_handler std_dump_handlers[] =
 {
-	NULL, /* 00 */
+	handle_std_base, /* 00 */
 	NULL, /* 01 */
 	NULL, /* 02 */
 	NULL, /* 03 */
@@ -84,7 +84,7 @@ cpu_std_handler std_dump_handlers[] =
 
 cpu_std_handler ext_dump_handlers[] =
 {
-	NULL, /* 00 */
+	handle_ext_base, /* 00 */
 	NULL, /* 01 */
 	NULL, /* 02 */
 	NULL, /* 03 */
