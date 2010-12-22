@@ -19,7 +19,7 @@ static const char *descs[] = {
     /* 06 */ "1st-level code cache: 8KB, 4-way set associative, 32 byte line size",
     /* 07 */ NULL,
     /* 08 */ "1st-level code cache: 16KB, 4-way set associative, 32 byte line size",
-    /* 09 */ "1st-level code cache: 32KB, 4-way set associative, 32 byte line size",
+    /* 09 */ "1st-level code cache: 32KB, 4-way set associative, 64 byte line size",
     /* 0a */ "1st-level data cache: 8KB, 2-way set associative, 32 byte line size",
     /* 0b */ NULL,
     /* 0c */ "1st-level data cache: 16KB, 4-way set associative, 32 byte line size",
