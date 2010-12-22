@@ -140,15 +140,30 @@ void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state)
 void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	if (state->last_leaf.eax == 0x00000001) {
+		typedef struct {
+			uint8_t brandid;
+			uint8_t clflushsz;
+			uint8_t logicalcount;
+			uint8_t localapicid;
+		} std1_ebx_t;
+		std1_ebx_t *ebx = (std1_ebx_t *)&regs->ebx;
 		*(uint32_t *)(&state->sig) = regs->eax;
 		printf("Signature: 0x%08x\n"
-		       "Family: %d\n"
-		       "Model: %d\n"
-		       "Stepping: %d\n\n",
+		       "  Family: %d\n"
+		       "  Model: %d\n"
+		       "  Stepping: %d\n\n",
 			*(uint32_t *)&state->sig,
 			state->sig.family + state->sig.extfamily,
 			state->sig.model + (state->sig.extmodel << 4),
 			state->sig.stepping);
+		printf("Local APIC: %d\n"
+		       "Logical processor count: %d\n"
+		       "CLFLUSH size: %d\n"
+		       "Brand ID: %d\n\n",
+		       ebx->localapicid,
+		       ebx->logicalcount,
+		       ebx->clflushsz,
+		       ebx->brandid);
 	}
 	print_features(regs, state->last_leaf.eax, state->vendor);
 	printf("\n");
