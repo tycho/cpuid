@@ -2,6 +2,11 @@
 #include "cpuid.h"
 
 #include <string.h>
+#ifdef TARGET_COMPILER_MSVC
+#ifdef TARGET_CPU_X86_64
+#include <intrin.h>
+#endif
+#endif
 
 const char *reg_to_str(cpu_regs_t *regs)
 {
@@ -17,7 +22,24 @@ const char *reg_to_str(cpu_regs_t *regs)
 	return buffer;
 }
 
-#ifdef TARGET_COMPILER_MSVC
+#if defined(TARGET_COMPILER_MSVC)
+#ifdef TARGET_CPU_X86_64
+
+/* I hate this. */
+BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
+{
+	uint32_t regs[4];
+	__cpuidex(regs, *_eax, *_ecx);
+	*_eax = regs[0];
+	*_ebx = regs[1];
+	*_ecx = regs[2];
+	*_edx = regs[3];
+	return TRUE;
+}
+
+#else
+
+/* MSVC, x86-only. Stupid compiler doesn't allow __asm on x86_64. */
 BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
 #ifdef TARGET_CPU_X86
@@ -70,6 +92,8 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 
 	return TRUE;
 }
+
+#endif
 #endif
 
 #ifdef TARGET_COMPILER_GCC

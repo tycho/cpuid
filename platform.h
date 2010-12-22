@@ -120,7 +120,7 @@
 #if !defined (COMPILER_DETECTED)
 #if defined (_MSC_VER)
 #define COMPILER_DETECTED
-#define TARGET_COMPILER_VC
+#define TARGET_COMPILER_MSVC
 #endif
 #endif
 

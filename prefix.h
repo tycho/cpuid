@@ -6,6 +6,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifdef _MSC_VER
+/* MSVC doesn't actually support most of C99, but we define
+   this so that the below actually uses the 'inline' keyword,
+   which MSVC does understand. */
+#define C99
+#endif
+
 #if defined(__STDC__)
 # define C89
 # if defined(__STDC_VERSION__)

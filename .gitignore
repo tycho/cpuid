@@ -1,3 +1,11 @@
+# Visual Studio junk
+*.vcproj.*.user
+*.suo
+*.ncb
+
+# Intermediate objects
 *.o
+
+# Output binaries
 cpuid
 cpuid.exe
