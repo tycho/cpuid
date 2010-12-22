@@ -6,6 +6,8 @@
 #include "cache.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static const char *descs[] = {
     /* 00 */ NULL,
@@ -266,31 +268,78 @@ static const char *descs[] = {
     /* ff */ NULL
 };
 
+static const char *descriptor_49[] = {
+	/* 00 */ "2nd-level cache: 4MB, 16-way set associative, 64 byte line size",
+	/* 01 */ "3rd-level cache: 4MB, 16-way set associative, 64 byte line size",
+};
+
+int entry_comparator(const void *a, const void *b)
+{
+	/* Make 'prefetching' lines show last. */
+	if (strstr(*(const char **)a, "prefetch")) return 1;
+	if (strstr(*(const char **)b, "prefetch")) return -1;
+
+	/* Simple string compare. */
+	return strcmp(*(const char **)a, *(const char **)b);
+}
+
 void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
 {
 	uint8_t buf[16], i;
+
+	/* It's only possible to have 16 entries on a single line, but
+	   we need a 17th for a sentinel value of zero. */
+	const char *entries[17];
+
+	const char **eptr = entries;
+
+	/* Only zero last element. All other entries are initialized below. */
+	entries[16] = 0;
+
 	*(uint32_t *)&buf[0x0] = regs->eax >> 8;
 	*(uint32_t *)&buf[0x3] = regs->ebx;
 	*(uint32_t *)&buf[0x7] = regs->ecx;
 	*(uint32_t *)&buf[0xB] = regs->edx;
+
 	for (i = 0; i < 0xF; i++) {
-		if (!descs[buf[i]]) {
+		const char *desc = descs[buf[i]];
+
+		/* Fetch a description. */
+		if (desc) {
+			*eptr++ = desc;
+		} else {
 			if (buf[i] == 0x49) {
 				/* A very stupid special case. AP-485 says this
 				 * is a 3rd-level cache for Intel Xeon processor MP,
 				 * Family 0Fh, Model 06h, while it's a 2nd-level cache
 				 * on everything else.
 				 */
-				printf("  %s-level cache: 4MB, 16-way set associative, 64 byte line size\n",
-					(sig->family == 0x0F && sig->model == 0x06) ?
-					"3rd" : "2nd");
-				continue;
+				*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
+				          descriptor_49[1] : descriptor_49[2];
 			}
-			if (buf[i] != 0x00)
+			else if (buf[i] != 0x00)
+			{
+				/* This one we can just print right away. Its exact string
+				   will vary, and we wouldn't know how to sort it anyway. */
 				printf("  Unknown cache descriptor (0x%02x)\n", buf[i]);
-			continue;
+			}
 		}
-		printf("  %s\n", descs[buf[i]]);
+	}
+
+	i = eptr - entries;
+
+	for(; eptr < &entries[17]; eptr++) {
+		*eptr = 0;
+	}
+
+	/* Sort alphabetically. Makes it a heck of a lot easier to read. */
+	qsort(entries, i, sizeof(const char *), entry_comparator);
+
+	/* Print the entries. */
+	eptr = entries;
+	while (*eptr) {
+		printf("  %s\n", *eptr);
+		eptr++;
 	}
 }
 
