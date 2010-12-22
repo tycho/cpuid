@@ -11,7 +11,8 @@
 void handle_features(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_std_cache02(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
@@ -26,9 +27,9 @@ cpu_std_handler std_handlers[] =
 {
 	handle_std_base, /* 00 */
 	handle_features, /* 01 */
-	handle_std_cache, /* 02 */
+	handle_std_cache02, /* 02 */
 	NULL, /* 03 */
-	NULL, /* 04 */
+	handle_std_cache04, /* 04 */
 	NULL, /* 05 */
 	NULL, /* 06 */
 	NULL, /* 07 */
@@ -139,7 +140,7 @@ void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 0000 0002 */
-void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_std_cache02(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	if (state->vendor != VENDOR_INTEL)
@@ -151,6 +152,98 @@ void handle_std_cache(cpu_regs_t *regs, cpuid_state_t *state)
 		regs->eax = 2;
 		cpuid_native(regs, state);
 		print_intel_caches(regs, &state->sig);
+	}
+	printf("\n");
+}
+
+/* EAX = 0000 0004 */
+static const char *cache04_type(uint8_t type)
+{
+	const char *types[] = {
+		"null",
+		"data",
+		"instruction",
+		"unified"
+	};
+	if (type > 3)
+		return "reserved";
+	return types[type];
+}
+
+/* EAX = 0000 0004 */
+void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
+{
+#pragma pack(push,1)
+	typedef struct {
+		uint8_t type:5;
+		uint8_t level:3;
+		uint8_t self_initializing:1;
+		uint8_t fully_associative:1;
+		uint8_t reserved:4;
+		uint16_t max_threads_sharing:12; /* +1 encoded */
+		uint8_t apics_reserved:6; /* +1 encoded */
+	} eax_cache04_t;
+	typedef struct {
+		uint16_t line_size:12; /* +1 encoded */
+		uint16_t partitions:10; /* +1 encoded */
+		uint16_t assoc:10; /* +1 encoded */
+	} ebx_cache04_t;
+#pragma pack(pop)
+	uint32_t i = 0;
+	printf("Deterministic Cache Parameters:\n");
+	if (sizeof(eax_cache04_t) != 4 || sizeof(ebx_cache04_t) != 4) {
+		printf("  WARNING: The code appears to have been incorrectly compiled.\n"
+		       "           Expect wildly inaccurate output for this section.\n");
+	}
+
+	while (1) {
+		eax_cache04_t *eax;
+		ebx_cache04_t *ebx;
+		uint32_t cacheSize;
+		ZERO_REGS(regs);
+		regs->eax = 4;
+		regs->ecx = i;
+		cpuid_native(regs, state);
+
+		/* This is a non-official check. With other leafs (i.e. 0x0B),
+		   some extra information comes through, past the termination
+		   condition. I want to show all the information the CPU provides,
+		   even if it's not specified by the Intel docs. */
+		if (!regs->eax && !regs->ebx && !regs->ecx && !regs->edx)
+			break;
+
+		eax = (eax_cache04_t *)&regs->eax;
+		ebx = (ebx_cache04_t *)&regs->ebx;
+
+		/* Cache size calculated in bytes. */
+		cacheSize = (ebx->assoc + 1) *
+			(ebx->partitions + 1) *
+			(ebx->line_size + 1) *
+			(regs->ecx + 1);
+
+		/* Convert to kilobytes. */
+		cacheSize /= 1024;
+
+		printf("  %u%cB L%d %s cache, ",
+			cacheSize > 1024 ? cacheSize / 1024 : cacheSize,
+			cacheSize > 1024 ? 'M' : 'K',
+			eax->level,
+			cache04_type(eax->type));
+
+		if (eax->fully_associative) {
+			printf("fully associative, ");
+		} else {
+			printf("%d-way set associative, ",
+				ebx->assoc + 1);
+		}
+
+		printf("%d byte line size\n", ebx->line_size + 1);
+
+		/* This is the official termination condition for this leaf. */
+		if (!(regs->eax & 0xF))
+			break;
+
+		i++;
 	}
 	printf("\n");
 }
