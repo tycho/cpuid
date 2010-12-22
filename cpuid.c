@@ -20,60 +20,55 @@ const char *reg_to_str(cpu_regs_t *regs)
 #ifdef TARGET_COMPILER_MSVC
 BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
-	/*
-	 *
-	 * VERY broken version for MSVC right now.
-	 *
-	 */*
-#if 0
 #ifdef TARGET_CPU_X86
-	/* This is pretty much the standard way to detect whether the CPUID
-	 *     instruction is supported: try to change the ID bit in the EFLAGS
-	 *     register.  If we can change it, then the CPUID instruction is
-	 *     implemented.  */
+	static BOOL cpuid_support = FALSE;
 
-	uint32_t pre_change, post_change;
-	const uint32_t id_flag = 0x200000;
+	if (!cpuid_support) {
+		uint32_t pre_change, post_change;
+		const uint32_t id_flag = 0x200000;
 
-	__asm {
-		mov edx, id_flag;
-		pushfd;                         /* Save %eflags to restore later.  */
-		pushfd;                         /* Push second copy, for manipulation.  */
-		pop ebx;                        /* Pop it into post_change.  */
-		mov eax, ebx;                   /* Save copy in pre_change.   */
-		xor ebx, edx;                   /* Tweak bit in post_change.  */
-		push ebx;                       /* Push tweaked copy... */
-		popfd;                          /* ... and pop it into eflags.  */
-		pushfd;                         /* Did it change?  Push new %eflags... */
-		pop ebx;                        /* ... and pop it into post_change.  */
-		popfd;                          /* Restore original value.  */
-		mov pre_change, eax;
-		mov post_change, ebx;
+		/* This is pretty much the standard way to detect whether the CPUID
+		 *     instruction is supported: try to change the ID bit in the EFLAGS
+		 *     register.  If we can change it, then the CPUID instruction is
+		 *     implemented.  */
+		__asm {
+			mov edx, id_flag;
+			pushfd;                         /* Save %eflags to restore later.  */
+			pushfd;                         /* Push second copy, for manipulation.  */
+			pop ebx;                        /* Pop it into post_change.  */
+			mov eax, ebx;                   /* Save copy in pre_change.   */
+			xor ebx, edx;                   /* Tweak bit in post_change.  */
+			push ebx;                       /* Push tweaked copy... */
+			popfd;                          /* ... and pop it into eflags.  */
+			pushfd;                         /* Did it change?  Push new %eflags... */
+			pop ebx;                        /* ... and pop it into post_change.  */
+			popfd;                          /* Restore original value.  */
+			mov pre_change, eax;
+			mov post_change, ebx;
+		}
+
+		if (((pre_change ^ post_change) & id_flag) == 0)
+			return FALSE;
+		else
+			cpuid_support = TRUE;
 	}
-
-	if ((pre_change ^ post_change) & id_flag) == 0)
-		return FALSE;
 #endif
 
 	__asm {
-		push esi;
-		push edi;
-		mov eax, request;
+		mov esi, _eax;
+		mov edi, _ecx;
+		mov eax, DWORD PTR [esi];
+		mov ecx, DWORD PTR [edi];
 		cpuid;
-		mov edi, [_eax];
-		mov esi, [_ebx];
-		mov[edi], eax;
-		mov[esi], ebx;
-		mov edi, [_ecx];
-		mov esi, [_edx];
-		mov[edi], ecx;
-		mov[esi], edx;
-		pop edi;
-		pop esi;
+		mov DWORD PTR [esi], eax;
+		mov DWORD PTR [edi], ecx;
+		mov esi, _ebx;
+		mov edi, _edx;
+		mov DWORD PTR [esi], ebx;
+		mov DWORD PTR [edi], edx;
 	}
 
 	return TRUE;
-#endif
 }
 #endif
 
@@ -81,22 +76,27 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
 #ifdef TARGET_CPU_X86
-	uint32_t pre_change, post_change;
-	const uint32_t id_flag = 0x200000;
-	asm ("pushfl\n\t"          /* Save %eflags to restore later.  */
-		 "pushfl\n\t"          /* Push second copy, for manipulation.  */
-		 "popl %1\n\t"         /* Pop it into post_change.  */
-		 "movl %1,%0\n\t"      /* Save copy in pre_change.   */
-		 "xorl %2,%1\n\t"      /* Tweak bit in post_change.  */
-		 "pushl %1\n\t"        /* Push tweaked copy... */
-		 "popfl\n\t"           /* ... and pop it into %eflags.  */
-		 "pushfl\n\t"          /* Did it change?  Push new %eflags... */
-		 "popl %1\n\t"         /* ... and pop it into post_change.  */
-		 "popfl"               /* Restore original value.  */
-		 : "=&r" (pre_change), "=&r" (post_change)
-		 : "ir" (id_flag));
-	if (((pre_change ^ post_change) & id_flag) == 0)
-		return FALSE;
+	static BOOL cpuid_support = FALSE;
+	if (!cpuid_support) {
+		uint32_t pre_change, post_change;
+		const uint32_t id_flag = 0x200000;
+		asm ("pushfl\n\t"          /* Save %eflags to restore later.  */
+			 "pushfl\n\t"          /* Push second copy, for manipulation.  */
+			 "popl %1\n\t"         /* Pop it into post_change.  */
+			 "movl %1,%0\n\t"      /* Save copy in pre_change.   */
+			 "xorl %2,%1\n\t"      /* Tweak bit in post_change.  */
+			 "pushl %1\n\t"        /* Push tweaked copy... */
+			 "popfl\n\t"           /* ... and pop it into %eflags.  */
+			 "pushfl\n\t"          /* Did it change?  Push new %eflags... */
+			 "popl %1\n\t"         /* ... and pop it into post_change.  */
+			 "popfl"               /* Restore original value.  */
+			 : "=&r" (pre_change), "=&r" (post_change)
+			 : "ir" (id_flag));
+		if (((pre_change ^ post_change) & id_flag) == 0)
+			return FALSE;
+		else
+			cpuid_support = TRUE;
+	}
 #endif
 	asm volatile("cpuid"
 	    : "=a" (*_eax),
