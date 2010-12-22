@@ -190,6 +190,8 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 	} ebx_cache04_t;
 #pragma pack(pop)
 	uint32_t i = 0;
+	if (state->vendor != VENDOR_INTEL)
+		return;
 	printf("Deterministic Cache Parameters:\n");
 	if (sizeof(eax_cache04_t) != 4 || sizeof(ebx_cache04_t) != 4) {
 		printf("  WARNING: The code appears to have been incorrectly compiled.\n"
