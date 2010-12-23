@@ -192,11 +192,11 @@ static const char *cache04_type(uint8_t type)
 	const char *types[] = {
 		"null",
 		"data",
-		"instruction",
+		"code",
 		"unified"
 	};
 	if (type > 3)
-		return "reserved";
+		return "unknown";
 	return types[type];
 }
 
@@ -256,20 +256,27 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 		/* Convert to kilobytes. */
 		cacheSize /= 1024;
 
-		printf("  %u%cB L%d %s cache, ",
+		printf("  %3u%cB L%d %s cache\n",
 			cacheSize > 1024 ? cacheSize / 1024 : cacheSize,
 			cacheSize > 1024 ? 'M' : 'K',
 			eax->level,
 			cache04_type(eax->type));
 
 		if (eax->fully_associative) {
-			printf("fully associative, ");
+			printf("        fully associative\n");
 		} else {
-			printf("%d-way set associative, ",
+			printf("        %d-way set associative\n",
 				ebx->assoc + 1);
 		}
 
-		printf("%d byte line size\n", ebx->line_size + 1);
+		printf("        %d byte line size\n"
+		       "        %d partitions\n"
+		       "        %d sets\n"
+		       "        shared by max %d threads\n\n",
+		       ebx->line_size + 1,
+		       ebx->partitions + 1,
+		       regs->ecx + 1,
+		       eax->max_threads_sharing + 1);
 
 		/* This is the official termination condition for this leaf. */
 		if (!(regs->eax & 0xF))
@@ -277,7 +284,6 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 
 		i++;
 	}
-	printf("\n");
 }
 
 /* EAX = 0000 0004 */
@@ -326,6 +332,8 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state)
 		regs->eax = 0xb;
 		regs->ecx = i;
 		cpuid_native(regs, state);
+		if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
+			break;
 		printf("  Bits to shift: %d\n"
 		       "  Logical at this level: %d\n"
 		       "  Level number: %d\n"
