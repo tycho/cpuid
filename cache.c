@@ -315,7 +315,7 @@ void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
 				 * on everything else.
 				 */
 				*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
-				          descriptor_49[1] : descriptor_49[2];
+				          descriptor_49[1] : descriptor_49[0];
 			}
 			else if (buf[i] != 0x00)
 			{
