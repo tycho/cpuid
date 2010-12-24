@@ -25,7 +25,7 @@ void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
 
-cpu_std_handler std_handlers[] =
+cpuid_leaf_handler_t std_handlers[] =
 {
 	handle_std_base, /* 00 */
 	handle_features, /* 01 */
@@ -45,7 +45,7 @@ cpu_std_handler std_handlers[] =
 	NULL  /* 0F */
 };
 
-cpu_std_handler ext_handlers[] =
+cpuid_leaf_handler_t ext_handlers[] =
 {
 	handle_ext_base, /* 00 */
 	handle_features, /* 01 */
@@ -65,7 +65,7 @@ cpu_std_handler ext_handlers[] =
 	NULL  /* 0F */
 };
 
-cpu_std_handler std_dump_handlers[] =
+cpuid_leaf_handler_t std_dump_handlers[] =
 {
 	handle_dump_std_base, /* 00 */
 	NULL, /* 01 */
@@ -85,7 +85,7 @@ cpu_std_handler std_dump_handlers[] =
 	NULL  /* 0F */
 };
 
-cpu_std_handler ext_dump_handlers[] =
+cpuid_leaf_handler_t ext_dump_handlers[] =
 {
 	handle_dump_ext_base, /* 00 */
 	NULL, /* 01 */
