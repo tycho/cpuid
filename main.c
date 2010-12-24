@@ -47,6 +47,22 @@ void dump_cpuid(cpuid_state_t *state)
 				cr_tmp.edx,
 				reg_to_str(&cr_tmp));
 	}
+
+	for (i = 0x40000000; i <= state->hvmax; i++) {
+		ZERO_REGS(&cr_tmp);
+		cr_tmp.eax = i;
+		cpuid_native(&cr_tmp, state);
+		if (HAS_HANDLER(vmm_dump_handlers, i - 0x40000000))
+			vmm_dump_handlers[i - 0x40000000](&cr_tmp, state);
+		else
+			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
+				state->last_leaf.eax,
+				cr_tmp.eax,
+				cr_tmp.ebx,
+				cr_tmp.ecx,
+				cr_tmp.edx,
+				reg_to_str(&cr_tmp));
+	}
 	printf("\n");
 }
 
@@ -69,6 +85,14 @@ void run_cpuid(cpuid_state_t *state)
 		cpuid_native(&cr_tmp, state);
 		if (HAS_HANDLER(ext_handlers, i - 0x80000000))
 			ext_handlers[i - 0x80000000](&cr_tmp, state);
+	}
+
+	for (i = 0x40000000; i <= state->hvmax; i++) {
+		ZERO_REGS(&cr_tmp);
+		cr_tmp.eax = i;
+		cpuid_native(&cr_tmp, state);
+		if (HAS_HANDLER(vmm_handlers, i - 0x40000000))
+			vmm_handlers[i - 0x40000000](&cr_tmp, state);
 	}
 }
 

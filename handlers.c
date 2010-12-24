@@ -20,10 +20,18 @@ void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_ext_amdl1cachefeat(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_ext_l2cachefeat(cpu_regs_t *regs, cpuid_state_t *state);
 
+void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state);
+
 void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
+
 void handle_dump_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
+
+void handle_dump_vmm_base(cpu_regs_t *regs, cpuid_state_t *state);
 
 cpuid_leaf_handler_t std_handlers[] =
 {
@@ -54,6 +62,26 @@ cpuid_leaf_handler_t ext_handlers[] =
 	handle_ext_pname, /* 04 */
 	handle_ext_amdl1cachefeat, /* 05 */
 	handle_ext_l2cachefeat, /* 06 */
+	NULL, /* 07 */
+	NULL, /* 08 */
+	NULL, /* 09 */
+	NULL, /* 0A */
+	NULL, /* 0B */
+	NULL, /* 0C */
+	NULL, /* 0D */
+	NULL, /* 0E */
+	NULL  /* 0F */
+};
+
+cpuid_leaf_handler_t vmm_handlers[] =
+{
+	handle_vmm_base, /* 00 */
+	handle_xen_version, /* 01 */
+	handle_xen_leaf02, /* 02 */
+	handle_xen_leaf03, /* 03 */
+	NULL, /* 04 */
+	NULL, /* 05 */
+	NULL, /* 06 */
 	NULL, /* 07 */
 	NULL, /* 08 */
 	NULL, /* 09 */
@@ -105,6 +133,25 @@ cpuid_leaf_handler_t ext_dump_handlers[] =
 	NULL  /* 0F */
 };
 
+cpuid_leaf_handler_t vmm_dump_handlers[] =
+{
+	handle_dump_vmm_base, /* 00 */
+	NULL, /* 01 */
+	NULL, /* 02 */
+	NULL, /* 03 */
+	NULL, /* 04 */
+	NULL, /* 05 */
+	NULL, /* 06 */
+	NULL, /* 07 */
+	NULL, /* 08 */
+	NULL, /* 09 */
+	NULL, /* 0A */
+	NULL, /* 0B */
+	NULL, /* 0C */
+	NULL, /* 0D */
+	NULL, /* 0E */
+	NULL  /* 0F */
+};
 
 /* EAX = 0000 0000 */
 void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state)
@@ -612,4 +659,63 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 
 		printf("\n");
 	}
+}
+
+/* EAX = 4000 0000 */
+void handle_dump_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	state->hvmax = regs->eax;
+	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
+		state->last_leaf.eax,
+		regs->eax,
+		regs->ebx,
+		regs->ecx,
+		regs->edx,
+		reg_to_str(regs));
+}
+
+/* EAX = 4000 0000 */
+void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	char buf[13];
+	state->hvmax = regs->eax;
+	*(uint32_t *)(&buf[0]) = regs->ebx;
+	*(uint32_t *)(&buf[4]) = regs->ecx;
+	*(uint32_t *)(&buf[8]) = regs->edx;
+	buf[12] = 0;
+	if (strcmp(buf, "XenVMMXenVMM") == 0) {
+		state->hypervisor = HYPERVISOR_XEN;
+		printf("Xen hypervisor detected\n");
+	} else {
+		state->hypervisor = HYPERVISOR_UNKNOWN;
+	}
+	printf("\n");
+}
+
+/* EAX = 4000 0001 */
+void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	if (state->hypervisor != HYPERVISOR_XEN)
+		return;
+	printf("Xen version: %d.%d\n\n", regs->eax >> 16, regs->eax & 0xFFFF);
+}
+
+/* EAX = 4000 0002 */
+void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	if (state->hypervisor != HYPERVISOR_XEN)
+		return;
+	printf("Xen features:\n"
+	       "  Hypercall transfer pages: %d\n"
+	       "  MSR base address: %08x\n\n",
+	       regs->eax,
+	       regs->ebx);
+}
+
+/* EAX = 4000 0003 */
+void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	if (state->hypervisor != HYPERVISOR_XEN)
+		return;
+	printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
 }
