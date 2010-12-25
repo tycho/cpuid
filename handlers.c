@@ -50,7 +50,23 @@ cpuid_leaf_handler_t std_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 cpuid_leaf_handler_t ext_handlers[] =
@@ -70,7 +86,23 @@ cpuid_leaf_handler_t ext_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 cpuid_leaf_handler_t vmm_handlers[] =
@@ -90,7 +122,23 @@ cpuid_leaf_handler_t vmm_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 cpuid_leaf_handler_t std_dump_handlers[] =
@@ -110,7 +158,23 @@ cpuid_leaf_handler_t std_dump_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 cpuid_leaf_handler_t ext_dump_handlers[] =
@@ -130,7 +194,23 @@ cpuid_leaf_handler_t ext_dump_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 cpuid_leaf_handler_t vmm_dump_handlers[] =
@@ -150,7 +230,23 @@ cpuid_leaf_handler_t vmm_dump_handlers[] =
 	NULL, /* 0C */
 	NULL, /* 0D */
 	NULL, /* 0E */
-	NULL  /* 0F */
+	NULL, /* 0F */
+	NULL, /* 10 */
+	NULL, /* 11 */
+	NULL, /* 12 */
+	NULL, /* 13 */
+	NULL, /* 14 */
+	NULL, /* 15 */
+	NULL, /* 16 */
+	NULL, /* 17 */
+	NULL, /* 18 */
+	NULL, /* 19 */
+	NULL, /* 1A */
+	NULL, /* 1B */
+	NULL, /* 1C */
+	NULL, /* 1D */
+	NULL, /* 1E */
+	NULL  /* 1F */
 };
 
 /* EAX = 0000 0000 */

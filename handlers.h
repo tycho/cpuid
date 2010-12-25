@@ -13,7 +13,7 @@ extern cpuid_leaf_handler_t std_dump_handlers[];
 extern cpuid_leaf_handler_t ext_dump_handlers[];
 extern cpuid_leaf_handler_t vmm_dump_handlers[];
 
-#define MAX_HANDLER_IDX 0x0F
+#define MAX_HANDLER_IDX 0x1F
 #define HAS_HANDLER(handlers, ind) ((ind) <= MAX_HANDLER_IDX && (handlers[(ind)]))
 
 #endif
