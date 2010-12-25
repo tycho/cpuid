@@ -807,7 +807,7 @@ void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state)
 		return;
 	printf("Xen features:\n"
 	       "  Hypercall transfer pages: %d\n"
-	       "  MSR base address: %08x\n\n",
+	       "  MSR base address: 0x%08x\n\n",
 	       regs->eax,
 	       regs->ebx);
 }
