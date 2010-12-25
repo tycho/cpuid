@@ -825,8 +825,8 @@ void handle_vmware_leaf10(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	if (state->hypervisor != HYPERVISOR_VMWARE)
 		return;
-	printf("TSC frequency: %dMHz\n"
-	       "Bus (local APIC timer) frequency: %dMHz\n\n",
-	       regs->eax / 1000,
-		   regs->ebx / 1000);
+	printf("TSC frequency: %4.2fMHz\n"
+	       "Bus (local APIC timer) frequency: %4.2fMHz\n\n",
+	       (float)regs->eax / 1000.0f,
+		   (float)regs->ebx / 1000.0f);
 }
