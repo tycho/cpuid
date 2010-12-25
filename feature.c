@@ -1,6 +1,7 @@
 #include "prefix.h"
 #include "cpuid.h"
 #include "vendor.h"
+#include "state.h"
 
 #include <stdio.h>
 
@@ -162,12 +163,11 @@ static const cpu_feature_t features [] = {
 	{ 0, REG_NULL, 0, 0, NULL}
 };
 
-
-void print_features(cpu_regs_t *regs, uint32_t level, cpu_vendor_t vendor)
+void print_features(cpu_regs_t *regs, cpuid_state_t *state)
 {
 	const cpu_feature_t *p = features;
 	uint8_t count = 0;
-	switch(level) {
+	switch(state->last_leaf.eax) {
 	case 0x00000001:
 		printf("Base features:\n");
 		break;
@@ -177,7 +177,7 @@ void print_features(cpu_regs_t *regs, uint32_t level, cpu_vendor_t vendor)
 	}
 	while (p && p->m_reg != REG_NULL) {
 		uint32_t reg;
-		if (level != p->m_level) {
+		if (state->last_leaf.eax != p->m_level) {
 			p++;
 			continue;
 		}
@@ -198,7 +198,9 @@ void print_features(cpu_regs_t *regs, uint32_t level, cpu_vendor_t vendor)
 			abort();
 			break;
 		}
-		if ((vendor & p->m_vendor) != 0 && (reg & p->m_bitmask) != 0) {
+		if ((p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
+		    && (reg & p->m_bitmask) != 0)
+		{
 			printf("  %-11s", p->m_name);
 			count++;
 			if (count == 6) {

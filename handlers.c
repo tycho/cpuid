@@ -212,7 +212,7 @@ void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 		       ebx->clflushsz,
 		       ebx->brandid);
 	}
-	print_features(regs, state->last_leaf.eax, state->vendor);
+	print_features(regs, state);
 	printf("\n");
 }
 
