@@ -13,7 +13,8 @@ typedef enum
 {
 	HYPERVISOR_UNKNOWN = 0x0,
 	HYPERVISOR_XEN  = 0x1,
-	HYPERVISOR_VMWARE = 0x2
+	HYPERVISOR_VMWARE = 0x2,
+	HYPERVISOR_KVM = 0x4
 } hypervisor_t;
 
 #endif
