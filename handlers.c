@@ -686,6 +686,9 @@ void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
 	if (strcmp(buf, "XenVMMXenVMM") == 0) {
 		state->hypervisor = HYPERVISOR_XEN;
 		printf("Xen hypervisor detected\n");
+	} else if (strcmp(buf, "VMwareVMware") == 0) {
+		state->hypervisor = HYPERVISOR_VMWARE;
+		printf("VMware hypervisor detected\n");
 	} else {
 		state->hypervisor = HYPERVISOR_UNKNOWN;
 	}

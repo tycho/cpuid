@@ -89,7 +89,7 @@ static const cpu_feature_t features [] = {
 	{ 0x00000001, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD, "AVX"},
 	{ 0x00000001, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD, "F16C"},
 /*	{ 0x00000001, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-	{ 0x00000001, REG_ECX, 0x80000000,                VENDOR_AMD, "RAZ"},
+	{ 0x00000001, REG_ECX, 0x80000000, VENDOR_ANY               , "RAZ"},
 
 /*  Extended (8000_0001h) */
 /*	{ 0x80000001, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
