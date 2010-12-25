@@ -24,6 +24,7 @@ void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_vmware_leaf10(cpu_regs_t *regs, cpuid_state_t *state);
 
 void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state);
 void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
@@ -123,7 +124,7 @@ cpuid_leaf_handler_t vmm_handlers[] =
 	NULL, /* 0D */
 	NULL, /* 0E */
 	NULL, /* 0F */
-	NULL, /* 10 */
+	handle_vmware_leaf10, /* 10 */
 	NULL, /* 11 */
 	NULL, /* 12 */
 	NULL, /* 13 */
@@ -817,4 +818,15 @@ void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state)
 	if (state->hypervisor != HYPERVISOR_XEN)
 		return;
 	printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
+}
+
+/* EAX = 4000 0010 */
+void handle_vmware_leaf10(cpu_regs_t *regs, cpuid_state_t *state)
+{
+	if (state->hypervisor != HYPERVISOR_VMWARE)
+		return;
+	printf("TSC frequency: %dMHz\n"
+	       "Bus (local APIC timer) frequency: %dMHz\n\n",
+	       regs->eax / 1000,
+		   regs->ebx / 1000);
 }
