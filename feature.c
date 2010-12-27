@@ -1,7 +1,8 @@
 #include "prefix.h"
+
 #include "cpuid.h"
-#include "vendor.h"
 #include "state.h"
+#include "vendor.h"
 
 #include <stdio.h>
 
@@ -14,16 +15,16 @@ typedef enum
 	REG_EDX
 } cpu_register_t;
 
-typedef struct
+struct cpu_feature_t
 {
 	uint32_t m_level;
 	uint8_t  m_reg;
 	uint32_t m_bitmask;
 	uint32_t m_vendor;
 	const char *m_name;
-} cpu_feature_t;
+};
 
-static const cpu_feature_t features [] = {
+static const struct cpu_feature_t features [] = {
 /*  Standard (0000_0001h) */
 	{ 0x00000001, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD, "FPU"},
 	{ 0x00000001, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD, "VME"},
@@ -163,9 +164,9 @@ static const cpu_feature_t features [] = {
 	{ 0, REG_NULL, 0, 0, NULL}
 };
 
-void print_features(cpu_regs_t *regs, cpuid_state_t *state)
+void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	const cpu_feature_t *p = features;
+	const struct cpu_feature_t *p = features;
 	uint8_t count = 0;
 	switch(state->last_leaf.eax) {
 	case 0x00000001:

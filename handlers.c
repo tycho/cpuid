@@ -1,38 +1,40 @@
 
 #include "prefix.h"
+
 #include "cache.h"
-#include "state.h"
+#include "feature.h"
 #include "handlers.h"
+#include "state.h"
 #include "util.h"
 
 #include <stdio.h>
 #include <string.h>
 
-void handle_features(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_std_cache02(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_amdl1cachefeat(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_ext_l2cachefeat(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_vmware_leaf10(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state);
-void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_ext_base(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_dump_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_vmm_base(cpu_regs_t *regs, cpuid_state_t *state);
+void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 cpuid_leaf_handler_t std_handlers[] =
 {
@@ -251,7 +253,7 @@ cpuid_leaf_handler_t vmm_dump_handlers[] =
 };
 
 /* EAX = 0000 0000 */
-void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	handle_std_base(regs, state);
 	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
@@ -264,7 +266,7 @@ void handle_dump_std_base(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 0000 0000 */
-void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 	state->stdmax = regs->eax;
@@ -281,16 +283,17 @@ void handle_std_base(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 8000 0001 | EAX = 0000 0001 */
-void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->last_leaf.eax == 0x00000001) {
-		typedef struct {
+		struct std1_ebx_t
+		{
 			uint8_t brandid;
 			uint8_t clflushsz;
 			uint8_t logicalcount;
 			uint8_t localapicid;
-		} std1_ebx_t;
-		std1_ebx_t *ebx = (std1_ebx_t *)&regs->ebx;
+		};
+		struct std1_ebx_t *ebx = (struct std1_ebx_t *)&regs->ebx;
 		*(uint32_t *)(&state->sig) = regs->eax;
 		printf("Signature: 0x%08x\n"
 		       "  Family: %d\n"
@@ -314,7 +317,7 @@ void handle_features(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 0000 0002 */
-void handle_std_cache02(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	if (state->vendor != VENDOR_INTEL)
@@ -345,10 +348,10 @@ static const char *cache04_type(uint8_t type)
 }
 
 /* EAX = 0000 0004 */
-void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 #pragma pack(push,1)
-	typedef struct {
+	struct eax_cache04_t {
 		uint8_t type:5;
 		uint8_t level:3;
 		uint8_t self_initializing:1;
@@ -356,25 +359,25 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 		uint8_t reserved:4;
 		uint16_t max_threads_sharing:12; /* +1 encoded */
 		uint8_t apics_reserved:6; /* +1 encoded */
-	} eax_cache04_t;
-	typedef struct {
+	};
+	struct ebx_cache04_t {
 		uint16_t line_size:12; /* +1 encoded */
 		uint16_t partitions:10; /* +1 encoded */
 		uint16_t assoc:10; /* +1 encoded */
-	} ebx_cache04_t;
+	};
 #pragma pack(pop)
 	uint32_t i = 0;
 	if (state->vendor != VENDOR_INTEL)
 		return;
 	printf("Deterministic Cache Parameters:\n");
-	if (sizeof(eax_cache04_t) != 4 || sizeof(ebx_cache04_t) != 4) {
+	if (sizeof(struct eax_cache04_t) != 4 || sizeof(struct ebx_cache04_t) != 4) {
 		printf("  WARNING: The code appears to have been incorrectly compiled.\n"
 		       "           Expect wildly inaccurate output for this section.\n");
 	}
 
 	while (1) {
-		eax_cache04_t *eax;
-		ebx_cache04_t *ebx;
+		struct eax_cache04_t *eax;
+		struct ebx_cache04_t *ebx;
 		uint32_t cacheSize;
 		ZERO_REGS(regs);
 		regs->eax = 4;
@@ -388,8 +391,8 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 		if (!regs->eax && !regs->ebx && !regs->ecx && !regs->edx)
 			break;
 
-		eax = (eax_cache04_t *)&regs->eax;
-		ebx = (ebx_cache04_t *)&regs->ebx;
+		eax = (struct eax_cache04_t *)&regs->eax;
+		ebx = (struct ebx_cache04_t *)&regs->ebx;
 
 		/* Cache size calculated in bytes. */
 		cacheSize = (ebx->assoc + 1) *
@@ -431,7 +434,7 @@ void handle_std_cache04(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 0000 0004 */
-void handle_dump_std_04(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	while (1) {
@@ -467,7 +470,7 @@ static const char *x2apic_level_type(uint8_t type)
 }
 
 /* EAX = 0000 000B */
-void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	printf("Processor Topology:\n");
@@ -496,7 +499,7 @@ void handle_std_x2apic(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 0000 000B */
-void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	while (1) {
@@ -519,7 +522,7 @@ void handle_dump_std_0B(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 8000 0000 */
-void handle_dump_ext_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_dump_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	handle_ext_base(regs, state);
 	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
@@ -532,13 +535,13 @@ void handle_dump_ext_base(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 8000 0000 */
-void handle_ext_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	state->extmax = regs->eax;
 }
 
 /* EAX = 8000 0002 */
-void handle_ext_pname(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t base = (state->last_leaf.eax - 0x80000002) * 16;
 	if (base == 0)
@@ -573,28 +576,28 @@ static const char *amd_associativity(uint8_t assoc)
 }
 
 /* EAX = 8000 0005 */
-void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
+void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t *state)
 {
-	typedef struct {
+	struct amd_l1_tlb_t {
 		uint8_t itlb_ent;
 		uint8_t itlb_assoc;
 		uint8_t dtlb_ent;
 		uint8_t dtlb_assoc;
-	} amd_l1_tlb_t;
-	typedef struct {
+	};
+	struct amd_l1_cache_t {
 		uint8_t linesize;
 		uint8_t linespertag;
 		uint8_t assoc;
 		uint8_t size;
-	} amd_l1_cache_t;
-	amd_l1_tlb_t *tlb;
-	amd_l1_cache_t *cache;
+	};
+	struct amd_l1_tlb_t *tlb;
+	struct amd_l1_cache_t *cache;
 
 	/* This is an AMD-only leaf. */
 	if (state->vendor != VENDOR_AMD)
 		return;
 
-	tlb = (amd_l1_tlb_t *)&regs->eax;
+	tlb = (struct amd_l1_tlb_t *)&regs->eax;
 	printf("L1 TLBs:\n");
 
 	if (tlb->dtlb_ent)
@@ -604,7 +607,7 @@ void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 		printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
 		       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
 
-	tlb = (amd_l1_tlb_t *)&regs->ebx;
+	tlb = (struct amd_l1_tlb_t *)&regs->ebx;
 	if (tlb->dtlb_ent)
 		printf("  Data TLB (4KB pages): %d entries, %s\n",
 		       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
@@ -614,7 +617,7 @@ void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 
 	printf("\n");
 
-	cache = (amd_l1_cache_t *)&regs->ecx;
+	cache = (struct amd_l1_cache_t *)&regs->ecx;
 	if (cache->size)
 		printf("L1 caches:\n"
 		       "  Data: %dKB, %s, %d lines per tag, %d byte line size\n",
@@ -623,7 +626,7 @@ void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 		       cache->linespertag,
 		       cache->linesize);
 
-	cache = (amd_l1_cache_t *)&regs->edx;
+	cache = (struct amd_l1_cache_t *)&regs->edx;
 	if (cache->size)
 		printf("  Instruction: %dKB, %s, %d lines per tag, %d byte line size\n",
 		       cache->size,
@@ -635,7 +638,7 @@ void handle_ext_amdl1cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 }
 
 /* EAX = 8000 0006 */
-void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
+void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t *state)
 {
 	if (state->vendor == VENDOR_INTEL) {
 		static const char *assoc[] = {
@@ -657,14 +660,14 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 			/* 0x0F */ "Fully associative"
 		};
 
-		typedef struct {
+		struct l2cache_feat_t {
 			uint8_t linesize;
 			uint8_t reserved1:4;
 			uint8_t assoc:4;
 			uint16_t size;
-		} l2cache_feat_t;
+		};
 
-		l2cache_feat_t *feat = (l2cache_feat_t *)&regs->ecx;
+		struct l2cache_feat_t *feat = (struct l2cache_feat_t *)&regs->ecx;
 
 		printf("L2 cache:\n"
 		       "  %d%cB, %s associativity, %d byte line size\n\n",
@@ -694,32 +697,32 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 			/* 0x0F */ "Fully associative"
 		};
 
-		typedef struct {
+		struct l2_tlb_t {
 			uint16_t itlb_size:12;
 			uint8_t  itlb_assoc:4;
 			uint16_t dtlb_size:12;
 			uint8_t  dtlb_assoc:4;
-		} l2_tlb_t;
-		typedef struct {
+		};
+		struct l2_cache_t {
 			uint8_t  linesize;
 			uint8_t  linespertag:4;
 			uint8_t  assoc:4;
 			uint16_t size;
-		} l2_cache_t;
-		typedef struct {
+		};
+		struct l3_cache_t {
 			uint8_t  linesize;
 			uint8_t  linespertag:4;
 			uint8_t  reserved:2;
 			uint16_t size:14;
-		} l3_cache_t;
+		};
 
-		l2_tlb_t *tlb;
-		l2_cache_t *l2_cache;
-		l3_cache_t *l3_cache;
+		struct l2_tlb_t *tlb;
+		struct l2_cache_t *l2_cache;
+		struct l3_cache_t *l3_cache;
 
 		printf("L2 TLBs:\n");
 
-		tlb = (l2_tlb_t *)&regs->eax;
+		tlb = (struct l2_tlb_t *)&regs->eax;
 		if (tlb->dtlb_size)
 			printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
 			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
@@ -727,7 +730,7 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 			printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
 			       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
 
-		tlb = (l2_tlb_t *)&regs->ebx;
+		tlb = (struct l2_tlb_t *)&regs->ebx;
 		if (tlb->dtlb_size)
 			printf("  Data TLB (4KB pages): %d entries, %s\n",
 			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
@@ -737,7 +740,7 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 
 		printf("\n");
 
-		l2_cache = (l2_cache_t *)&regs->ecx;
+		l2_cache = (struct l2_cache_t *)&regs->ecx;
 		if (l2_cache->size)
 			printf("L2 cache: %d%cB, %s, %d lines per tag, %d byte line size\n",
 			       l2_cache->size > 1024 ? l2_cache->size / 1024 : l2_cache->size,
@@ -746,7 +749,7 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 			       l2_cache->linespertag,
 			       l2_cache->linesize);
 
-		l3_cache = (l3_cache_t *)&regs->edx;
+		l3_cache = (struct l3_cache_t *)&regs->edx;
 		if (l3_cache->size)
 			printf("L3 cache: %d%cB, %d lines per tag, %d byte line size\n",
 			       l3_cache->size > 1024 ? l3_cache->size / 1024 : l3_cache->size,
@@ -759,7 +762,7 @@ void handle_ext_l2cachefeat(cpu_regs_t *regs, unused cpuid_state_t *state)
 }
 
 /* EAX = 4000 0000 */
-void handle_dump_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	state->hvmax = regs->eax;
 	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
@@ -772,7 +775,7 @@ void handle_dump_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 4000 0000 */
-void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 	state->hvmax = regs->eax;
@@ -796,7 +799,7 @@ void handle_vmm_base(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 4000 0001 */
-void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->hypervisor != HYPERVISOR_XEN)
 		return;
@@ -804,7 +807,7 @@ void handle_xen_version(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 4000 0002 */
-void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->hypervisor != HYPERVISOR_XEN)
 		return;
@@ -816,7 +819,7 @@ void handle_xen_leaf02(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 4000 0003 */
-void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->hypervisor != HYPERVISOR_XEN)
 		return;
@@ -824,7 +827,7 @@ void handle_xen_leaf03(cpu_regs_t *regs, cpuid_state_t *state)
 }
 
 /* EAX = 4000 0010 */
-void handle_vmware_leaf10(cpu_regs_t *regs, cpuid_state_t *state)
+void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->hypervisor != HYPERVISOR_VMWARE)
 		return;

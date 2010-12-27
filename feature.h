@@ -1,10 +1,9 @@
 #ifndef __feature_h
 #define __feature_h
 
-#include "cpuid.h"
-#include "vendor.h"
-#include "state.h"
+struct cpu_regs_t;
+struct cpuid_state_t;
 
-void print_features(cpu_regs_t *regs, cpuid_state_t *state);
+void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 #endif

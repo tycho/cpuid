@@ -1,10 +1,7 @@
 #ifndef __handlers_h
 #define __handlers_h
 
-#include "cpuid.h"
-#include "state.h"
-
-typedef void(*cpuid_leaf_handler_t)(cpu_regs_t *, cpuid_state_t *);
+typedef void(*cpuid_leaf_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
 
 extern cpuid_leaf_handler_t std_handlers[];
 extern cpuid_leaf_handler_t ext_handlers[];

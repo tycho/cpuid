@@ -1,9 +1,10 @@
 #include "prefix.h"
 
-#include "cpuid.h"
-#include "vendor.h"
-#include "feature.h"
 #include "cache.h"
+#include "cpuid.h"
+#include "feature.h"
+#include "state.h"
+#include "vendor.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -283,7 +284,7 @@ int entry_comparator(const void *a, const void *b)
 	return strcmp(*(const char **)a, *(const char **)b);
 }
 
-void print_intel_caches(cpu_regs_t *regs, const cpu_signature_t *sig)
+void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *sig)
 {
 	uint8_t buf[16], i;
 

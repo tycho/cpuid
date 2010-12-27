@@ -1,20 +1,21 @@
 #include "prefix.h"
-#include "cpuid.h"
-#include "vendor.h"
-#include "feature.h"
+
 #include "cache.h"
+#include "cpuid.h"
+#include "feature.h"
+#include "handlers.h"
 #include "util.h"
 #include "state.h"
-#include "handlers.h"
+#include "vendor.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void dump_cpuid(cpuid_state_t *state)
+void dump_cpuid(struct cpuid_state_t *state)
 {
 	uint32_t i;
-	cpu_regs_t cr_tmp;
+	struct cpu_regs_t cr_tmp;
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
@@ -66,10 +67,10 @@ void dump_cpuid(cpuid_state_t *state)
 	printf("\n");
 }
 
-void run_cpuid(cpuid_state_t *state)
+void run_cpuid(struct cpuid_state_t *state)
 {
 	uint32_t i;
-	cpu_regs_t cr_tmp;
+	struct cpu_regs_t cr_tmp;
 
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
@@ -98,7 +99,7 @@ void run_cpuid(cpuid_state_t *state)
 
 int main(unused int argc, unused char **argv)
 {
-	cpuid_state_t state;
+	struct cpuid_state_t state;
 	INIT_CPUID_STATE(&state);
 	dump_cpuid(&state);
 	INIT_CPUID_STATE(&state);

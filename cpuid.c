@@ -1,5 +1,7 @@
 #include "prefix.h"
+
 #include "cpuid.h"
+#include "state.h"
 
 #include <string.h>
 #ifdef TARGET_COMPILER_MSVC
@@ -8,13 +10,13 @@
 #endif
 #endif
 
-const char *reg_to_str(cpu_regs_t *regs)
+const char *reg_to_str(struct cpu_regs_t *regs)
 {
 	uint32_t i;
-	static char buffer[sizeof(cpu_regs_t) + 1];
-	buffer[sizeof(cpu_regs_t)] = 0;
-	memcpy(&buffer, regs, sizeof(cpu_regs_t));
-	for (i = 0; i < sizeof(cpu_regs_t); i++) {
+	static char buffer[sizeof(struct cpu_regs_t) + 1];
+	buffer[sizeof(struct cpu_regs_t)] = 0;
+	memcpy(&buffer, regs, sizeof(struct cpu_regs_t));
+	for (i = 0; i < sizeof(struct cpu_regs_t); i++) {
 		if (buffer[i]  > 31 && buffer[i] < 127)
 			continue;
 		buffer[i] = '.';
@@ -133,8 +135,8 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 
 #endif
 
-BOOL cpuid_native(cpu_regs_t *regs, cpuid_state_t *state)
+BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	memcpy(&state->last_leaf, regs, sizeof(cpu_regs_t));
+	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
 	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
 }
