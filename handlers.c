@@ -764,7 +764,16 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t
 /* EAX = 4000 0000 */
 void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	state->hvmax = regs->eax;
+	/* Processors which aren't using 0x40000000 will report unusual values
+	   in this register. Sometimes they can cause a seemingly infinite loop
+	   because it tries to iterate over all the leaves. I figure we won't
+	   ever have more than 65535 leaves at this level, so this should fix
+	   the nonsense. */
+	if ((regs->eax & 0xFFFF0000) == 0x40000000)
+		state->hvmax = regs->eax;
+	else
+		state->hvmax = 0;
+
 	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
 		state->last_leaf.eax,
 		regs->eax,
@@ -778,7 +787,17 @@ void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
-	state->hvmax = regs->eax;
+
+	/* Processors which aren't using 0x40000000 will report unusual values
+	   in this register. Sometimes they can cause a seemingly infinite loop
+	   because it tries to iterate over all the leaves. I figure we won't
+	   ever have more than 65535 leaves at this level, so this should fix
+	   the nonsense. */
+	if ((regs->eax & 0xFFFF0000) == 0x40000000)
+		state->hvmax = regs->eax;
+	else
+		state->hvmax = 0;
+
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->ecx;
 	*(uint32_t *)(&buf[8]) = regs->edx;
