@@ -14,8 +14,14 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx);
 
 struct cpuid_state_t;
 
+typedef BOOL(*cpuid_call_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
+
 /* Makes a lot of calls easier to do. */
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+
+/* For cpuid_pseudo */
+BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state);
 
 const char *reg_to_str(struct cpu_regs_t *regs);
 

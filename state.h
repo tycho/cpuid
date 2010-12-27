@@ -15,8 +15,15 @@ struct cpu_signature_t {
 	uint8_t reserved2:4;
 };
 
+struct cpuid_leaf_t {
+	struct cpu_regs_t input;
+	struct cpu_regs_t output;
+};
+
 struct cpuid_state_t
 {
+	cpuid_call_handler_t cpuid_call;
+	struct cpuid_leaf_t *cpuid_leaves;
 	uint32_t stdmax;
 	uint32_t extmax;
 	uint32_t hvmax;
@@ -31,6 +38,12 @@ struct cpuid_state_t
 	memset((x), 0, sizeof(struct cpuid_state_t)); \
 	(x)->extmax = 0x80000000; \
 	(x)->hvmax = 0x40000000; \
+	(x)->cpuid_call = cpuid_native; \
+	}
+
+#define FREE_CPUID_STATE(x) { \
+	if ((x)->cpuid_leaves) \
+		free((x)->cpuid_leaves); \
 	}
 
 #endif

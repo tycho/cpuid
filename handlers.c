@@ -327,7 +327,7 @@ void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	for (i = 1; i < m; i++) {
 		ZERO_REGS(regs);
 		regs->eax = 2;
-		cpuid_native(regs, state);
+		state->cpuid_call(regs, state);
 		print_intel_caches(regs, &state->sig);
 	}
 	printf("\n");
@@ -382,7 +382,7 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 4;
 		regs->ecx = i;
-		cpuid_native(regs, state);
+		state->cpuid_call(regs, state);
 
 		/* This is a non-official check. With other leafs (i.e. 0x0B),
 		   some extra information comes through, past the termination
@@ -441,7 +441,7 @@ void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 4;
 		regs->ecx = i;
-		cpuid_native(regs, state);
+		state->cpuid_call(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			state->last_leaf.eax,
 			state->last_leaf.ecx,
@@ -478,7 +478,7 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
 		regs->ecx = i;
-		cpuid_native(regs, state);
+		state->cpuid_call(regs, state);
 		if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
 			break;
 		printf("  Bits to shift: %d\n"
@@ -506,7 +506,7 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
 		regs->ecx = i;
-		cpuid_native(regs, state);
+		state->cpuid_call(regs, state);
 		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
 			state->last_leaf.eax,
 			state->last_leaf.ecx,

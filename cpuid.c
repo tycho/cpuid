@@ -3,6 +3,8 @@
 #include "cpuid.h"
 #include "state.h"
 
+#include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #ifdef TARGET_COMPILER_MSVC
 #ifdef TARGET_CPU_X86_64
@@ -139,4 +141,120 @@ BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
 	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
+}
+
+BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
+{
+	struct cpuid_leaf_t *leaf;
+	size_t linecount = 0;
+	FILE *file = fopen(filename, "r");
+	if (!file)
+		return FALSE;
+
+	while(TRUE) {
+		char linebuf[85];
+
+		if(!fgets(linebuf, sizeof(linebuf), file))
+			break;
+
+		if (strncmp(linebuf, "CPUID", 5) == 0) {
+			linecount++;
+		}
+	}
+
+	if (linecount < 1)
+		goto fail;
+
+	state->cpuid_leaves = (struct cpuid_leaf_t *)malloc(sizeof(struct cpuid_leaf_t) * (linecount + 1));
+	assert(state->cpuid_leaves);
+
+	memset(state->cpuid_leaves, 0, sizeof(struct cpuid_leaf_t) * (linecount + 1));
+
+	/* Now do the actual read. */
+	rewind(file);
+
+	leaf = state->cpuid_leaves;
+	while(TRUE) {
+		size_t s;
+		char linebuf[85];
+
+		if(!fgets(linebuf, sizeof(linebuf), file))
+			break;
+
+		/* Strip \r and \n */
+		s = strcspn(linebuf, "\r\n");
+		if (s)
+			linebuf[s] = 0;
+
+		if (strncmp(linebuf, "CPUID", 5) == 0) {
+			/* Probably a valid line. */
+			uint32_t eax_in, ecx_in = 0;
+			uint32_t eax_out, ebx_out, ecx_out, edx_out;
+
+			/* First format, no ecx input. */
+			int r = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
+			               &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+			if (r != 5) {
+				r = sscanf(linebuf, "CPUID %08x, index %d = %08x %08x %08x %08x",
+				           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+				if (r != 6) {
+					printf("Couldn't parse: '%s'\n", linebuf);
+					continue;
+				}
+			}
+
+			leaf->input.eax = eax_in;
+			leaf->input.ecx = ecx_in;
+
+			leaf->output.eax = eax_out;
+			leaf->output.ebx = ebx_out;
+			leaf->output.ecx = ecx_out;
+			leaf->output.edx = edx_out;
+
+			leaf++;
+		}
+	}
+
+	/* Sentinel values */
+	leaf->input.eax = 0xFFFFFFFF;
+	leaf->input.ecx = 0xFFFFFFFF;
+
+	leaf->output.eax = 0xFFFFFFFF;
+	leaf->output.ebx = 0xFFFFFFFF;
+	leaf->output.ecx = 0xFFFFFFFF;
+	leaf->output.edx = 0xFFFFFFFF;
+
+	fclose(file);
+
+	return TRUE;
+fail:
+	if (file)
+		fclose(file);
+
+	return FALSE;
+}
+
+BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct cpuid_leaf_t *leaf;
+
+	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
+
+	/* Iterate through the loaded leaves and find a match. */
+	leaf = state->cpuid_leaves;
+	while(leaf && leaf->input.eax != 0xFFFFFFFF) {
+		if (leaf->input.eax == regs->eax &&
+		    leaf->input.ecx == regs->ecx) {
+			memcpy(regs, &leaf->output, sizeof(struct cpu_regs_t));
+			return TRUE;
+		}
+		leaf++;
+	}
+
+	/* Didn't find a match. */
+	regs->eax = 0;
+	regs->ebx = 0;
+	regs->ecx = 0;
+	regs->edx = 0;
+	return TRUE	;
 }

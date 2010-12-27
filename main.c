@@ -20,7 +20,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(std_dump_handlers, i))
 			std_dump_handlers[i](&cr_tmp, state);
 		else
@@ -36,7 +36,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 	for (i = 0x80000000; i <= state->extmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(ext_dump_handlers, i - 0x80000000))
 			ext_dump_handlers[i - 0x80000000](&cr_tmp, state);
 		else
@@ -52,7 +52,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 	for (i = 0x40000000; i <= state->hvmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(vmm_dump_handlers, i - 0x40000000))
 			vmm_dump_handlers[i - 0x40000000](&cr_tmp, state);
 		else
@@ -75,7 +75,7 @@ void run_cpuid(struct cpuid_state_t *state)
 	for (i = 0; i <= state->stdmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(std_handlers, i))
 			std_handlers[i](&cr_tmp, state);
 	}
@@ -83,7 +83,7 @@ void run_cpuid(struct cpuid_state_t *state)
 	for (i = 0x80000000; i <= state->extmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(ext_handlers, i - 0x80000000))
 			ext_handlers[i - 0x80000000](&cr_tmp, state);
 	}
@@ -91,18 +91,31 @@ void run_cpuid(struct cpuid_state_t *state)
 	for (i = 0x40000000; i <= state->hvmax; i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
-		cpuid_native(&cr_tmp, state);
+		state->cpuid_call(&cr_tmp, state);
 		if (HAS_HANDLER(vmm_handlers, i - 0x40000000))
 			vmm_handlers[i - 0x40000000](&cr_tmp, state);
 	}
 }
 
-int main(unused int argc, unused char **argv)
+int main(int argc, char **argv)
 {
 	struct cpuid_state_t state;
+
 	INIT_CPUID_STATE(&state);
+	if (argc > 1) {
+		cpuid_load_from_file(argv[1], &state);
+		state.cpuid_call = cpuid_pseudo;
+	}
 	dump_cpuid(&state);
+	FREE_CPUID_STATE(&state);
+
 	INIT_CPUID_STATE(&state);
+	if (argc > 1) {
+		cpuid_load_from_file(argv[1], &state);
+		state.cpuid_call = cpuid_pseudo;
+	}
 	run_cpuid(&state);
+	FREE_CPUID_STATE(&state);
+
 	return 0;
 }
