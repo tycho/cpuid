@@ -5,6 +5,9 @@
 
 # Intermediate objects
 *.o
+.cflags
+build.h
+license.h
 
 # Output binaries
 cpuid

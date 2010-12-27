@@ -7,10 +7,12 @@
 #include "util.h"
 #include "state.h"
 #include "vendor.h"
+#include "version.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
 
 void dump_cpuid(struct cpuid_state_t *state)
 {
@@ -97,25 +99,79 @@ void run_cpuid(struct cpuid_state_t *state)
 	}
 }
 
+void usage(const char *argv0)
+{
+	printf("usage: %s [--help] [--dump] [--parse <filename>]\n\n", argv0);
+	printf("  %-15s %s\n", "-h, --help", "Print this help");
+	printf("  %-15s %s\n", "-d, --dump", "Dump a raw CPUID table");
+	printf("  %-15s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified.");
+	printf("\n");
+	exit(0);
+}
+
+void version()
+{
+	printf("cpuid version %s\n\n", cpuid_version_long());
+	license();
+	exit(0);
+}
+
+static int do_dump = 0;
+
 int main(int argc, char **argv)
 {
+	const char *file = NULL;
 	struct cpuid_state_t state;
+	int c;
 
-	INIT_CPUID_STATE(&state);
-	if (argc > 1) {
-		cpuid_load_from_file(argv[1], &state);
-		state.cpuid_call = cpuid_pseudo;
-	}
-	dump_cpuid(&state);
-	FREE_CPUID_STATE(&state);
+	while (TRUE) {
+		static struct option long_options[] = {
+			{"version", no_argument, 0, 'v'},
+			{"help", no_argument, 0, 'h'},
+			{"dump", no_argument, &do_dump, 1},
+			{"parse", required_argument, 0, 'f'},
+			{0, 0, 0, 0}
+		};
+		int option_index = 0;
 
-	INIT_CPUID_STATE(&state);
-	if (argc > 1) {
-		cpuid_load_from_file(argv[1], &state);
-		state.cpuid_call = cpuid_pseudo;
+		c = getopt_long(argc, argv, "hdvf:", long_options, &option_index);
+		if (c == -1)
+			break;
+		switch (c) {
+		case 0:
+			break;
+		case 'd':
+			do_dump = 1;
+			break;
+		case 'f':
+			file = optarg;
+			break;
+		case 'v':
+			version();
+		case 'h':
+		case '?':
+		default:
+			usage(argv[0]);
+		}
 	}
-	run_cpuid(&state);
-	FREE_CPUID_STATE(&state);
+
+	if (do_dump) {
+		INIT_CPUID_STATE(&state);
+		if (file) {
+			cpuid_load_from_file(file, &state);
+			state.cpuid_call = cpuid_pseudo;
+		}
+		dump_cpuid(&state);
+		FREE_CPUID_STATE(&state);
+	} else {
+		INIT_CPUID_STATE(&state);
+		if (file) {
+			cpuid_load_from_file(file, &state);
+			state.cpuid_call = cpuid_pseudo;
+		}
+		run_cpuid(&state);
+		FREE_CPUID_STATE(&state);
+	}
 
 	return 0;
 }
