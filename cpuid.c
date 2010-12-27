@@ -252,9 +252,7 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	}
 
 	/* Didn't find a match. */
-	regs->eax = 0;
-	regs->ebx = 0;
-	regs->ecx = 0;
-	regs->edx = 0;
-	return TRUE	;
+	memset(regs, 0, sizeof(struct cpu_regs_t));
+
+	return TRUE;
 }
