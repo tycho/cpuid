@@ -27,7 +27,7 @@ BINARY := cpuid$(EXT)
 all: $(BINARY)
 
 CC := gcc
-CFLAGS := -Os -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Werror
+CFLAGS := -Os -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wpadded -pedantic
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o util.o version.o
 
 $(BINARY): $(OBJECTS)
