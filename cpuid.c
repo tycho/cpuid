@@ -195,7 +195,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			int r = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
 			               &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 			if (r != 5) {
-				r = sscanf(linebuf, "CPUID %08x, index %d = %08x %08x %08x %08x",
+				r = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
 				           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 				if (r != 6) {
 					printf("Couldn't parse: '%s'\n", linebuf);
