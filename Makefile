@@ -45,7 +45,7 @@ build.h: .force-regen
 
 .PHONY: .force-regen
 
-license.h:
+license.h: COPYING
 	$(QUIET_GEN)tools/license.pl COPYING license.h
 
 version.o: license.h build.h
