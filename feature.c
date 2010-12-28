@@ -225,7 +225,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			{
 				char feat[32];
 				sprintf(feat, "%s (%s)", p->m_name, vendors(p->m_vendor));
-				printf("  %-26s", feat);
+				printf("  %-24s", feat);
 				count++;
 				if (count == 3) {
 					count = 0;
