@@ -256,13 +256,7 @@ cpuid_leaf_handler_t vmm_dump_handlers[] =
 void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	handle_std_base(regs, state);
-	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-		state->last_leaf.eax,
-		regs->eax,
-		regs->ebx,
-		regs->ecx,
-		regs->edx,
-		reg_to_str(regs));
+	state->cpuid_print(regs, state, FALSE);
 }
 
 /* EAX = 0000 0000 */
@@ -440,14 +434,7 @@ void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		regs->eax = 4;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
-		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
-			state->last_leaf.eax,
-			state->last_leaf.ecx,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx,
-			reg_to_str(regs));
+		state->cpuid_print(regs, state, TRUE);
 		if (!(regs->eax & 0xF))
 			break;
 		i++;
@@ -505,14 +492,7 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		regs->eax = 0xb;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
-		printf("CPUID %08x, index %d = %08x %08x %08x %08x | %s\n",
-			state->last_leaf.eax,
-			state->last_leaf.ecx,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx,
-			reg_to_str(regs));
+		state->cpuid_print(regs, state, TRUE);
 		if (!(regs->eax || regs->ebx))
 			break;
 		i++;
@@ -523,13 +503,7 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_dump_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	handle_ext_base(regs, state);
-	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-		state->last_leaf.eax,
-		regs->eax,
-		regs->ebx,
-		regs->ecx,
-		regs->edx,
-		reg_to_str(regs));
+	state->cpuid_print(regs, state, FALSE);
 }
 
 /* EAX = 8000 0000 */
@@ -774,13 +748,7 @@ void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	else
 		state->hvmax = 0;
 
-	printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-		state->last_leaf.eax,
-		regs->eax,
-		regs->ebx,
-		regs->ecx,
-		regs->edx,
-		reg_to_str(regs));
+	state->cpuid_print(regs, state, FALSE);
 }
 
 /* EAX = 4000 0000 */

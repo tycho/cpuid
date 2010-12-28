@@ -28,13 +28,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 		if (HAS_HANDLER(std_dump_handlers, i))
 			std_dump_handlers[i](&cr_tmp, state);
 		else
-			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-				state->last_leaf.eax,
-				cr_tmp.eax,
-				cr_tmp.ebx,
-				cr_tmp.ecx,
-				cr_tmp.edx,
-				reg_to_str(&cr_tmp));
+			state->cpuid_print(&cr_tmp, state, FALSE);
 	}
 	
 	for (i = 0x80000000; i <= state->extmax; i++) {
@@ -44,13 +38,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 		if (HAS_HANDLER(ext_dump_handlers, i - 0x80000000))
 			ext_dump_handlers[i - 0x80000000](&cr_tmp, state);
 		else
-			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-				state->last_leaf.eax,
-				cr_tmp.eax,
-				cr_tmp.ebx,
-				cr_tmp.ecx,
-				cr_tmp.edx,
-				reg_to_str(&cr_tmp));
+			state->cpuid_print(&cr_tmp, state, FALSE);
 	}
 
 	for (i = 0x40000000; i <= state->hvmax; i++) {
@@ -60,13 +48,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 		if (HAS_HANDLER(vmm_dump_handlers, i - 0x40000000))
 			vmm_dump_handlers[i - 0x40000000](&cr_tmp, state);
 		else
-			printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-				state->last_leaf.eax,
-				cr_tmp.eax,
-				cr_tmp.ebx,
-				cr_tmp.ecx,
-				cr_tmp.edx,
-				reg_to_str(&cr_tmp));
+			state->cpuid_print(&cr_tmp, state, FALSE);
 	}
 	printf("\n");
 }
@@ -120,6 +102,7 @@ void version()
 }
 
 static int do_dump = 0;
+static int dump_vmware = 0;
 
 int main(int argc, char **argv)
 {
@@ -134,6 +117,7 @@ int main(int argc, char **argv)
 			{"dump", no_argument, &do_dump, 1},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
+			{"vmware-vmx", no_argument, &dump_vmware, 1},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
@@ -165,6 +149,8 @@ int main(int argc, char **argv)
 			cpuid_load_from_file(file, &state);
 			state.cpuid_call = cpuid_pseudo;
 		}
+		if (dump_vmware)
+			state.cpuid_print = cpuid_dump_vmware;
 		dump_cpuid(&state);
 		FREE_CPUID_STATE(&state);
 	} else {

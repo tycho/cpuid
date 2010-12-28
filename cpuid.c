@@ -256,3 +256,46 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 	return TRUE;
 }
+
+void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
+{
+	if (!indexed)
+		printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
+			state->last_leaf.eax,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx,
+			reg_to_str(regs));
+	else
+		printf("CPUID %08x, index %x = %08x %08x %08x %08x | %s\n",
+			state->last_leaf.eax,
+			state->last_leaf.ecx,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx,
+			reg_to_str(regs));
+}
+
+static const char *uint32_to_binary(uint32_t val)
+{
+	static char buf[33];
+	int i;
+	buf[32] = 0;
+	for (i = 0; i < 32; i++) {
+		buf[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
+	}
+	return buf;
+}
+
+void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, unused BOOL indexed)
+{
+	/* Not sure what VMware's format is for that. */
+	if (indexed)
+		return;
+	printf("cpuid.%x.eax = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->eax));
+	printf("cpuid.%x.ebx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->ebx));
+	printf("cpuid.%x.ecx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->ecx));
+	printf("cpuid.%x.edx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->edx));
+}

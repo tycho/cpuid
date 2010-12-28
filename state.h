@@ -23,6 +23,7 @@ struct cpuid_leaf_t {
 struct cpuid_state_t
 {
 	cpuid_call_handler_t cpuid_call;
+	cpuid_print_handler_t cpuid_print;
 	struct cpuid_leaf_t *cpuid_leaves;
 	uint32_t stdmax;
 	uint32_t extmax;
@@ -38,6 +39,7 @@ struct cpuid_state_t
 	memset((x), 0, sizeof(struct cpuid_state_t)); \
 	(x)->extmax = 0x80000000; \
 	(x)->hvmax = 0x40000000; \
+	(x)->cpuid_print = cpuid_dump_normal; \
 	(x)->cpuid_call = cpuid_native; \
 	}
 
