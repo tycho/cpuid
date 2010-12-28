@@ -15,13 +15,14 @@
 #include <getopt.h>
 
 int ignore_vendor = 0;
+uint32_t scan_to = 0;
 
 void dump_cpuid(struct cpuid_state_t *state)
 {
 	uint32_t i;
 	struct cpu_regs_t cr_tmp;
 
-	for (i = 0; i <= state->stdmax; i++) {
+	for (i = 0; i <= (scan_to ? scan_to : state->stdmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -31,7 +32,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 			state->cpuid_print(&cr_tmp, state, FALSE);
 	}
 	
-	for (i = 0x80000000; i <= state->extmax; i++) {
+	for (i = 0x80000000; i <= (scan_to ? 0x80000000 + scan_to : state->extmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -41,7 +42,7 @@ void dump_cpuid(struct cpuid_state_t *state)
 			state->cpuid_print(&cr_tmp, state, FALSE);
 	}
 
-	for (i = 0x40000000; i <= state->hvmax; i++) {
+	for (i = 0x40000000; i <= (scan_to ? 0x40000000 + scan_to : state->hvmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -58,7 +59,7 @@ void run_cpuid(struct cpuid_state_t *state)
 	uint32_t i;
 	struct cpu_regs_t cr_tmp;
 
-	for (i = 0; i <= state->stdmax; i++) {
+	for (i = 0; i <= (scan_to ? scan_to : state->stdmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -66,7 +67,7 @@ void run_cpuid(struct cpuid_state_t *state)
 			std_handlers[i](&cr_tmp, state);
 	}
 	
-	for (i = 0x80000000; i <= state->extmax; i++) {
+	for (i = 0x80000000; i <= (scan_to ? 0x80000000 + scan_to : state->extmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -74,7 +75,7 @@ void run_cpuid(struct cpuid_state_t *state)
 			ext_handlers[i - 0x80000000](&cr_tmp, state);
 	}
 
-	for (i = 0x40000000; i <= state->hvmax; i++) {
+	for (i = 0x40000000; i <= (scan_to ? 0x40000000 + scan_to : state->hvmax); i++) {
 		ZERO_REGS(&cr_tmp);
 		cr_tmp.eax = i;
 		state->cpuid_call(&cr_tmp, state);
@@ -118,6 +119,7 @@ int main(int argc, char **argv)
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
 			{"vmware-vmx", no_argument, &dump_vmware, 1},
+			{"scan-to", required_argument, 0, 2},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
@@ -127,6 +129,12 @@ int main(int argc, char **argv)
 			break;
 		switch (c) {
 		case 0:
+			break;
+		case 2:
+			if (sscanf(optarg, "0x%x", &scan_to) != 1)
+				if (sscanf(optarg, "%u", &scan_to) != 1)
+					if (sscanf(optarg, "%x", &scan_to) != 1)
+						scan_to = 0;
 			break;
 		case 'd':
 			do_dump = 1;
