@@ -233,7 +233,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				}
 			}
 		} else {
-			if ((p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
+			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
 				&& (reg & p->m_bitmask) != 0)
 			{
 				printf("  %-11s", p->m_name);
