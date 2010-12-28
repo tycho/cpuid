@@ -14,6 +14,8 @@
 #include <string.h>
 #include <getopt.h>
 
+int ignore_vendor = 0;
+
 void dump_cpuid(struct cpuid_state_t *state)
 {
 	uint32_t i;
@@ -101,10 +103,11 @@ void run_cpuid(struct cpuid_state_t *state)
 
 void usage(const char *argv0)
 {
-	printf("usage: %s [--help] [--dump] [--parse <filename>]\n\n", argv0);
-	printf("  %-15s %s\n", "-h, --help", "Print this help");
-	printf("  %-15s %s\n", "-d, --dump", "Dump a raw CPUID table");
-	printf("  %-15s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified.");
+	printf("usage: %s [--help] [--dump] [--ignore-vendor] [--parse <filename>]\n\n", argv0);
+	printf("  %-18s %s\n", "-h, --help", "Print this list of options");
+	printf("  %-18s %s\n", "-d, --dump", "Dump a raw CPUID table");
+	printf("  %-18s %s\n", "--ignore-vendor", "Show feature flags from all vendors");
+	printf("  %-18s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified");
 	printf("\n");
 	exit(0);
 }
@@ -129,6 +132,7 @@ int main(int argc, char **argv)
 			{"version", no_argument, 0, 'v'},
 			{"help", no_argument, 0, 'h'},
 			{"dump", no_argument, &do_dump, 1},
+			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
 			{0, 0, 0, 0}
 		};

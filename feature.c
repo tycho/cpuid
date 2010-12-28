@@ -5,6 +5,7 @@
 #include "vendor.h"
 
 #include <stdio.h>
+#include <string.h>
 
 typedef enum
 {
@@ -164,6 +165,26 @@ static const struct cpu_feature_t features [] = {
 	{ 0, REG_NULL, 0, 0, NULL}
 };
 
+static const char *vendors(uint32_t mask)
+{
+	static char vendor[32];
+	char multi = 0;
+	vendor[0] = 0;
+	if (mask & VENDOR_INTEL) {
+		if (multi)
+			strcat(vendor, ", ");
+		strcat(vendor, "Intel");
+		multi = 1;
+	}
+	if (mask & VENDOR_AMD) {
+		if (multi)
+			strcat(vendor, ", ");
+		strcat(vendor, "AMD");
+		multi = 1;
+	}
+	return vendor;
+}
+
 void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	const struct cpu_feature_t *p = features;
@@ -199,14 +220,28 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			abort();
 			break;
 		}
-		if ((p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
-		    && (reg & p->m_bitmask) != 0)
-		{
-			printf("  %-11s", p->m_name);
-			count++;
-			if (count == 6) {
-				count = 0;
-				printf("\n");
+		if (ignore_vendor) {
+			if ((reg & p->m_bitmask) != 0)
+			{
+				char feat[32];
+				sprintf(feat, "%s (%s)", p->m_name, vendors(p->m_vendor));
+				printf("  %-26s", feat);
+				count++;
+				if (count == 3) {
+					count = 0;
+					printf("\n");
+				}
+			}
+		} else {
+			if ((p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
+				&& (reg & p->m_bitmask) != 0)
+			{
+				printf("  %-11s", p->m_name);
+				count++;
+				if (count == 6) {
+					count = 0;
+					printf("\n");
+				}
 			}
 		}
 		p++;

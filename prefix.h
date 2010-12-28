@@ -46,4 +46,6 @@
 #define FALSE 0
 #endif
 
+extern int ignore_vendor;
+
 #endif
