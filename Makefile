@@ -40,13 +40,15 @@ clean:
 %.o: %.c .cflags
 	$(QUIET_CC)$(CC) $(CFLAGS) -c -o $@ $<
 
-build.h:
+build.h: .force-regen
 	$(QUIET_GEN)tools/build.pl build.h
+
+.PHONY: .force-regen
 
 license.h:
 	$(QUIET_GEN)tools/license.pl COPYING license.h
 
-version.c: license.h build.h
+version.o: license.h build.h
 
 TRACK_CFLAGS = $(subst ','\'',$(CC) $(CFLAGS) $(uname_S) $(uname_O))
 
