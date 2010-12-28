@@ -350,22 +350,20 @@ static const char *cache04_type(uint8_t type)
 /* EAX = 0000 0004 */
 void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-#pragma pack(push,1)
 	struct eax_cache04_t {
-		uint8_t type:5;
-		uint8_t level:3;
-		uint8_t self_initializing:1;
-		uint8_t fully_associative:1;
-		uint8_t reserved:4;
-		uint16_t max_threads_sharing:12; /* +1 encoded */
-		uint8_t apics_reserved:6; /* +1 encoded */
+		unsigned type:5;
+		unsigned level:3;
+		unsigned self_initializing:1;
+		unsigned fully_associative:1;
+		unsigned reserved:4;
+		unsigned max_threads_sharing:12; /* +1 encoded */
+		unsigned apics_reserved:6; /* +1 encoded */
 	};
 	struct ebx_cache04_t {
-		uint16_t line_size:12; /* +1 encoded */
-		uint16_t partitions:10; /* +1 encoded */
-		uint16_t assoc:10; /* +1 encoded */
+		unsigned line_size:12; /* +1 encoded */
+		unsigned partitions:10; /* +1 encoded */
+		unsigned assoc:10; /* +1 encoded */
 	};
-#pragma pack(pop)
 	uint32_t i = 0;
 	if (state->vendor != VENDOR_INTEL)
 		return;
@@ -661,10 +659,10 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t
 		};
 
 		struct l2cache_feat_t {
-			uint8_t linesize;
-			uint8_t reserved1:4;
-			uint8_t assoc:4;
-			uint16_t size;
+			unsigned linesize:8;
+			unsigned reserved1:4;
+			unsigned assoc:4;
+			unsigned size:16;
 		};
 
 		struct l2cache_feat_t *feat = (struct l2cache_feat_t *)&regs->ecx;
@@ -698,22 +696,23 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t
 		};
 
 		struct l2_tlb_t {
-			uint16_t itlb_size:12;
-			uint8_t  itlb_assoc:4;
-			uint16_t dtlb_size:12;
-			uint8_t  dtlb_assoc:4;
+			unsigned itlb_size:12;
+			unsigned itlb_assoc:4;
+			unsigned dtlb_size:12;
+			unsigned dtlb_assoc:4;
 		};
 		struct l2_cache_t {
-			uint8_t  linesize;
-			uint8_t  linespertag:4;
-			uint8_t  assoc:4;
-			uint16_t size;
+			unsigned linesize:8;
+			unsigned linespertag:4;
+			unsigned assoc:4;
+			unsigned size:16;
 		};
 		struct l3_cache_t {
-			uint8_t  linesize;
-			uint8_t  linespertag:4;
-			uint8_t  reserved:2;
-			uint16_t size:14;
+			unsigned linesize:8;
+			unsigned linespertag:4;
+			unsigned assoc:4;
+			unsigned reserved:2;
+			unsigned size:14;
 		};
 
 		struct l2_tlb_t *tlb;
@@ -751,9 +750,10 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t
 
 		l3_cache = (struct l3_cache_t *)&regs->edx;
 		if (l3_cache->size)
-			printf("L3 cache: %d%cB, %d lines per tag, %d byte line size\n",
+			printf("L3 cache: %d%cB, %s, %d lines per tag, %d byte line size\n",
 			       l3_cache->size > 1024 ? l3_cache->size / 1024 : l3_cache->size,
 			       l3_cache->size > 1024 ? 'M' : 'K',
+			       assoc[l3_cache->assoc] ? assoc[l3_cache->assoc] : "unknown associativity",
 			       l3_cache->linespertag,
 			       l3_cache->linesize);
 

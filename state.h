@@ -5,14 +5,14 @@
 #include "vendor.h"
 
 struct cpu_signature_t {
-	uint8_t stepping:4;
-	uint8_t model:4;
-	uint8_t family:4;
-	uint8_t type:2;
-	uint8_t reserved1:2;
-	uint8_t extmodel:4;
-	uint8_t extfamily:8;
-	uint8_t reserved2:4;
+	unsigned stepping:4;
+	unsigned model:4;
+	unsigned family:4;
+	unsigned type:2;
+	unsigned reserved1:2;
+	unsigned extmodel:4;
+	unsigned extfamily:8;
+	unsigned reserved2:4;
 };
 
 struct cpuid_leaf_t {
