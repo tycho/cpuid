@@ -151,14 +151,18 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (dump_vmware) {
+		/* --vmware-vmx implies --dump */
+		do_dump = 1;
+		state.cpuid_print = cpuid_dump_vmware;
+	}
+
 	if (do_dump) {
 		INIT_CPUID_STATE(&state);
 		if (file) {
 			cpuid_load_from_file(file, &state);
 			state.cpuid_call = cpuid_pseudo;
 		}
-		if (dump_vmware)
-			state.cpuid_print = cpuid_dump_vmware;
 		dump_cpuid(&state);
 		FREE_CPUID_STATE(&state);
 	} else {
