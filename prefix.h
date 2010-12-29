@@ -3,6 +3,7 @@
 
 #include "platform.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -36,6 +37,7 @@
 #define unused
 #endif
 
+#ifndef TARGET_OS_WINDOWS
 #ifndef BOOL
 #define BOOL uint8_t
 #endif
@@ -44,6 +46,9 @@
 #endif
 #ifndef FALSE
 #define FALSE 0
+#endif
+#else
+#include <windows.h>
 #endif
 
 extern int ignore_vendor;
