@@ -635,7 +635,8 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	} else {
 		state->hypervisor = HYPERVISOR_UNKNOWN;
 	}
-	printf("\n");
+	if (state->hypervisor != HYPERVISOR_UNKNOWN)
+		printf("\n");
 }
 
 /* EAX = 4000 0001 */

@@ -68,7 +68,6 @@ void run_cpuid(struct cpuid_state_t *state, int dump)
 				state->cpuid_print(&cr_tmp, state, FALSE);
 		}
 	}
-	printf("\n");
 }
 
 void usage(const char *argv0)
