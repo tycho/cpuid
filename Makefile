@@ -28,7 +28,7 @@ BINARY := cpuid$(EXT)
 all: $(BINARY)
 
 CC := gcc
-CFLAGS := -Os -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wpadded -pedantic
+CFLAGS := -Os -pthread -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wpadded -pedantic
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o util.o version.o
 
 ifeq (,$(findstring clean,$(MAKECMDGOALS)))
@@ -42,7 +42,7 @@ endif
 depend: $(DEPS)
 
 $(BINARY): $(OBJECTS)
-	$(QUIET_LINK)$(CC) -o $@ $(OBJECTS)
+	$(QUIET_LINK)$(CC) -pthread -o $@ $(OBJECTS)
 
 clean:
 	$(QUIET)rm -f $(BINARY)

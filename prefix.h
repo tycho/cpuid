@@ -3,6 +3,10 @@
 
 #include "platform.h"
 
+#ifdef TARGET_OS_LINUX
+#define _GNU_SOURCE
+#endif
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>

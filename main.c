@@ -11,10 +11,8 @@
 
 #ifdef TARGET_OS_LINUX
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include <pthread.h>
+#include <sched.h>
 #define CPUSET_T cpu_set_t
 
 #elif defined(TARGET_OS_WINDOWS)
@@ -145,7 +143,7 @@ void set_affinity(uint32_t num)
 
 	pth = pthread_self();
 	CPU_ZERO(&mask);
-	CPU_SET(1 << num, &mask);
+	CPU_SET(num, &mask);
 	ret = pthread_setaffinity_np(pth, sizeof(mask), &mask);
 
 	if (ret != 0) {

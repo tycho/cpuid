@@ -4,6 +4,7 @@
 *.ncb
 
 # Intermediate objects
+*.d
 *.o
 .cflags
 build.h
