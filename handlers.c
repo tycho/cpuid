@@ -14,6 +14,7 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
@@ -54,6 +55,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000000, handle_std_base},
 	{0x00000001, handle_features},
 	{0x00000002, handle_std_cache02},
+	{0x00000003, handle_std_psn},
 	{0x00000004, handle_std_cache04},
 	{0x0000000B, handle_std_x2apic},
 
@@ -166,6 +168,36 @@ void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		print_intel_caches(regs, &state->sig);
 	}
 	printf("\n");
+}
+
+/* EAX = 0000 0003 */
+void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_TRANSMETA)) == 0)
+		return;
+	ZERO_REGS(regs);
+	regs->eax = 0x01;
+	state->cpuid_call(regs, state);
+	if ((regs->edx & 0x00040000) == 0) {
+		printf("Processor serial number: disabled (or not supported)\n\n");
+		return;
+	}
+	if (state->vendor & VENDOR_TRANSMETA) {
+		ZERO_REGS(regs);
+		regs->eax = 0x03;
+		state->cpuid_call(regs, state);
+		printf("Processor serial number: %08X-%08X-%08X-%08X\n\n",
+		       regs->eax, regs->ebx, regs->ecx, regs->edx);
+	} else if (state->vendor & VENDOR_INTEL) {
+		uint32_t ser_eax = regs->eax;
+		ZERO_REGS(regs);
+		regs->eax = 0x03;
+		state->cpuid_call(regs, state);
+		printf("Processor serial number: %04X-%04X-%04X-%04X-%04X-%04X\n\n",
+		       ser_eax >> 16, ser_eax & 0xFFFF,
+		       regs->ecx >> 16, regs->ecx & 0xFFFF,
+		       regs->edx >> 16, regs->edx & 0xFFFF);
+	}
 }
 
 /* EAX = 0000 0004 */
