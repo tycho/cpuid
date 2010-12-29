@@ -154,8 +154,14 @@ void set_affinity(uint32_t num)
 #endif
 }
 
+enum {
+	DUMP_FORMAT_DEFAULT,
+	DUMP_FORMAT_VMWARE,
+	DUMP_FORMAT_ETALLEN
+};
+
 static int do_dump = 0;
-static int dump_vmware = 0;
+static int dump_format = DUMP_FORMAT_DEFAULT;
 static int cpu_index = 0;
 
 int main(int argc, char **argv)
@@ -172,7 +178,8 @@ int main(int argc, char **argv)
 			{"cpu", required_argument, 0, 'c'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
-			{"vmware-vmx", no_argument, &dump_vmware, 1},
+			{"vmware-vmx", no_argument, &dump_format, DUMP_FORMAT_VMWARE},
+			{"etallen", no_argument, &dump_format, DUMP_FORMAT_ETALLEN},
 			{"scan-to", required_argument, 0, 2},
 			{0, 0, 0, 0}
 		};
@@ -219,29 +226,38 @@ int main(int argc, char **argv)
 
 	set_affinity(cpu_index);
 
-	if (dump_vmware) {
-		/* --vmware-vmx implies --dump */
+	INIT_CPUID_STATE(&state);
+
+	/* Non-default dump format settings imply --dump. */
+	switch(dump_format) {
+	case DUMP_FORMAT_DEFAULT:
+		state.cpuid_print = cpuid_dump_normal;
+		break;
+	case DUMP_FORMAT_VMWARE:
 		do_dump = 1;
 		state.cpuid_print = cpuid_dump_vmware;
+		break;
+	case DUMP_FORMAT_ETALLEN:
+		do_dump = 1;
+		state.cpuid_print = cpuid_dump_etallen;
+		break;
 	}
 
 	if (do_dump) {
-		INIT_CPUID_STATE(&state);
 		if (file) {
 			cpuid_load_from_file(file, &state);
 			state.cpuid_call = cpuid_pseudo;
 		}
 		dump_cpuid(&state);
-		FREE_CPUID_STATE(&state);
 	} else {
-		INIT_CPUID_STATE(&state);
 		if (file) {
 			cpuid_load_from_file(file, &state);
 			state.cpuid_call = cpuid_pseudo;
 		}
 		run_cpuid(&state);
-		FREE_CPUID_STATE(&state);
 	}
+
+	FREE_CPUID_STATE(&state);
 
 	return 0;
 }

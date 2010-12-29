@@ -278,6 +278,17 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 			reg_to_str(regs));
 }
 
+void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, unused BOOL indexed)
+{
+	printf("  0x%08x 0x%02x: eax=%08x ebx=%08x ecx=%08x edx=%08x\n",
+		state->last_leaf.eax,
+		state->last_leaf.ecx,
+		regs->eax,
+		regs->ebx,
+		regs->ecx,
+		regs->edx);
+}
+
 static const char *uint32_to_binary(uint32_t val)
 {
 	static char buf[33];
