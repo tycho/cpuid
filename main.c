@@ -243,17 +243,14 @@ int main(int argc, char **argv)
 		break;
 	}
 
+	if (file) {
+		cpuid_load_from_file(file, &state);
+		state.cpuid_call = cpuid_pseudo;
+	}
+
 	if (do_dump) {
-		if (file) {
-			cpuid_load_from_file(file, &state);
-			state.cpuid_call = cpuid_pseudo;
-		}
 		dump_cpuid(&state);
 	} else {
-		if (file) {
-			cpuid_load_from_file(file, &state);
-			state.cpuid_call = cpuid_pseudo;
-		}
 		run_cpuid(&state);
 	}
 
