@@ -31,10 +31,12 @@ CC := gcc
 CFLAGS := -Os -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wpadded -pedantic
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o util.o version.o
 
+ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 DEPS := $(shell ls $(OBJECTS:.o=.d) 2>/dev/null)
 
 ifneq ($(DEPS),)
 -include $(DEPS)
+endif
 endif
 
 depend: $(DEPS)
@@ -71,6 +73,8 @@ license.h: COPYING
 
 version.o: license.h build.h
 
+ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+
 TRACK_CFLAGS = $(subst ','\'',$(CC) $(CFLAGS) $(uname_S) $(uname_O))
 
 .cflags: .force-cflags
@@ -81,3 +85,6 @@ TRACK_CFLAGS = $(subst ','\'',$(CC) $(CFLAGS) $(uname_S) $(uname_O))
 	fi
 
 .PHONY: .force-cflags
+
+endif
+
