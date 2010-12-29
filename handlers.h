@@ -3,14 +3,12 @@
 
 typedef void(*cpuid_leaf_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
 
-extern cpuid_leaf_handler_t std_handlers[];
-extern cpuid_leaf_handler_t ext_handlers[];
-extern cpuid_leaf_handler_t vmm_handlers[];
-extern cpuid_leaf_handler_t std_dump_handlers[];
-extern cpuid_leaf_handler_t ext_dump_handlers[];
-extern cpuid_leaf_handler_t vmm_dump_handlers[];
+struct cpuid_leaf_handler_index_t {
+	uint32_t leaf_id;
+	cpuid_leaf_handler_t handler;
+};
 
-#define MAX_HANDLER_IDX 0x1F
-#define HAS_HANDLER(handlers, ind) ((ind) <= MAX_HANDLER_IDX && (handlers[(ind)]))
+extern const struct cpuid_leaf_handler_index_t dump_handlers[];
+extern const struct cpuid_leaf_handler_index_t decode_handlers[];
 
 #endif

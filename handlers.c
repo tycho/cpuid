@@ -28,234 +28,58 @@ void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-
-void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-
-cpuid_leaf_handler_t std_handlers[] =
+const struct cpuid_leaf_handler_index_t dump_handlers[] =
 {
-	handle_std_base, /* 00 */
-	handle_features, /* 01 */
-	handle_std_cache02, /* 02 */
-	NULL, /* 03 */
-	handle_std_cache04, /* 04 */
-	NULL, /* 05 */
-	NULL, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	handle_std_x2apic, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	NULL, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
+	/* Standard levels */
+	{0x00000000, handle_dump_base},
+	{0x00000004, handle_dump_std_04},
+	{0x0000000B, handle_dump_std_0B},
+
+	/* Hypervisor levels */
+	{0x40000000, handle_dump_base},
+
+	/* Extended levels */
+	{0x80000000, handle_dump_base},
+
+	{0, 0}
 };
 
-cpuid_leaf_handler_t ext_handlers[] =
+const struct cpuid_leaf_handler_index_t decode_handlers[] =
 {
-	handle_ext_base, /* 00 */
-	handle_features, /* 01 */
-	handle_ext_pname, /* 02 */
-	handle_ext_pname, /* 03 */
-	handle_ext_pname, /* 04 */
-	handle_ext_amdl1cachefeat, /* 05 */
-	handle_ext_l2cachefeat, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	NULL, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	NULL, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
+	/* Standard levels */
+	{0x00000000, handle_std_base},
+	{0x00000001, handle_features},
+	{0x00000002, handle_std_cache02},
+	{0x00000004, handle_std_cache04},
+	{0x0000000B, handle_std_x2apic},
+
+	/* Hypervisor levels */
+	{0x40000000, handle_vmm_base},
+	{0x40000001, handle_xen_version},
+	{0x40000002, handle_xen_leaf02},
+	{0x40000003, handle_xen_leaf03},
+	{0x40000003, handle_vmware_leaf10},
+
+	/* Extended levels */
+	{0x80000000, handle_ext_base},
+	{0x80000001, handle_features},
+	{0x80000002, handle_ext_pname},
+	{0x80000003, handle_ext_pname},
+	{0x80000004, handle_ext_pname},
+	{0x80000005, handle_ext_amdl1cachefeat},
+	{0x80000006, handle_ext_l2cachefeat},
+
+	{0, 0}
 };
 
-cpuid_leaf_handler_t vmm_handlers[] =
+/* EAX = 0000 0000 | EAX = 4000 0000 | EAX = 8000 0000 */
+void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	handle_vmm_base, /* 00 */
-	handle_xen_version, /* 01 */
-	handle_xen_leaf02, /* 02 */
-	handle_xen_leaf03, /* 03 */
-	NULL, /* 04 */
-	NULL, /* 05 */
-	NULL, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	NULL, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	handle_vmware_leaf10, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
-};
-
-cpuid_leaf_handler_t std_dump_handlers[] =
-{
-	handle_dump_std_base, /* 00 */
-	NULL, /* 01 */
-	NULL, /* 02 */
-	NULL, /* 03 */
-	handle_dump_std_04, /* 04 */
-	NULL, /* 05 */
-	NULL, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	handle_dump_std_0B, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	NULL, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
-};
-
-cpuid_leaf_handler_t ext_dump_handlers[] =
-{
-	handle_dump_ext_base, /* 00 */
-	NULL, /* 01 */
-	NULL, /* 02 */
-	NULL, /* 03 */
-	NULL, /* 04 */
-	NULL, /* 05 */
-	NULL, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	NULL, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	NULL, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
-};
-
-cpuid_leaf_handler_t vmm_dump_handlers[] =
-{
-	handle_dump_vmm_base, /* 00 */
-	NULL, /* 01 */
-	NULL, /* 02 */
-	NULL, /* 03 */
-	NULL, /* 04 */
-	NULL, /* 05 */
-	NULL, /* 06 */
-	NULL, /* 07 */
-	NULL, /* 08 */
-	NULL, /* 09 */
-	NULL, /* 0A */
-	NULL, /* 0B */
-	NULL, /* 0C */
-	NULL, /* 0D */
-	NULL, /* 0E */
-	NULL, /* 0F */
-	NULL, /* 10 */
-	NULL, /* 11 */
-	NULL, /* 12 */
-	NULL, /* 13 */
-	NULL, /* 14 */
-	NULL, /* 15 */
-	NULL, /* 16 */
-	NULL, /* 17 */
-	NULL, /* 18 */
-	NULL, /* 19 */
-	NULL, /* 1A */
-	NULL, /* 1B */
-	NULL, /* 1C */
-	NULL, /* 1D */
-	NULL, /* 1E */
-	NULL  /* 1F */
-};
-
-/* EAX = 0000 0000 */
-void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	handle_std_base(regs, state);
+	state->curmax = regs->eax;
 	state->cpuid_print(regs, state, FALSE);
 }
 
@@ -263,7 +87,7 @@ void handle_dump_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
-	state->stdmax = regs->eax;
+	state->curmax = regs->eax;
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->edx;
 	*(uint32_t *)(&buf[8]) = regs->ecx;
@@ -515,16 +339,9 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 0000 */
-void handle_dump_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	handle_ext_base(regs, state);
-	state->cpuid_print(regs, state, FALSE);
-}
-
-/* EAX = 8000 0000 */
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	state->extmax = regs->eax;
+	state->curmax = regs->eax;
 }
 
 /* EAX = 8000 0002 */
@@ -753,16 +570,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t
 /* EAX = 4000 0000 */
 void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	/* Processors which aren't using 0x40000000 will report unusual values
-	   in this register. Sometimes they can cause a seemingly infinite loop
-	   because it tries to iterate over all the leaves. I figure we won't
-	   ever have more than 65535 leaves at this level, so this should fix
-	   the nonsense. */
-	if ((regs->eax & 0xFFFF0000) == 0x40000000)
-		state->hvmax = regs->eax;
-	else
-		state->hvmax = 0;
-
+	state->curmax = regs->eax;
 	state->cpuid_print(regs, state, FALSE);
 }
 
@@ -771,15 +579,7 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 
-	/* Processors which aren't using 0x40000000 will report unusual values
-	   in this register. Sometimes they can cause a seemingly infinite loop
-	   because it tries to iterate over all the leaves. I figure we won't
-	   ever have more than 65535 leaves at this level, so this should fix
-	   the nonsense. */
-	if ((regs->eax & 0xFFFF0000) == 0x40000000)
-		state->hvmax = regs->eax;
-	else
-		state->hvmax = 0;
+	state->curmax = regs->eax;
 
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->ecx;

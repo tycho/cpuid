@@ -36,71 +36,38 @@
 int ignore_vendor = 0;
 uint32_t scan_to = 0;
 
-void dump_cpuid(struct cpuid_state_t *state)
+const uint32_t ranges[] = {
+	0x00000000,
+	0x40000000,
+	0x80000000,
+	0xFFFFFFFF
+};
+
+void run_cpuid(struct cpuid_state_t *state, int dump)
 {
-	uint32_t i;
+	uint32_t i, *r;
 	struct cpu_regs_t cr_tmp;
+	struct cpuid_leaf_handler_index_t *h;
 
-	for (i = 0; i <= (scan_to ? scan_to : state->stdmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(std_dump_handlers, i))
-			std_dump_handlers[i](&cr_tmp, state);
-		else
-			state->cpuid_print(&cr_tmp, state, FALSE);
-	}
-	
-	for (i = 0x80000000; i <= (scan_to ? 0x80000000 + scan_to : state->extmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(ext_dump_handlers, i - 0x80000000))
-			ext_dump_handlers[i - 0x80000000](&cr_tmp, state);
-		else
-			state->cpuid_print(&cr_tmp, state, FALSE);
-	}
-
-	for (i = 0x40000000; i <= (scan_to ? 0x40000000 + scan_to : state->hvmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(vmm_dump_handlers, i - 0x40000000))
-			vmm_dump_handlers[i - 0x40000000](&cr_tmp, state);
-		else
-			state->cpuid_print(&cr_tmp, state, FALSE);
+	for (r = ranges; *r != 0xFFFFFFFF; r++) {
+		state->curmax = *r;
+		for (i = *r; i <= (scan_to ? *r + scan_to : state->curmax); i++) {
+			if ((state->curmax & 0xFFFF0000) != (i & 0xFFFF0000))
+				break;
+			ZERO_REGS(&cr_tmp);
+			cr_tmp.eax = i;
+			state->cpuid_call(&cr_tmp, state);
+			for (h = dump ? dump_handlers : decode_handlers; h && h->handler; h++) {
+				if (h->leaf_id == i)
+					break;
+			}
+			if (h->handler)
+				h->handler(&cr_tmp, state);
+			else if (dump)
+				state->cpuid_print(&cr_tmp, state, FALSE);
+		}
 	}
 	printf("\n");
-}
-
-void run_cpuid(struct cpuid_state_t *state)
-{
-	uint32_t i;
-	struct cpu_regs_t cr_tmp;
-
-	for (i = 0; i <= (scan_to ? scan_to : state->stdmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(std_handlers, i))
-			std_handlers[i](&cr_tmp, state);
-	}
-	
-	for (i = 0x80000000; i <= (scan_to ? 0x80000000 + scan_to : state->extmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(ext_handlers, i - 0x80000000))
-			ext_handlers[i - 0x80000000](&cr_tmp, state);
-	}
-
-	for (i = 0x40000000; i <= (scan_to ? 0x40000000 + scan_to : state->hvmax); i++) {
-		ZERO_REGS(&cr_tmp);
-		cr_tmp.eax = i;
-		state->cpuid_call(&cr_tmp, state);
-		if (HAS_HANDLER(vmm_handlers, i - 0x40000000))
-			vmm_handlers[i - 0x40000000](&cr_tmp, state);
-	}
 }
 
 void usage(const char *argv0)
@@ -248,11 +215,7 @@ int main(int argc, char **argv)
 		state.cpuid_call = cpuid_pseudo;
 	}
 
-	if (do_dump) {
-		dump_cpuid(&state);
-	} else {
-		run_cpuid(&state);
-	}
+	run_cpuid(&state, do_dump);
 
 	FREE_CPUID_STATE(&state);
 
