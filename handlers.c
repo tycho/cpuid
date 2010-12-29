@@ -272,6 +272,8 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->vendor = VENDOR_INTEL;
 	else if (strcmp(buf, "AuthenticAMD") == 0)
 		state->vendor = VENDOR_AMD;
+	else if (strcmp(buf, "CyrixInstead") == 0)
+		state->vendor = VENDOR_CYRIX;
 	else
 		state->vendor = VENDOR_UNKNOWN;
 }
@@ -314,7 +316,7 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
-	if (state->vendor != VENDOR_INTEL)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_CYRIX)) == 0)
 		return;
 	printf("Cache descriptors:\n");
 	print_intel_caches(regs, &state->sig);
