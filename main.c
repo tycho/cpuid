@@ -45,9 +45,10 @@ const uint32_t ranges[] = {
 
 void run_cpuid(struct cpuid_state_t *state, int dump)
 {
-	uint32_t i, *r;
+	uint32_t i;
+	const uint32_t *r;
 	struct cpu_regs_t cr_tmp;
-	struct cpuid_leaf_handler_index_t *h;
+	const struct cpuid_leaf_handler_index_t *h;
 
 	for (r = ranges; *r != 0xFFFFFFFF; r++) {
 		state->curmax = *r;

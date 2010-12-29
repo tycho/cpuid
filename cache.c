@@ -10,276 +10,334 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char *descs[] = {
-    /* 00 */ NULL,
-    /* 01 */ "Code TLB: 4KB pages, 4-way associativity, 32 entries",
-    /* 02 */ "Code TLB: 4MB pages, fully associative, 2 entries",
-    /* 03 */ "Data TLB: 4KB pages, 4-way associativity, 64 entries",
-    /* 04 */ "Data TLB: 4MB pages, 4-way associativity, 8 entries",
-    /* 05 */ "Data TLB: 4MB pages, 4-way associativity, 32 entries",
-    /* 06 */ "L1 code cache: 8KB, 4-way associativity, 32 bytes/line",
-    /* 07 */ NULL,
-    /* 08 */ "L1 code cache: 16KB, 4-way associativity, 32 bytes/line",
-    /* 09 */ "L1 code cache: 32KB, 4-way associativity, 64 bytes/line",
-    /* 0a */ "L1 data cache: 8KB, 2-way associativity, 32 bytes/line",
-    /* 0b */ "Code TLB: 4MB pages, 4-way associativity, 4 entries (undocumented)",
-    /* 0c */ "L1 data cache: 16KB, 4-way associativity, 32 bytes/line",
-    /* 0d */ "L1 data cache: 16KB, 4-way associativity, 64 bytes/line, ECC",
-    /* 0e */ "L1 data cache: 24KB, 6-way associativity, 64 bytes/line (undocumented)",
-    /* 0f */ NULL,
-    /* 10 */ "L1 data cache, 16KB, 4-way associativity, 32 bytes/line (IA-64)",
-    /* 11 */ NULL,
-    /* 12 */ NULL,
-    /* 13 */ NULL,
-    /* 14 */ NULL,
-    /* 15 */ "L1 code cache, 16KB, 4-way associativity, 32 bytes/line (IA-64)",
-    /* 16 */ NULL,
-    /* 17 */ NULL,
-    /* 18 */ NULL,
-    /* 19 */ NULL,
-    /* 1a */ "L2 cache, 96KB, 6-way associativity, 64 bytes/line (IA-64)",
-    /* 1b */ NULL,
-    /* 1c */ NULL,
-    /* 1d */ NULL,
-    /* 1e */ NULL,
-    /* 1f */ NULL,
-    /* 20 */ NULL,
-    /* 21 */ "L2 cache: 256KB, 8-way associativity, 64 bytes/line",
-    /* 22 */ "L3 cache: 512KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 23 */ "L3 cache: 1MB, 8-way associativity, sectored cache, 64 bytes/line",
-    /* 24 */ NULL,
-    /* 25 */ "L3 cache: 2MB, 8-way associativity, sectored cache, 64 bytes/line",
-    /* 26 */ NULL,
-    /* 27 */ NULL,
-    /* 28 */ NULL,
-    /* 29 */ "L3 cache: 4MB, 8-way associativity, sectored cache, 64 bytes/line",
-    /* 2a */ NULL,
-    /* 2b */ NULL,
-    /* 2c */ "L1 data cache: 32KB, 8-way set assocative, 64 bytes/line",
-    /* 2d */ NULL,
-    /* 2e */ NULL,
-    /* 2f */ NULL,
-    /* 30 */ "L1 code cache: 32KB, 8-way associativity, 64 bytes/line",
-    /* 31 */ NULL,
-    /* 32 */ NULL,
-    /* 33 */ NULL,
-    /* 34 */ NULL,
-    /* 35 */ NULL,
-    /* 36 */ NULL,
-    /* 37 */ NULL,
-    /* 38 */ NULL,
-    /* 39 */ "L2 cache: 128KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 3a */ "L2 cache: 192KB, 6-way associativity, sectored cache, 64 bytes/line",
-    /* 3b */ "L2 cache: 128KB, 2-way associativity, sectored cache, 64 bytes/line",
-    /* 3c */ "L2 cache: 256KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 3d */ "L2 cache: 384KB, 6-way associativity, sectored cache, 64 bytes/line",
-    /* 3e */ "L2 cache: 512KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 3f */ NULL,
-    /* 40 */ "No L2 cache, or if L2 cache exists, no L3 cache",
-    /* 41 */ "L2 cache: 128KB, 4-way associativity, 32 bytes/line",
-    /* 42 */ "L2 cache: 256KB, 4-way associativity, 32 bytes/line",
-    /* 43 */ "L2 cache: 512KB, 4-way associativity, 32 bytes/line",
-    /* 44 */ "L2 cache: 1MB, 4-way associativity, 32 bytes/line",
-    /* 45 */ "L2 cache: 2MB, 4-way associativity, 32 bytes/line",
-    /* 46 */ "L3 cache: 4MB, 4-way associativity, 64 bytes/line",
-    /* 47 */ "L3 cache: 8MB, 8-way associativity, 64 bytes/line",
-    /* 48 */ "L2 cache: 3MB, 12-way associativity, 64 bytes/line",
-    /* 49 */ NULL, /* Documented, but a special case. */
-    /* 4a */ "L3 cache: 6MB, 12-way associativity, 64 bytes/line",
-    /* 4b */ "L3 cache: 8MB, 16-way associativity, 64 bytes/line",
-    /* 4c */ "L3 cache: 12MB, 12-way associativity, 64 bytes/line",
-    /* 4d */ "L3 cache: 16MB, 16-way associativity, 64 bytes/line",
-    /* 4e */ "L2 cache: 6MB, 24-way associativity, 64 bytes/line",
-    /* 4f */ "Code TLB: 4KB pages, unknown associativity, 32 entries (undocumented)",
-    /* 50 */ "Code TLB: 4KB, 2MB, or 4MB pages, fully associative, 64 entries",
-    /* 51 */ "Code TLB: 4KB, 2MB, or 4MB pages, fully associative, 128 entries",
-    /* 52 */ "Code TLB: 4KB, 2MB, or 4MB pages, fully associative, 256 entries",
-    /* 53 */ NULL,
-    /* 54 */ NULL,
-    /* 55 */ "Code TLB: 2MB or 4MB pages, fully associative, 256 entries",
-    /* 56 */ "L1 Data TLB: 4MB pages, 4-way associativity associative, 16 entries",
-    /* 57 */ "L1 Data TLB: 4KB pages, 4-way associativity, 16 entries",
-    /* 58 */ NULL,
-    /* 59 */ "L0 data TLB: 4KB pages, fully associative, 16 entries (undocumented)",
-    /* 5a */ "Data TLB0: 2MB or 4MB pages, 4-way associativity, 32 entries",
-    /* 5b */ "Data TLB: 4KB or 4MB pages, fully associative, 64 entries",
-    /* 5c */ "Data TLB: 4KB or 4MB pages, fully associative, 128 entries",
-    /* 5d */ "Data TLB: 4KB or 4MB pages, fully associative, 256 entries",
-    /* 5e */ NULL,
-    /* 5f */ NULL,
-    /* 60 */ "L1 data cache: 16KB, 8-way associativity, sectored cache, 64 bytes/line",
-    /* 61 */ NULL,
-    /* 62 */ NULL,
-    /* 63 */ NULL,
-    /* 64 */ NULL,
-    /* 65 */ NULL,
-    /* 66 */ "L1 data cache: 8KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 67 */ "L1 data cache: 16KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 68 */ "L1 data cache: 32KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 69 */ NULL,
-    /* 6a */ NULL,
-    /* 6b */ NULL,
-    /* 6c */ NULL,
-    /* 6d */ NULL,
-    /* 6e */ NULL,
-    /* 6f */ NULL,
-    /* 70 */ "12K-uops, 8-way associativity",
-    /* 71 */ "16K-uops, 8-way associativity",
-    /* 72 */ "32K-uops, 8-way associativity",
-    /* 73 */ "64K-uops, 8-way associativity",
-    /* 74 */ NULL,
-    /* 75 */ NULL,
-    /* 76 */ NULL,
-    /* 77 */ "L1 code cache: 16KB, 4-way associativity, 64 bytes/line, sectored (IA-64)",
-    /* 78 */ "L2 cache: 1MB, 4-way associativity, 64 bytes/line",
-    /* 79 */ "L2 cache: 128KB, 8-way associativity, sectored cache, 64 bytes/line",
-    /* 7a */ "L2 cache: 256KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 7b */ "L2 cache: 512KB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 7c */ "L2 cache: 1MB, 4-way associativity, sectored cache, 64 bytes/line",
-    /* 7d */ "L2 cache: 2MB, 8-way associativity, 64 bytes/line",
-    /* 7e */ "L2 cache: 256KB, 8-way associativity, 128 bytes/line, sectored (IA-64)",
-    /* 7f */ "L2 cache: 512KB, 2-way associativity, 64 bytes/line",
-    /* 80 */ "L2 cache: 512KB, 8-way associativity, 64 bytes/line (undocumented)",
-    /* 81 */ "L2 cache: 128KB, 8-way associativity, 32 bytes/line (undocumented)",
-    /* 82 */ "L2 cache: 256KB, 8-way associativity, 32 bytes/line",
-    /* 83 */ "L2 cache: 512KB, 8-way associativity, 32 bytes/line",
-    /* 84 */ "L2 cache: 1MB, 8-way associativity, 32 bytes/line",
-    /* 85 */ "L2 cache: 2MB, 8-way associativity, 32 bytes/line",
-    /* 86 */ "L2 cache: 512KB, 4-way associativity, 64 bytes/line",
-    /* 87 */ "L2 cache: 1MB, 8-way associativity, 64 bytes/line",
-    /* 88 */ "L3 cache: 2MB, 4-way associativity, 64 bytes/line (IA-64)",
-    /* 89 */ "L3 cache: 4MB, 4-way associativity, 64 bytes/line (IA-64)",
-    /* 8a */ "L3 cache: 8MB, 4-way associativity, 64 bytes/line (IA-64)",
-    /* 8b */ NULL,
-    /* 8c */ NULL,
-    /* 8d */ "L3 cache: 3MB, 12-way associativity, 128 bytes/line (IA-64)",
-    /* 8e */ NULL,
-    /* 8f */ NULL,
-    /* 90 */ "Code TLB: 4KB-256MB pages, fully associative, 64 entries (IA-64)",
-    /* 91 */ NULL,
-    /* 92 */ NULL,
-    /* 93 */ NULL,
-    /* 94 */ NULL,
-    /* 95 */ NULL,
-    /* 96 */ "L1 data TLB, 4KB-256MB pages, fully associative, 32 entries (IA-64)",
-    /* 97 */ NULL,
-    /* 98 */ NULL,
-    /* 99 */ NULL,
-    /* 9a */ NULL,
-    /* 9b */ "L2 data TLB, 4KB-256MB pages, fully associative, 96 entries (IA-64)",
-    /* 9c */ NULL,
-    /* 9d */ NULL,
-    /* 9e */ NULL,
-    /* 9f */ NULL,
-    /* a0 */ NULL,
-    /* a1 */ NULL,
-    /* a2 */ NULL,
-    /* a3 */ NULL,
-    /* a4 */ NULL,
-    /* a5 */ NULL,
-    /* a6 */ NULL,
-    /* a7 */ NULL,
-    /* a8 */ NULL,
-    /* a9 */ NULL,
-    /* aa */ NULL,
-    /* ab */ NULL,
-    /* ac */ NULL,
-    /* ad */ NULL,
-    /* ae */ NULL,
-    /* af */ NULL,
-    /* b0 */ "Code TLB: 4KB pages, 4-way associativity, 128 entries",
-    /* b1 */ "Code TLB: 2MB pages, 4-way associativity, 8 entries",
-    /* b2 */ "Data TLB: 4KB pages, 4-way associativity, 64 entries",
-    /* b3 */ "Data TLB: 4KB pages, 4-way associativity, 128 entries",
-    /* b4 */ "Data TLB: 4KB pages, 4-way associativity, 256 entries",
-    /* b5 */ NULL,
-    /* b6 */ NULL,
-    /* b7 */ NULL,
-    /* b8 */ NULL,
-    /* b9 */ NULL,
-    /* ba */ "Data TLB: 4KB pages, 4-way associativity, 64 entries (undocumented)",
-    /* bb */ NULL,
-    /* bc */ NULL,
-    /* bd */ NULL,
-    /* be */ NULL,
-    /* bf */ NULL,
-    /* c0 */ "Data TLB: 4KB and 4MB pages, 4-way associativity, 8 entries (undocumented)",
-    /* c1 */ NULL,
-    /* c2 */ NULL,
-    /* c3 */ NULL,
-    /* c4 */ NULL,
-    /* c5 */ NULL,
-    /* c6 */ NULL,
-    /* c7 */ NULL,
-    /* c8 */ NULL,
-    /* c9 */ NULL,
-    /* ca */ "Shared L2 TLB: 4KB pages, 4-way associativity, 512 entries",
-    /* cb */ NULL,
-    /* cc */ NULL,
-    /* cd */ NULL,
-    /* ce */ NULL,
-    /* cf */ NULL,
-    /* d0 */ "L3 cache: 512KB, 4-way associativity, 64 bytes/line",
-    /* d1 */ "L3 cache: 1MB, 4-way associativity, 64 bytes/line",
-    /* d2 */ "L3 cache: 2MB, 4-way associativity, 64 bytes/line",
-    /* d3 */ NULL,
-    /* d4 */ NULL,
-    /* d5 */ NULL,
-    /* d6 */ "L3 cache: 1MB, 8-way associativity, 64 bytes/line",
-    /* d7 */ "L3 cache: 2MB, 8-way associativity, 64 bytes/line",
-    /* d8 */ "L3 cache: 4MB, 8-way associativity, 64 bytes/line",
-    /* d9 */ NULL,
-    /* da */ NULL,
-    /* db */ NULL,
-    /* dc */ "L3 cache: 1.5MB, 12-way associativity, 64 bytes/line",
-    /* dd */ "L3 cache: 3MB, 12-way associativity, 64 bytes/line",
-    /* de */ "L3 cache: 6MB, 12-way associativity, 64 bytes/line",
-    /* df */ NULL,
-    /* e0 */ NULL,
-    /* e1 */ NULL,
-    /* e2 */ "L3 cache: 2MB, 16-way associativity, 64 bytes/line",
-    /* e3 */ "L3 cache: 4MB, 16-way associativity, 64 bytes/line",
-    /* e4 */ "L3 cache: 8MB, 16-way associativity, 64 bytes/line",
-    /* e5 */ NULL,
-    /* e6 */ NULL,
-    /* e7 */ NULL,
-    /* e8 */ NULL,
-    /* e9 */ NULL,
-    /* ea */ "L3 cache: 12MB, 24-way associativity, 64 bytes/line",
-    /* eb */ "L3 cache: 18MB, 24-way associativity, 64 bytes/line",
-    /* ec */ "L3 cache: 24MB, 24-way associativity, 64 bytes/line",
-    /* ed */ NULL,
-    /* ee */ NULL,
-    /* ef */ NULL,
-    /* f0 */ "64 byte prefetching",
-    /* f1 */ "128 byte prefetching",
-    /* f2 */ NULL,
-    /* f3 */ NULL,
-    /* f4 */ NULL,
-    /* f5 */ NULL,
-    /* f6 */ NULL,
-    /* f7 */ NULL,
-    /* f8 */ NULL,
-    /* f9 */ NULL,
-    /* fa */ NULL,
-    /* fb */ NULL,
-    /* fc */ NULL,
-    /* fd */ NULL,
-    /* fe */ NULL,
-    /* ff */ NULL
+typedef enum {
+	DATA_TLB,
+	CODE_TLB,
+	SHARED_TLB,
+	DATA,
+	CODE,
+	TRACE,
+	UNIFIED
+} cache_type_t;
+
+typedef enum {
+	NO,
+	L0,
+	L1,
+	L2,
+	L3
+} cache_level_t;
+
+typedef enum {
+	NONE = 0x0,
+	UNDOCUMENTED = 0x1,
+	IA64 = 0x2,
+	ECC = 0x4,
+	SECTORED = 0x8,
+	PAGES_4K = 0x10,
+	PAGES_2M = 0x20,
+	PAGES_4M = 0x40
+} extra_attrs_t;
+
+struct cache_desc_t {
+	cache_level_t level;
+	cache_type_t type;
+	uint32_t size;
+	uint32_t attrs;
+	uint8_t assoc;
+	uint8_t linesize;
 };
 
-static const char *descriptor_49[] = {
-	/* 00 */ "L2 cache: 4MB, 16-way associativity, 64 bytes/line",
-	/* 01 */ "L3 cache: 4MB, 16-way associativity, 64 bytes/line",
+struct cache_desc_index_t {
+	uint8_t descriptor;
+	struct cache_desc_t desc;
 };
 
-int entry_comparator(const void *a, const void *b)
+#define MB * 1024
+static const struct cache_desc_index_t descs[] = {
+	{ 0x01, {NO, CODE_TLB,    32, PAGES_4K, 0x04, 0}},
+	{ 0x02, {NO, CODE_TLB,     2, PAGES_4M, 0xFF, 0}},
+	{ 0x03, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
+	{ 0x04, {NO, DATA_TLB,     8, PAGES_4M, 0x04, 0}},
+	{ 0x05, {NO, DATA_TLB,    32, PAGES_4M, 0x04, 0}},
+	{ 0x06, {L1, CODE,         8, NONE, 0x04, 32}},
+	{ 0x08, {L1, CODE,        16, NONE, 0x04, 32}},
+	{ 0x09, {L1, CODE,        32, NONE, 0x04, 64}},
+	{ 0x0a, {L1, DATA,         8, NONE, 0x02, 32}},
+	{ 0x0b, {L1, CODE_TLB,     4, PAGES_4M | UNDOCUMENTED, 0x04, 0}},
+	{ 0x0c, {L1, DATA,        16, NONE, 0x04, 32}},
+	{ 0x0d, {L1, DATA,        16, ECC, 0x04, 64}},
+	{ 0x0e, {L1, DATA,        24, UNDOCUMENTED, 0x06, 64}},
+	{ 0x10, {L1, DATA,        16, IA64, 0x04, 32}},
+	{ 0x15, {L1, CODE,        16, IA64, 0x04, 32}},
+	{ 0x1a, {L2, UNIFIED,     96, IA64, 0x06, 64}},
+	{ 0x21, {L2, UNIFIED,    256, NONE, 0x08, 64}},
+	{ 0x22, {L3, UNIFIED,    512, SECTORED, 0x04, 64}},
+	{ 0x23, {L3, UNIFIED,   1 MB, SECTORED, 0x08, 64}},
+	{ 0x25, {L3, UNIFIED,   2 MB, SECTORED, 0x08, 64}},
+	{ 0x29, {L3, UNIFIED,   4 MB, SECTORED, 0x08, 64}},
+	{ 0x2c, {L1, DATA,        32, NONE, 0x08, 64}},
+	{ 0x30, {L1, CODE,        32, NONE, 0x08, 64}},
+	{ 0x39, {L2, UNIFIED,    128, SECTORED, 0x04, 64}},
+	{ 0x3a, {L2, UNIFIED,    192, SECTORED, 0x06, 64}},
+	{ 0x3b, {L2, UNIFIED,    128, SECTORED, 0x02, 64}},
+	{ 0x3c, {L2, UNIFIED,    256, SECTORED, 0x04, 64}},
+	{ 0x3d, {L2, UNIFIED,    384, SECTORED, 0x06, 64}},
+	{ 0x3e, {L2, UNIFIED,    512, SECTORED, 0x04, 64}},
+	{ 0x41, {L2, UNIFIED,    128, NONE, 0x04, 32}},
+	{ 0x42, {L2, UNIFIED,    256, NONE, 0x04, 32}},
+	{ 0x43, {L2, UNIFIED,    512, NONE, 0x04, 32}},
+	{ 0x44, {L2, UNIFIED,   1 MB, NONE, 0x04, 32}},
+	{ 0x45, {L2, UNIFIED,   2 MB, NONE, 0x04, 32}},
+	{ 0x46, {L3, UNIFIED,   4 MB, NONE, 0x04, 64}},
+	{ 0x47, {L3, UNIFIED,   8 MB, NONE, 0x08, 64}},
+	{ 0x48, {L2, UNIFIED,   3 MB, NONE, 0x0C, 64}},
+	{ 0x4a, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64}},
+	{ 0x4b, {L3, UNIFIED,   8 MB, NONE, 0x10, 64}},
+	{ 0x4c, {L3, UNIFIED,  12 MB, NONE, 0x0C, 64}},
+	{ 0x4d, {L3, UNIFIED,  16 MB, NONE, 0x10, 64}},
+	{ 0x4e, {L2, UNIFIED,   6 MB, NONE, 0x18, 64}},
+	{ 0x4f, {NO, CODE_TLB,    32, PAGES_4K | UNDOCUMENTED, 0x00, 0}},
+	{ 0x50, {NO, CODE_TLB,    64, PAGES_4K | PAGES_2M | PAGES_4M, 0xFF, 0}},
+	{ 0x51, {NO, CODE_TLB,   128, PAGES_4K | PAGES_2M | PAGES_4M, 0xFF, 0}},
+	{ 0x52, {NO, CODE_TLB,   256, PAGES_4K | PAGES_2M | PAGES_4M, 0xFF, 0}},
+	{ 0x55, {NO, CODE_TLB,   256, PAGES_2M | PAGES_4M, 0xFF, 0}},
+	{ 0x56, {L0, DATA_TLB,    16, PAGES_4M, 0x04, 0}},
+	{ 0x57, {L0, DATA_TLB,    16, PAGES_4K, 0x04, 0}},
+	{ 0x59, {L0, DATA_TLB,    16, PAGES_4K | UNDOCUMENTED, 0xFF, 0}},
+	{ 0x5a, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M, 0x04, 0}},
+	{ 0x5b, {NO, DATA_TLB,    64, PAGES_4K | PAGES_4M, 0xFF, 0}},
+	{ 0x5c, {NO, DATA_TLB,   128, PAGES_4K | PAGES_4M, 0xFF, 0}},
+	{ 0x5d, {NO, DATA_TLB,   256, PAGES_4K | PAGES_4M, 0xFF, 0}},
+	{ 0x60, {L1, DATA,        16, SECTORED, 0x08, 64}},
+	{ 0x66, {L1, DATA,         8, SECTORED, 0x04, 64}},
+	{ 0x67, {L1, DATA,        16, SECTORED, 0x04, 64}},
+	{ 0x68, {L1, DATA,        32, SECTORED, 0x04, 64}},
+	{ 0x70, {L1, TRACE,       12, NONE, 0x08, 0}},
+	{ 0x71, {L1, TRACE,       16, NONE, 0x08, 0}},
+	{ 0x72, {L1, TRACE,       32, NONE, 0x08, 0}},
+	{ 0x73, {L1, TRACE,       64, NONE, 0x08, 0}},
+	{ 0x77, {L1, CODE,        16, SECTORED | IA64, 0x04, 64}},
+	{ 0x78, {L2, UNIFIED,   1 MB, NONE, 0x04, 64}},
+	{ 0x79, {L2, UNIFIED,    128, SECTORED, 0x08, 64}},
+	{ 0x7a, {L2, UNIFIED,    256, SECTORED, 0x04, 64}},
+	{ 0x7b, {L2, UNIFIED,    512, SECTORED, 0x04, 64}},
+	{ 0x7c, {L2, UNIFIED,   1 MB, SECTORED, 0x04, 64}},
+	{ 0x7d, {L2, UNIFIED,   2 MB, NONE, 0x08, 64}},
+	{ 0x7e, {L2, UNIFIED,    256, SECTORED | IA64, 0x08, 128}},
+	{ 0x7f, {L2, UNIFIED,    512, NONE, 0x02, 64}},
+	{ 0x80, {L2, UNIFIED,    512, UNDOCUMENTED, 0x08, 64}},
+	{ 0x81, {L2, UNIFIED,    128, UNDOCUMENTED, 0x08, 32}},
+	{ 0x82, {L2, UNIFIED,    256, NONE, 0x08, 32}},
+	{ 0x83, {L2, UNIFIED,    512, NONE, 0x08, 32}},
+	{ 0x84, {L2, UNIFIED,   1 MB, NONE, 0x08, 32}},
+	{ 0x85, {L2, UNIFIED,   2 MB, NONE, 0x08, 32}},
+	{ 0x86, {L2, UNIFIED,    512, NONE, 0x04, 64}},
+	{ 0x87, {L2, UNIFIED,   1 MB, NONE, 0x08, 64}},
+	{ 0x88, {L3, UNIFIED,   2 MB, IA64, 0x04, 64}},
+	{ 0x89, {L3, UNIFIED,   4 MB, IA64, 0x04, 64}},
+	{ 0x8a, {L3, UNIFIED,   8 MB, IA64, 0x04, 64}},
+	{ 0x8d, {L3, UNIFIED,   3 MB, IA64, 0x0C, 128}},
+	{ 0xb0, {NO, CODE_TLB,   128, PAGES_4K, 0x04, 0}},
+	{ 0xb1, {NO, CODE_TLB,     8, PAGES_2M, 0x04, 0}},
+	{ 0xb2, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
+	{ 0xb3, {NO, DATA_TLB,   128, PAGES_4K, 0x04, 0}},
+	{ 0xb4, {NO, DATA_TLB,   256, PAGES_4K, 0x04, 0}},
+	{ 0xba, {NO, DATA_TLB,    64, PAGES_4K | UNDOCUMENTED, 0x04, 0}},
+	{ 0xc0, {NO, DATA_TLB,     8, PAGES_4K | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
+	{ 0xca, {L2, SHARED_TLB, 512, PAGES_4K, 0x04, 0}},
+	{ 0xd0, {L3, UNIFIED,    512, NONE, 0x04, 64}},
+	{ 0xd1, {L3, UNIFIED,   1 MB, NONE, 0x04, 64}},
+	{ 0xd2, {L3, UNIFIED,   2 MB, NONE, 0x04, 64}},
+	{ 0xd6, {L3, UNIFIED,   1 MB, NONE, 0x08, 64}},
+	{ 0xd7, {L3, UNIFIED,   2 MB, NONE, 0x08, 64}},
+	{ 0xd8, {L3, UNIFIED,   4 MB, NONE, 0x08, 64}},
+	{ 0xdc, {L3, UNIFIED, 1.5 MB, NONE, 0x0C, 64}},
+	{ 0xdd, {L3, UNIFIED,   3 MB, NONE, 0x0C, 64}},
+	{ 0xde, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64}},
+	{ 0xe2, {L3, UNIFIED,   2 MB, NONE, 0x10, 64}},
+	{ 0xe3, {L3, UNIFIED,   4 MB, NONE, 0x10, 64}},
+	{ 0xe4, {L3, UNIFIED,   8 MB, NONE, 0x10, 64}},
+	{ 0xea, {L3, UNIFIED,  12 MB, NONE, 0x18, 64}},
+	{ 0xeb, {L3, UNIFIED,  18 MB, NONE, 0x18, 64}},
+	{ 0xec, {L3, UNIFIED,  24 MB, NONE, 0x18, 64}},
+	
+	/* Special cases, not described in this table. */
+	{ 0x40, {0, 0, 0, 0, 0, 0}},
+	{ 0xf0, {0, 0, 0, 0, 0, 0}},
+	{ 0xf1, {0, 0, 0, 0, 0, 0}},
+
+	{ 0x00, {0, 0, 0, 0, 0, 0}}
+};
+static const struct cache_desc_index_t descriptor_49[] = {
+	{ 0x49, {L2, UNIFIED,  4 MB, NONE, 0x10, 64}},
+	{ 0x49, {L3, UNIFIED,  4 MB, NONE, 0x10, 64}}
+};
+#undef MB
+
+static const char *page_types(uint32_t attrs)
+{
+	/* There's probably a much better algorithm for this. */
+	attrs &= (PAGES_4K | PAGES_2M | PAGES_4M);
+	switch(attrs) {
+	case 0:
+		return NULL;
+	case PAGES_4K:
+		return "4KB pages";
+	case PAGES_2M:
+		return "2MB pages";
+	case PAGES_4M:
+		return "4MB pages";
+	case PAGES_4K | PAGES_4M:
+		return "4KB or 4MB pages";
+	case PAGES_2M | PAGES_4M:
+		return "2MB or 4MB pages";
+	case PAGES_4K | PAGES_2M | PAGES_4M:
+		return "4KB, 2MB, or 4MB pages";
+	default:
+		abort();
+	}
+}
+
+static const char *associativity(uint8_t assoc)
+{
+	static char buf[32];
+	switch(assoc) {
+	case 0x00:
+		return "unknown associativity";
+	case 0x01:
+		return "direct-mapped";
+	case 0xFF:
+		return "fully associative";
+	}
+	sprintf(buf, "%d-way set associative", assoc);
+	return buf;
+}
+
+static const char *size(uint32_t size)
+{
+	static char buf[8];
+	if (size > 1024) {
+		sprintf(buf, "%dMB", size / 1024);
+	} else {
+		sprintf(buf, "%dKB", size);
+	}
+	return buf;
+}
+
+static char *create_description(const struct cache_desc_index_t *idx)
+{
+	const struct cache_desc_t *desc = &idx->desc;
+	char buffer[128], temp[32];
+	const char *cp;
+	buffer[0] = 0;
+
+	/* Special cases. */
+	switch(idx->descriptor) {
+	case 0x40:
+		sprintf(buffer, "No L2 cache, or if L2 cache exists, no L3 cache");
+		goto out;
+	case 0xF0:
+		sprintf(buffer, "64-byte prefetching");
+		goto out;
+	case 0xF1:
+		sprintf(buffer, "64-byte prefetching");
+		goto out;
+	}
+
+	switch(desc->level) {
+	case NO:
+		break;
+	case L0:
+		strcat(buffer, "L0 ");
+		break;
+	case L1:
+		strcat(buffer, "L1 ");
+		break;
+	case L2:
+		strcat(buffer, "L2 ");
+		break;
+	case L3:
+		strcat(buffer, "L3 ");
+		break;
+	default:
+		abort();
+	}
+
+	switch (desc->type) {
+	case TRACE:
+		strcat(buffer, "trace cache: ");
+		sprintf(temp, "%dK-uops, ", desc->size);
+		strcat(buffer, temp);
+		break;
+	case DATA_TLB:
+		strcat(buffer, "Data TLB: ");
+		break;
+	case CODE_TLB:
+		strcat(buffer, "Code TLB: ");
+		break;
+	case SHARED_TLB:
+		strcat(buffer, "shared TLB: ");
+		break;
+	case CODE:
+		strcat(buffer, "code cache: ");
+		strcat(buffer, size(desc->size));
+		strcat(buffer, ", ");
+		break;
+	case DATA:
+		strcat(buffer, "data cache: ");
+		strcat(buffer, size(desc->size));
+		strcat(buffer, ", ");
+		break;
+	case UNIFIED:
+		strcat(buffer, "cache: ");
+		strcat(buffer, size(desc->size));
+		strcat(buffer, ", ");
+		break;
+	default:
+		abort();
+	}
+
+	cp = page_types(desc->attrs);
+	if (cp) {
+		strcat(buffer, page_types(desc->attrs));
+		strcat(buffer, ", ");
+	}
+
+	strcat(buffer, associativity(desc->assoc));
+
+	if (desc->attrs & SECTORED)
+		strcat(buffer, ", sectored cache");
+
+	switch (desc->type) {
+	case CODE:
+	case DATA:
+	case UNIFIED:
+		sprintf(temp, ", %d byte line size", desc->linesize);
+		strcat(buffer, temp);
+		break;
+	case DATA_TLB:
+	case CODE_TLB:
+	case SHARED_TLB:
+		sprintf(temp, ", %d entries", desc->size);
+		strcat(buffer, temp);
+		break;
+	default:
+		break;
+	}
+
+	if (desc->attrs & ECC)
+		strcat(buffer, ", ECC");
+
+out:
+	return strdup(buffer);
+}
+
+static int entry_comparator(const void *a, const void *b)
 {
 	/* Make 'prefetching' lines show last. */
 	if (strstr(*(const char **)a, "prefetch")) return 1;
 	if (strstr(*(const char **)b, "prefetch")) return -1;
-
 	/* Simple string compare. */
 	return strcmp(*(const char **)a, *(const char **)b);
 }
@@ -290,9 +348,9 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 
 	/* It's only possible to have 16 entries on a single line, but
 	   we need a 17th for a sentinel value of zero. */
-	const char *entries[17];
+	char *entries[17];
 
-	const char **eptr = entries;
+	char **eptr = entries;
 
 	/* Only zero last element. All other entries are initialized below. */
 	entries[16] = 0;
@@ -308,7 +366,19 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 		*(uint32_t *)&buf[0xB] = regs->edx;
 
 	for (i = 0; i < 0xF; i++) {
-		const char *desc = descs[buf[i]];
+		char *desc = NULL;
+		const struct cache_desc_index_t *d;
+
+		if (buf[i] == 0)
+			continue;
+
+		for(d = descs; d->descriptor; d++) {
+			if (d->descriptor == buf[i])
+				break;
+		}
+
+		if (d->descriptor)
+			desc = create_description(d);
 
 		/* Fetch a description. */
 		if (desc) {
@@ -321,7 +391,8 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 				 * on everything else.
 				 */
 				*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
-				          descriptor_49[1] : descriptor_49[0];
+				          create_description(&descriptor_49[1]) :
+						  create_description(&descriptor_49[0]);
 			}
 			else if (buf[i] != 0x00)
 			{
@@ -345,6 +416,7 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 	eptr = entries;
 	while (*eptr) {
 		printf("  %s\n", *eptr);
+		free(*eptr);
 		eptr++;
 	}
 }
