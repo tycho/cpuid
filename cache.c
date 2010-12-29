@@ -297,10 +297,15 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 	/* Only zero last element. All other entries are initialized below. */
 	entries[16] = 0;
 
+	memset(buf, 0, sizeof(buf));
+
 	*(uint32_t *)&buf[0x0] = regs->eax >> 8;
-	*(uint32_t *)&buf[0x3] = regs->ebx;
-	*(uint32_t *)&buf[0x7] = regs->ecx;
-	*(uint32_t *)&buf[0xB] = regs->edx;
+	if ((regs->ebx & (1 << 31)) == 0)
+		*(uint32_t *)&buf[0x3] = regs->ebx;
+	if ((regs->ecx & (1 << 31)) == 0)
+		*(uint32_t *)&buf[0x7] = regs->ecx;
+	if ((regs->edx & (1 << 31)) == 0)
+		*(uint32_t *)&buf[0xB] = regs->edx;
 
 	for (i = 0; i < 0xF; i++) {
 		const char *desc = descs[buf[i]];
