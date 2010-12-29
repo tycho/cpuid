@@ -289,15 +289,28 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			uint8_t logicalcount;
 			uint8_t localapicid;
 		};
+		uint32_t model;
 		struct std1_ebx_t *ebx = (struct std1_ebx_t *)&regs->ebx;
 		*(uint32_t *)(&state->sig) = regs->eax;
-		printf("Signature: 0x%08x\n"
-		       "  Family: %d\n"
-		       "  Model: %d\n"
-		       "  Stepping: %d\n\n",
+
+		/* Model is calculated differently on Intel/AMD. */
+		model = state->sig.model;
+		if (state->vendor == VENDOR_INTEL) {
+			model += ((state->sig.family == 0xf || state->sig.family == 0x6) ? state->sig.extmodel << 4 : 0);
+		} else if (state->vendor == VENDOR_AMD) {
+			model += (model == 0xf ? state->sig.extmodel << 4 : 0);
+		}
+
+		printf("Signature:  0x%08x\n"
+		       "  Family:   0x%02x (%d)\n"
+		       "  Model:    0x%02x (%d)\n"
+		       "  Stepping: 0x%02x (%d)\n\n",
 			*(uint32_t *)&state->sig,
 			state->sig.family + state->sig.extfamily,
-			state->sig.model + (state->sig.extmodel << 4),
+			state->sig.family + state->sig.extfamily,
+			model,
+			model,
+			state->sig.stepping,
 			state->sig.stepping);
 		printf("Local APIC: %d\n"
 		       "Logical processor count: %d\n"
