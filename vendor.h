@@ -7,6 +7,7 @@ typedef enum
 	VENDOR_INTEL     = 0x1,
 	VENDOR_AMD       = 0x2,
 	VENDOR_CYRIX     = 0x4,
+	VENDOR_TRANSMETA = 0x8,
 	VENDOR_ANY       = (int)-1
 } cpu_vendor_t;
 

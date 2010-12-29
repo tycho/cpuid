@@ -96,6 +96,8 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->vendor = VENDOR_INTEL;
 	else if (strcmp(buf, "AuthenticAMD") == 0)
 		state->vendor = VENDOR_AMD;
+	else if (strcmp(buf, "GenuineTMx86") == 0)
+		state->vendor = VENDOR_TRANSMETA;
 	else if (strcmp(buf, "CyrixInstead") == 0)
 		state->vendor = VENDOR_CYRIX;
 	else
