@@ -37,6 +37,11 @@ CFLAGS += -pthread
 LDFLAGS += -pthread
 endif
 
+ifeq ($(uname_S),Darwin)
+CFLAGS += -mdynamic-no-pic
+LDFLAGS += -mdynamic-no-pic
+endif
+
 ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 DEPS := $(shell ls $(OBJECTS:.o=.d) 2>/dev/null)
 
