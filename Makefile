@@ -11,6 +11,7 @@ endif
 
 ifneq ($(findstring $(MAKEFLAGS),s),s)
 ifndef V
+        QUIET_DEPEND    = @echo '   ' DEPEND $@;
         QUIET_CC        = @echo '   ' CC $@;
         QUIET_GEN       = @echo '   ' GEN $@;
         QUIET_LINK      = @echo '   ' LD $@;
@@ -30,15 +31,35 @@ CC := gcc
 CFLAGS := -Os -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wpadded -pedantic
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o util.o version.o
 
+DEPS := $(shell ls $(OBJECTS:.o=.d) 2>/dev/null)
+
+ifneq ($(DEPS),)
+-include $(DEPS)
+endif
+
+depend: $(DEPS)
+
 $(BINARY): $(OBJECTS)
 	$(QUIET_LINK)$(CC) -o $@ $(OBJECTS)
 
 clean:
 	$(QUIET)rm -f $(BINARY)
 	$(QUIET)rm -f $(OBJECTS) build.h license.h
+	$(QUIET)rm -f $(DEPS)
+
+ifdef NO_INLINE_DEPGEN
+$(OBJECTS): $(OBJECTS:.o=.d)
+endif
+
+%.d: %.c .cflags
+	$(QUIET_DEPEND)$(CC) -MM $(CFLAGS) -MT $*.o $< > $*.d
 
 %.o: %.c .cflags
+ifdef NO_INLINE_DEPGEN
 	$(QUIET_CC)$(CC) $(CFLAGS) -c -o $@ $<
+else
+	$(QUIET_CC)$(CC) $(CFLAGS) -Wp,-MD,$*.d,-MT,$@ -c -o $@ $<
+endif
 
 build.h: .force-regen
 	$(QUIET_GEN)tools/build.pl build.h
