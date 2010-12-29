@@ -195,8 +195,8 @@ void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->cpuid_call(regs, state);
 		printf("Processor serial number: %04X-%04X-%04X-%04X-%04X-%04X\n\n",
 		       ser_eax >> 16, ser_eax & 0xFFFF,
-		       regs->ecx >> 16, regs->ecx & 0xFFFF,
-		       regs->edx >> 16, regs->edx & 0xFFFF);
+		       regs->edx >> 16, regs->edx & 0xFFFF,
+		       regs->ecx >> 16, regs->ecx & 0xFFFF);
 	}
 }
 
