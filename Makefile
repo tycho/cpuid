@@ -53,7 +53,7 @@ $(BINARY): $(OBJECTS)
 clean:
 	$(QUIET)rm -f $(BINARY)
 	$(QUIET)rm -f $(OBJECTS) build.h license.h
-	$(QUIET)rm -f $(DEPS)
+	$(QUIET)rm -f $(OBJECTS:.o=.d)
 
 ifdef NO_INLINE_DEPGEN
 $(OBJECTS): $(OBJECTS:.o=.d)
