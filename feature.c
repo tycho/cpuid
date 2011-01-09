@@ -204,30 +204,28 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		break;
 	}
 	while (p && p->m_reg != REG_NULL) {
-		uint32_t reg;
+		uint32_t *reg = NULL;
+
 		if (state->last_leaf.eax != p->m_level) {
 			p++;
 			continue;
 		}
+
+		/* Only ECX and EDX are used for feature flags. */
 		switch (p->m_reg) {
-		case REG_EAX:
-			reg = regs->eax;
-			break;
-		case REG_EBX:
-			reg = regs->ebx;
-			break;
 		case REG_ECX:
-			reg = regs->ecx;
+			reg = &regs->ecx;
 			break;
 		case REG_EDX:
-			reg = regs->edx;
+			reg = &regs->edx;
 			break;
 		default:
 			abort();
 			break;
 		}
+
 		if (ignore_vendor) {
-			if ((reg & p->m_bitmask) != 0)
+			if ((*reg & p->m_bitmask) != 0)
 			{
 				char feat[32];
 				sprintf(feat, "%s (%s)", p->m_name, vendors(p->m_vendor));
@@ -237,10 +235,11 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 					count = 0;
 					printf("\n");
 				}
+				*reg &= (~p->m_bitmask);
 			}
 		} else {
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
-				&& (reg & p->m_bitmask) != 0)
+				&& (*reg & p->m_bitmask) != 0)
 			{
 				printf("  %-11s", p->m_name);
 				count++;
@@ -248,10 +247,15 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 					count = 0;
 					printf("\n");
 				}
+				*reg &= (~p->m_bitmask);
 			}
 		}
 		p++;
 	}
+
 	if (count != 0)
 		printf("\n");
+
+	if (regs->ecx || regs->edx)
+		printf("Unaccounted for: %08x %08x\n", regs->ecx, regs->edx);
 }
