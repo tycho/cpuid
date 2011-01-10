@@ -29,6 +29,4 @@ void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 /* For cpuid_pseudo */
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state);
 
-const char *reg_to_str(struct cpu_regs_t *regs);
-
 #endif
