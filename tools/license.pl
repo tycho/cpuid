@@ -17,7 +17,9 @@ my $license_text = <LICENSE>;
 close LICENSE;
 mkdir dirname($outfile);
 
-$license_text =~ s/\n/\\n/g;
+$license_text =~ s/[\\]/\\\\/g;
+$license_text =~ s/\x0D//g;
+$license_text =~ s/\x0A/\\n/g;
 $license_text =~ s/"/\\"/g;
 
 my $prefix   = "CPUID";
