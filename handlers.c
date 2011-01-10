@@ -418,7 +418,7 @@ static const char *amd_associativity(uint8_t assoc)
 }
 
 /* EAX = 8000 0005 */
-void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t *state)
+void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
 {
 	struct amd_l1_tlb_t {
 		uint8_t itlb_ent;
@@ -480,7 +480,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, unused struct cpuid_stat
 }
 
 /* EAX = 8000 0006 */
-void handle_ext_l2cachefeat(struct cpu_regs_t *regs, unused struct cpuid_state_t *state)
+void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
 {
 	if (state->vendor == VENDOR_INTEL) {
 		static const char *assoc[] = {

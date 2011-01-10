@@ -36,9 +36,9 @@
 #endif
 
 #ifdef __GNUC__
-#define unused __attribute__((unused))
+#define __unused __attribute__((unused))
 #else
-#define unused
+#define __unused
 #endif
 
 #ifndef TARGET_OS_WINDOWS

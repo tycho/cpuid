@@ -28,6 +28,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Generating build.h and license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -44,7 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\.."
+				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -102,6 +104,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Generating build.h and license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -119,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\.."
+				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -180,6 +184,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Generating build.h and license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -197,7 +203,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\.."
+				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -256,6 +262,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Generating build.h and license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -274,7 +282,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\.."
+				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
@@ -355,6 +363,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\getopt\getopt.h"
+			>
+		</File>
+		<File
+			RelativePath="..\getopt\getopt_long.c"
+			>
+		</File>
+		<File
 			RelativePath="..\handlers.c"
 			>
 		</File>
@@ -424,6 +440,14 @@
 		</File>
 		<File
 			RelativePath="..\vendor.h"
+			>
+		</File>
+		<File
+			RelativePath="..\version.c"
+			>
+		</File>
+		<File
+			RelativePath="..\version.h"
 			>
 		</File>
 	</Files>

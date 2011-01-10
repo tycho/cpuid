@@ -197,6 +197,12 @@ static const char *page_types(uint32_t attrs)
 	default:
 		abort();
 	}
+#ifdef _MSC_VER
+	/* Visual C++ isn't bright enough to figure out that
+	 * all control paths DO return a value (or don't return at all).
+	 */
+	return NULL;
+#endif
 }
 
 static const char *associativity(uint8_t assoc)

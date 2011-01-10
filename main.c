@@ -53,15 +53,31 @@ void run_cpuid(struct cpuid_state_t *state, int dump)
 	for (r = ranges; *r != 0xFFFFFFFF; r++) {
 		state->curmax = *r;
 		for (i = *r; i <= (scan_to ? *r + scan_to : state->curmax); i++) {
+
+			/* If a particular range is unsupported, the processor can report
+			 * a really wacky upper boundary. This is a quick sanity check,
+			 * since it's very unlikely that any range would have more than
+			 * 0xFFFF indices.
+			 */
 			if ((state->curmax & 0xFFFF0000) != (i & 0xFFFF0000))
 				break;
+
 			ZERO_REGS(&cr_tmp);
+
+			/* ECX isn't populated here. It's the job of any leaf handler to
+			 * re-call CPUID with the appropriate ECX values.
+			 */
 			cr_tmp.eax = i;
 			state->cpuid_call(&cr_tmp, state);
-			for (h = dump ? dump_handlers : decode_handlers; h && h->handler; h++) {
+
+			for (h = dump ? dump_handlers : decode_handlers;
+			     h->handler;
+			     h++)
+			{
 				if (h->leaf_id == i)
 					break;
 			}
+
 			if (h->handler)
 				h->handler(&cr_tmp, state);
 			else if (dump)

@@ -278,7 +278,7 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 			reg_to_str(regs));
 }
 
-void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, unused BOOL indexed)
+void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
 	printf("  0x%08x 0x%02x: eax=%08x ebx=%08x ecx=%08x edx=%08x\n",
 		state->last_leaf.eax,
@@ -300,7 +300,7 @@ static const char *uint32_to_binary(uint32_t val)
 	return buf;
 }
 
-void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, unused BOOL indexed)
+void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
 	/* Not sure what VMware's format is for that. */
 	if (indexed)
