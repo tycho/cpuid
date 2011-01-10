@@ -306,10 +306,12 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	cp = page_types(desc->attrs);
 	if (cp) {
 		strcat(buffer, page_types(desc->attrs));
-		strcat(buffer, ", ");
 	}
 
-	strcat(buffer, associativity(temp, desc->assoc));
+	if (desc->assoc != 0) {
+		strcat(buffer, ", ");
+		strcat(buffer, associativity(temp, desc->assoc));
+	}
 
 	if (desc->attrs & SECTORED)
 		strcat(buffer, ", sectored cache");
