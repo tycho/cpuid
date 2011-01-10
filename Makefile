@@ -87,6 +87,8 @@ build.h: .force-regen
 license.h: COPYING
 	$(QUIET_GEN)tools/license.pl COPYING license.h
 
+version.d: license.h build.h
+
 version.o: license.h build.h
 
 ifeq (,$(findstring clean,$(MAKECMDGOALS)))
