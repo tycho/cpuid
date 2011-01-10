@@ -54,6 +54,7 @@
 
 #include <getopt.h>
 #include <stdio.h>
+#include <string.h>
 
 #define warnx printf
 
@@ -80,7 +81,7 @@ int posixly_correct = 0;
 #define	BADARG		((*options == ':') ? (int)':' : (int)'?')
 #define	INORDER 	(int)1
 
-#define	EMSG		""
+#define EMSG		(char *)""
 
 static int getopt_internal(int, char * const *, const char *,
 			   const struct option *, int *, int);
@@ -167,7 +168,8 @@ static int
 parse_long_options(char * const *nargv, const char *options,
 	const struct option *long_options, int *idx, int short_too)
 {
-	char *current_argv, *has_equal;
+	const char *current_argv;
+	char *has_equal;
 	size_t current_argv_len;
 	int i, match;
 
