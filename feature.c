@@ -165,30 +165,29 @@ static const struct cpu_feature_t features [] = {
 	{ 0, REG_NULL, 0, 0, NULL}
 };
 
-static const char *vendors(uint32_t mask)
+static const char *vendors(char *buffer, uint32_t mask)
 {
-	static char vendor[32];
 	char multi = 0;
-	vendor[0] = 0;
+	buffer[0] = 0;
 	if (mask & VENDOR_INTEL) {
 		if (multi)
-			strcat(vendor, ", ");
-		strcat(vendor, "Intel");
+			strcat(buffer, ", ");
+		strcat(buffer, "Intel");
 		multi = 1;
 	}
 	if (mask & VENDOR_AMD) {
 		if (multi)
-			strcat(vendor, ", ");
-		strcat(vendor, "AMD");
+			strcat(buffer, ", ");
+		strcat(buffer, "AMD");
 		multi = 1;
 	}
 	if (mask & VENDOR_TRANSMETA) {
 		if (multi)
-			strcat(vendor, ", ");
-		strcat(vendor, "Transmeta");
+			strcat(buffer, ", ");
+		strcat(buffer, "Transmeta");
 		multi = 1;
 	}
-	return vendor;
+	return buffer;
 }
 
 void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
@@ -227,8 +226,8 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		if (ignore_vendor) {
 			if ((*reg & p->m_bitmask) != 0)
 			{
-				char feat[32];
-				sprintf(feat, "%s (%s)", p->m_name, vendors(p->m_vendor));
+				char feat[32], buffer[32];
+				sprintf(feat, "%s (%s)", p->m_name, vendors(buffer, p->m_vendor));
 				printf("  %-38s", feat);
 				count++;
 				if (count == 2) {

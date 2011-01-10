@@ -401,9 +401,8 @@ void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	}
 }
 
-static const char *amd_associativity(uint8_t assoc)
+static const char *amd_associativity(char *buffer, uint8_t assoc)
 {
-	static char buf[20];
 	switch (assoc) {
 	case 0x00:
 		return "Reserved";
@@ -412,14 +411,15 @@ static const char *amd_associativity(uint8_t assoc)
 	case 0xFF:
 		return "fully associative";
 	default:
-		sprintf(buf, "%d-way associative", assoc);
-		return buf;
+		sprintf(buffer, "%d-way associative", assoc);
+		return buffer;
 	}
 }
 
 /* EAX = 8000 0005 */
 void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
 {
+	char buffer[20];
 	struct amd_l1_tlb_t {
 		uint8_t itlb_ent;
 		uint8_t itlb_assoc;
@@ -444,18 +444,18 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 
 	if (tlb->dtlb_ent)
 		printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
+		       tlb->dtlb_ent, amd_associativity(buffer, tlb->dtlb_assoc));
 	if (tlb->itlb_ent)
 		printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
+		       tlb->itlb_ent, amd_associativity(buffer, tlb->itlb_assoc));
 
 	tlb = (struct amd_l1_tlb_t *)&regs->ebx;
 	if (tlb->dtlb_ent)
 		printf("  Data TLB (4KB pages): %d entries, %s\n",
-		       tlb->dtlb_ent, amd_associativity(tlb->dtlb_assoc));
+		       tlb->dtlb_ent, amd_associativity(buffer, tlb->dtlb_assoc));
 	if (tlb->itlb_ent)
 		printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-		       tlb->itlb_ent, amd_associativity(tlb->itlb_assoc));
+		       tlb->itlb_ent, amd_associativity(buffer, tlb->itlb_assoc));
 
 	printf("\n");
 
@@ -464,7 +464,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 		printf("L1 caches:\n"
 		       "  Data: %dKB, %s, %d lines per tag, %d byte line size\n",
 		       cache->size,
-		       amd_associativity(cache->assoc),
+		       amd_associativity(buffer, cache->assoc),
 		       cache->linespertag,
 		       cache->linesize);
 
@@ -472,7 +472,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 	if (cache->size)
 		printf("  Instruction: %dKB, %s, %d lines per tag, %d byte line size\n",
 		       cache->size,
-		       amd_associativity(cache->assoc),
+		       amd_associativity(buffer, cache->assoc),
 		       cache->linespertag,
 		       cache->linesize);
 
@@ -538,6 +538,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 			/* 0x0E */ "128-way",
 			/* 0x0F */ "Fully associative"
 		};
+		char buffer[20];
 
 		struct l2_tlb_t {
 			unsigned itlb_size:12;
@@ -568,18 +569,18 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 		tlb = (struct l2_tlb_t *)&regs->eax;
 		if (tlb->dtlb_size)
 			printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
+			       tlb->dtlb_size, amd_associativity(buffer, tlb->dtlb_assoc));
 		if (tlb->itlb_size)
 			printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-			       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
+			       tlb->itlb_size, amd_associativity(buffer, tlb->itlb_assoc));
 
 		tlb = (struct l2_tlb_t *)&regs->ebx;
 		if (tlb->dtlb_size)
 			printf("  Data TLB (4KB pages): %d entries, %s\n",
-			       tlb->dtlb_size, amd_associativity(tlb->dtlb_assoc));
+			       tlb->dtlb_size, amd_associativity(buffer, tlb->dtlb_assoc));
 		if (tlb->itlb_size)
 			printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-			       tlb->itlb_size, amd_associativity(tlb->itlb_assoc));
+			       tlb->itlb_size, amd_associativity(buffer, tlb->itlb_assoc));
 
 		printf("\n");
 

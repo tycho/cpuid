@@ -12,12 +12,11 @@
 #endif
 #endif
 
-const char *reg_to_str(struct cpu_regs_t *regs)
+const char *reg_to_str(char *buffer, struct cpu_regs_t *regs)
 {
 	uint32_t i;
-	static char buffer[sizeof(struct cpu_regs_t) + 1];
 	buffer[sizeof(struct cpu_regs_t)] = 0;
-	memcpy(&buffer, regs, sizeof(struct cpu_regs_t));
+	memcpy(buffer, regs, sizeof(struct cpu_regs_t));
 	for (i = 0; i < sizeof(struct cpu_regs_t); i++) {
 		if (buffer[i]  > 31 && buffer[i] < 127)
 			continue;
@@ -259,6 +258,7 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
+	char buffer[sizeof(struct cpu_regs_t) + 1];
 	if (!indexed)
 		printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
 			state->last_leaf.eax,
@@ -266,7 +266,7 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 			regs->ebx,
 			regs->ecx,
 			regs->edx,
-			reg_to_str(regs));
+			reg_to_str(buffer, regs));
 	else
 		printf("CPUID %08x, index %x = %08x %08x %08x %08x | %s\n",
 			state->last_leaf.eax,
@@ -275,7 +275,7 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 			regs->ebx,
 			regs->ecx,
 			regs->edx,
-			reg_to_str(regs));
+			reg_to_str(buffer, regs));
 }
 
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
@@ -289,24 +289,24 @@ void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __
 		regs->edx);
 }
 
-static const char *uint32_to_binary(uint32_t val)
+static const char *uint32_to_binary(char *buffer, uint32_t val)
 {
-	static char buf[33];
 	int i;
-	buf[32] = 0;
+	buffer[32] = 0;
 	for (i = 0; i < 32; i++) {
-		buf[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
+		buffer[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
 	}
-	return buf;
+	return buffer;
 }
 
 void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
+	char buffer[33];
 	/* Not sure what VMware's format is for that. */
 	if (indexed)
 		return;
-	printf("cpuid.%x.eax = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->eax));
-	printf("cpuid.%x.ebx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->ebx));
-	printf("cpuid.%x.ecx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->ecx));
-	printf("cpuid.%x.edx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(regs->edx));
+	printf("cpuid.%x.eax = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->eax));
+	printf("cpuid.%x.ebx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->ebx));
+	printf("cpuid.%x.ecx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->ecx));
+	printf("cpuid.%x.edx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->edx));
 }

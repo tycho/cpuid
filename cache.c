@@ -205,9 +205,8 @@ static const char *page_types(uint32_t attrs)
 #endif
 }
 
-static const char *associativity(uint8_t assoc)
+static const char *associativity(char *buffer, uint8_t assoc)
 {
-	static char buf[32];
 	switch(assoc) {
 	case 0x00:
 		return "unknown associativity";
@@ -216,19 +215,18 @@ static const char *associativity(uint8_t assoc)
 	case 0xFF:
 		return "fully associative";
 	}
-	sprintf(buf, "%d-way set associative", assoc);
-	return buf;
+	sprintf(buffer, "%d-way set associative", assoc);
+	return buffer;
 }
 
-static const char *size(uint32_t size)
+static const char *size(char *buffer, uint32_t size)
 {
-	static char buf[8];
 	if (size > 1024) {
-		sprintf(buf, "%dMB", size / 1024);
+		sprintf(buffer, "%dMB", size / 1024);
 	} else {
-		sprintf(buf, "%dKB", size);
+		sprintf(buffer, "%dKB", size);
 	}
-	return buf;
+	return buffer;
 }
 
 static char *create_description(const struct cache_desc_index_t *idx)
@@ -287,17 +285,17 @@ static char *create_description(const struct cache_desc_index_t *idx)
 		break;
 	case CODE:
 		strcat(buffer, "code cache: ");
-		strcat(buffer, size(desc->size));
+		strcat(buffer, size(temp, desc->size));
 		strcat(buffer, ", ");
 		break;
 	case DATA:
 		strcat(buffer, "data cache: ");
-		strcat(buffer, size(desc->size));
+		strcat(buffer, size(temp, desc->size));
 		strcat(buffer, ", ");
 		break;
 	case UNIFIED:
 		strcat(buffer, "cache: ");
-		strcat(buffer, size(desc->size));
+		strcat(buffer, size(temp, desc->size));
 		strcat(buffer, ", ");
 		break;
 	default:
@@ -310,7 +308,7 @@ static char *create_description(const struct cache_desc_index_t *idx)
 		strcat(buffer, ", ");
 	}
 
-	strcat(buffer, associativity(desc->assoc));
+	strcat(buffer, associativity(temp, desc->assoc));
 
 	if (desc->attrs & SECTORED)
 		strcat(buffer, ", sectored cache");
