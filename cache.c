@@ -287,17 +287,14 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	case CODE:
 		strcat(buffer, "code cache: ");
 		strcat(buffer, size(temp, desc->size));
-		strcat(buffer, ", ");
 		break;
 	case DATA:
 		strcat(buffer, "data cache: ");
 		strcat(buffer, size(temp, desc->size));
-		strcat(buffer, ", ");
 		break;
 	case UNIFIED:
 		strcat(buffer, "cache: ");
 		strcat(buffer, size(temp, desc->size));
-		strcat(buffer, ", ");
 		break;
 	default:
 		abort();
