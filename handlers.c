@@ -333,7 +333,7 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	uint32_t i = 0;
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
-	if (!regs->eax)
+	if (!regs->eax && !regs->ebx)
 		return;
 	printf("Processor Topology:\n");
 	while (1) {
