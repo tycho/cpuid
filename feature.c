@@ -77,7 +77,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, REG_ECX, 0x00004000, VENDOR_INTEL                                , "xTPR"},
 	{ 0x00000001, REG_ECX, 0x00008000, VENDOR_INTEL                                , "PDCM"},
 /*	{ 0x00000001, REG_ECX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000001, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , "PCID"},
 	{ 0x00000001, REG_ECX, 0x00040000, VENDOR_INTEL                                , "DCA"},
 	{ 0x00000001, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.1"},
 	{ 0x00000001, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.2"},
