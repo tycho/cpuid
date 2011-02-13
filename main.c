@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 {
 	const char *file = NULL;
 	struct cpuid_state_t state;
-	int c;
+	int c, ret = 0;
 
 	while (TRUE) {
 		static struct option long_options[] = {
@@ -163,10 +163,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (do_sanity) {
-		exit(sanity_run());
-	}
-
 	thread_bind(cpu_index);
 
 	INIT_CPUID_STATE(&state);
@@ -193,7 +189,11 @@ int main(int argc, char **argv)
 
 	run_cpuid(&state, do_dump);
 
+	if (do_sanity) {
+		ret = sanity_run(&state);
+	}
+
 	FREE_CPUID_STATE(&state);
 
-	return 0;
+	return ret;
 }

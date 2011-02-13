@@ -7,24 +7,25 @@
 
 #include "cpuid.h"
 #include "sanity.h"
+#include "state.h"
 #include "threads.h"
 
-typedef int(*sanity_handler_t)();
+typedef int(*sanity_handler_t)(struct cpuid_state_t *state);
 
-static int sane_apicid();
+static int sane_apicid(struct cpuid_state_t *state);
 
 sanity_handler_t handlers[] = {
 	sane_apicid,
 	NULL
 };
 
-static unsigned char get_apicid_for_cpu(unsigned int index)
+static unsigned char get_apicid_for_cpu(struct cpuid_state_t *state, unsigned int index)
 {
 	struct cpu_regs_t regs;
 	ZERO_REGS(&regs);
 	regs.eax = 1;
 	thread_bind(index);
-	cpuid(&regs.eax, &regs.ebx, &regs.ecx, &regs.edx);
+	state->cpuid_call(&regs, state);
 	regs.ebx = regs.ebx >> 24;
 	return (char)(regs.ebx & 0xFF);
 }
@@ -48,20 +49,23 @@ static void *apic_nonsensical_worker_thread(void *flag)
 	return NULL;
 }
 
-static int sane_apicid()
+static int sane_apicid(struct cpuid_state_t *state)
 {
 	unsigned int hwthreads = thread_count(), i, j,
-	    worker_count;
+	    worker_count, oldbinding;
 	unsigned char *apic_ids = NULL, *apic_copy = NULL,
 	    worker_flag;
 	pthread_t *workers = NULL;
+
+	/* Store the current affinity mask. It will get clobbered. */
+	oldbinding = thread_get_binding();
 
 	printf("Verifying APIC ID sanity... ");
 
 	/* Populate initial APIC ID array. */
 	apic_ids = malloc(hwthreads * sizeof(unsigned char));
 	for (i = 0; i < hwthreads; i++) {
-		apic_ids[i] = get_apicid_for_cpu(i);
+		apic_ids[i] = get_apicid_for_cpu(state, i);
 	}
 
 	/* First verify that no CPUs reported identical APIC IDs. */
@@ -87,7 +91,7 @@ static int sane_apicid()
 	/* Now verify that the APIC IDs don't change over time. */
 	for (i = 0; i < 1024; i++) {
 		for (j = 0; j < hwthreads; j++) {
-			if (apic_ids[j] != get_apicid_for_cpu(j)) {
+			if (apic_ids[j] != get_apicid_for_cpu(state, j)) {
 				printf("fail (APIC IDs changed over time)\n");
 				return 2;
 			}
@@ -100,16 +104,19 @@ static int sane_apicid()
 	for (i = 0; i < worker_count; i++)
 		pthread_join(workers[i], NULL);
 
+	/* Restore the affinity mask from before. */
+	thread_bind_mask(oldbinding);
+
 	printf("ok\n");
 	return 0;
 }
 
-int sanity_run()
+int sanity_run(struct cpuid_state_t *state)
 {
 	sanity_handler_t *p = handlers;
 	unsigned int ret = 0;
 	while (*p) {
-		if ((*p++)() != 0)
+		if ((*p++)(state) != 0)
 			ret = p - handlers;
 	}
 	return ret;
