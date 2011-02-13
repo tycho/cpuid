@@ -6,27 +6,9 @@
 #include "handlers.h"
 #include "util.h"
 #include "state.h"
+#include "threads.h"
 #include "vendor.h"
 #include "version.h"
-
-#ifdef TARGET_OS_LINUX
-
-#include <pthread.h>
-#include <sched.h>
-#define CPUSET_T cpu_set_t
-
-#elif defined(TARGET_OS_WINDOWS)
-
-#include <windows.h>
-
-#elif defined(TARGET_OS_FREEBSD)
-
-#include <pthread_np.h>
-#include <sys/param.h>
-#include <sys/cpuset.h>
-#define CPUSET_T cpuset_t
-
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,38 +87,6 @@ void version()
 	exit(0);
 }
 
-void set_affinity(uint32_t num)
-{
-#ifdef TARGET_OS_WINDOWS
-
-	DWORD ret;
-	HANDLE hThread = GetCurrentThread();
-	ret = SetThreadAffinityMask(hThread, 1 << num);
-
-	if (ret == 0) {
-		printf("Could not bind to CPU at index %d. Does it exist?\n", num);
-		exit(1);
-	}
-
-#elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
-
-	int ret;
-	CPUSET_T mask;
-	pthread_t pth;
-
-	pth = pthread_self();
-	CPU_ZERO(&mask);
-	CPU_SET(num, &mask);
-	ret = pthread_setaffinity_np(pth, sizeof(mask), &mask);
-
-	if (ret != 0) {
-		printf("Could not bind to CPU at index %d. Does it exist?\n", num);
-		exit(1);
-	}
-
-#endif
-}
-
 enum {
 	DUMP_FORMAT_DEFAULT,
 	DUMP_FORMAT_VMWARE,
@@ -207,7 +157,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	set_affinity(cpu_index);
+	thread_bind(cpu_index);
 
 	INIT_CPUID_STATE(&state);
 

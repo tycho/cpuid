@@ -30,7 +30,7 @@ all: $(BINARY)
 CC := gcc
 CFLAGS := -Os -I. -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wwrite-strings -pedantic -Wno-overlength-strings
 LDFLAGS :=
-OBJECTS := cache.o cpuid.o feature.o handlers.o main.o util.o version.o
+OBJECTS := cache.o cpuid.o feature.o handlers.o main.o threads.o util.o version.o
 
 ifeq ($(uname_S),Linux)
 CFLAGS += -pthread
@@ -38,8 +38,8 @@ LDFLAGS += -pthread
 endif
 
 ifeq ($(uname_S),Darwin)
-CFLAGS += -mdynamic-no-pic
-LDFLAGS += -mdynamic-no-pic
+CFLAGS += -m32 -mdynamic-no-pic -F/System/Library/PrivateFrameworks
+LDFLAGS += -m32 -mdynamic-no-pic -F/System/Library/PrivateFrameworks -framework CHUD
 endif
 
 ifdef NO_GNU_GETOPT
