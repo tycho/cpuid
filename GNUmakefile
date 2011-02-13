@@ -1,4 +1,6 @@
 
+MAKEFLAGS += -Rr
+
 ifneq ($(findstring MINGW,$(shell uname -s 2> /dev/null)),)
 win32 = Yep
 endif
