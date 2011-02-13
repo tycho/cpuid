@@ -45,6 +45,7 @@ static void *apic_nonsensical_worker_thread(void *flag)
 		srand(s);
 	}
 	pthread_exit(NULL);
+	return NULL;
 }
 
 static int sane_apicid()
