@@ -13,9 +13,11 @@
 typedef int(*sanity_handler_t)(struct cpuid_state_t *state);
 
 static int sane_apicid(struct cpuid_state_t *state);
+static int sane_l3_sharing(struct cpuid_state_t *state);
 
 sanity_handler_t handlers[] = {
 	sane_apicid,
+	sane_l3_sharing,
 	NULL
 };
 
@@ -107,6 +109,47 @@ static int sane_apicid(struct cpuid_state_t *state)
 	/* Restore the affinity mask from before. */
 	thread_bind_mask(oldbinding);
 
+	printf("ok\n");
+	return 0;
+}
+
+static int sane_l3_sharing(struct cpuid_state_t *state)
+{
+	struct eax_cache04_t {
+		unsigned type:5;
+		unsigned level:3;
+		unsigned self_initializing:1;
+		unsigned fully_associative:1;
+		unsigned reserved:4;
+		unsigned max_threads_sharing:12; /* +1 encoded */
+		unsigned apics_reserved:6; /* +1 encoded */
+	};
+	printf("Verifying L3 thread sharing sanity... ");
+	uint32_t i = 0;
+	struct cpu_regs_t regs;
+	while (1) {
+		struct eax_cache04_t *eax;
+		ZERO_REGS(&regs);
+		regs.eax = 4;
+		regs.ecx = i;
+		state->cpuid_call(&regs, state);
+
+		/* This is a non-official check. With other leafs (i.e. 0x0B),
+		   some extra information comes through, past the termination
+		   condition. I want to show all the information the CPU provides,
+		   even if it's not specified by the Intel docs. */
+		if (!(regs.eax & 0xF))
+			break;
+
+		eax = (struct eax_cache04_t *)&regs.eax;
+
+		if (eax->level == 3 && eax->max_threads_sharing + 1 == 1) {
+			printf("fail (L3 cache shared by too few threads)\n");
+			return 0;
+		}
+
+		i++;
+	}
 	printf("ok\n");
 	return 0;
 }
