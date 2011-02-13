@@ -37,6 +37,10 @@ CFLAGS += -pthread
 LDFLAGS += -pthread
 endif
 
+ifneq ($(findstring MINGW,$(uname_S)),)
+LDFLAGS += -lpthread
+endif
+
 ifeq ($(uname_S),Darwin)
 CFLAGS += -m32 -pthread -mdynamic-no-pic -F/System/Library/PrivateFrameworks
 LDFLAGS += -m32 -pthread -mdynamic-no-pic -F/System/Library/PrivateFrameworks -framework CHUD
@@ -58,7 +62,7 @@ endif
 depend: $(DEPS)
 
 $(BINARY): $(OBJECTS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(QUIET_LINK)$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
 clean:
 	$(QUIET)rm -f $(BINARY)
