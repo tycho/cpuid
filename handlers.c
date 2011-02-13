@@ -146,7 +146,7 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		       "Brand ID: %d\n\n",
 		       ebx->localapicid,
 		       ebx->logicalcount,
-		       ebx->clflushsz,
+		       ebx->clflushsz << 3,
 		       ebx->brandid);
 	}
 	print_features(regs, state);
