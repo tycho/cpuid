@@ -1,7 +1,7 @@
 #ifndef __cpuid_h
 #define __cpuid_h
 
-struct cpu_regs_t{
+struct cpu_regs_t {
 	uint32_t eax;
 	uint32_t ebx;
 	uint32_t ecx;

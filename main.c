@@ -5,6 +5,7 @@
 #include "feature.h"
 #include "handlers.h"
 #include "util.h"
+#include "sanity.h"
 #include "state.h"
 #include "threads.h"
 #include "vendor.h"
@@ -76,6 +77,7 @@ void usage(const char *argv0)
 	printf("  %-18s %s\n", "-d, --dump", "Dump a raw CPUID table");
 	printf("  %-18s %s\n", "--ignore-vendor", "Show feature flags from all vendors");
 	printf("  %-18s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified");
+	printf("  %-18s %s\n", "--sanity", "Do a sanity check of the CPUID data");
 	printf("\n");
 	exit(0);
 }
@@ -93,6 +95,7 @@ enum {
 	DUMP_FORMAT_ETALLEN
 };
 
+static int do_sanity = 0;
 static int do_dump = 0;
 static int dump_format = DUMP_FORMAT_DEFAULT;
 static int cpu_index = 0;
@@ -107,6 +110,7 @@ int main(int argc, char **argv)
 		static struct option long_options[] = {
 			{"version", no_argument, 0, 'v'},
 			{"help", no_argument, 0, 'h'},
+			{"sanity", no_argument, &do_sanity, 1},
 			{"dump", no_argument, &do_dump, 1},
 			{"cpu", required_argument, 0, 'c'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
@@ -155,6 +159,10 @@ int main(int argc, char **argv)
 		default:
 			usage(argv[0]);
 		}
+	}
+
+	if (do_sanity) {
+		exit(sanity_run());
 	}
 
 	thread_bind(cpu_index);
