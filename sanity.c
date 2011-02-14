@@ -46,9 +46,7 @@ static void *apic_nonsensical_worker_thread(void *flagptr)
 	struct timeval tv;
 	while (*flag) {
 		thread_bind(rand() % hwthreads);
-		t = (rand() % 81920+ 1);
-		for (i = 0; i < t && *flag; i++)
-			gettimeofday(&tv, NULL);
+		gettimeofday(&tv, NULL);
 	}
 	pthread_exit(NULL);
 	return NULL;
@@ -142,11 +140,11 @@ static int sane_apicid(struct cpuid_state_t *state)
 	gettimeofday(&start, NULL);
 	while(worker_flag) {
 		gettimeofday(&now, NULL);
-		if (now.tv_sec - start.tv_sec > 3)
+		if (now.tv_sec - start.tv_sec > 10)
 			break;
 		printf(".");
 		fflush(stdout);
-		usleep(250000);
+		usleep(750000);
 		for (i = 0; i < hwthreads; i++) {
 			if (apic_state[i].failed) {
 				printf(" failed (APIC IDs changed over time)\n");
