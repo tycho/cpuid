@@ -30,7 +30,7 @@ BINARY := cpuid$(EXT)
 all: $(BINARY)
 
 CC := gcc
-CFLAGS := -Os -I. -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wwrite-strings -pedantic -Wno-overlength-strings
+CFLAGS := -Os -I. -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wwrite-strings -pedantic
 LDFLAGS :=
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
