@@ -67,6 +67,7 @@ $(BINARY): $(OBJECTS)
 	$(QUIET_LINK)$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
 clean:
+	$(QUIET)rm -f .cflags
 	$(QUIET)rm -f $(BINARY)
 	$(QUIET)rm -f $(OBJECTS) build.h license.h
 	$(QUIET)rm -f $(OBJECTS:.o=.d)
