@@ -121,8 +121,8 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000001, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, REG_EDX, 0x02000000,                VENDOR_AMD                   , "FFXSR"},
-	{ 0x80000001, REG_EDX, 0x04000000,                VENDOR_AMD                   , "P1GB"},
-	{ 0x80000001, REG_EDX, 0x08000000,                VENDOR_AMD                   , "RDTSCP"},
+	{ 0x80000001, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "P1GB"},
+	{ 0x80000001, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "RDTSCP"},
 /*	{ 0x80000001, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, REG_EDX, 0x20000000, VENDOR_INTEL                                , "EM64T"},
 	{ 0x80000001, REG_EDX, 0x20000000,                VENDOR_AMD                   , "LM"},
