@@ -139,6 +139,8 @@ static int sane_apicid(struct cpuid_state_t *state)
 	/* Occasionally signal workers to run validation checks. */
 	gettimeofday(&start, NULL);
 	c = 1;
+	printf(".");
+	fflush(stdout);
 	while(worker_flag) {
 		gettimeofday(&now, NULL);
 		if (now.tv_sec - start.tv_sec > 30)
@@ -146,10 +148,10 @@ static int sane_apicid(struct cpuid_state_t *state)
 		if (c % 100 == 0) {
 			c = 1;
 			printf(".");
+			fflush(stdout);
 		} else {
 			c++;
 		}
-		fflush(stdout);
 		usleep(10000);
 		for (i = 0; i < hwthreads; i++) {
 			if (apic_state[i].failed) {
