@@ -82,7 +82,7 @@ static int apic_compare(const void *a, const void *b)
 static int sane_apicid(struct cpuid_state_t *state)
 {
 	int ret = 0;
-	uint32_t hwthreads = thread_count(), i,
+	uint32_t hwthreads = thread_count(), i, c,
 	    worker_count, oldbinding;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
@@ -138,13 +138,19 @@ static int sane_apicid(struct cpuid_state_t *state)
 
 	/* Occasionally signal workers to run validation checks. */
 	gettimeofday(&start, NULL);
+	c = 1;
 	while(worker_flag) {
 		gettimeofday(&now, NULL);
 		if (now.tv_sec - start.tv_sec > 30)
 			break;
-		printf(".");
+		if (c % 100 == 0) {
+			c = 1;
+			printf(".");
+		} else {
+			c++;
+		}
 		fflush(stdout);
-		usleep(1000000);
+		usleep(10000);
 		for (i = 0; i < hwthreads; i++) {
 			if (apic_state[i].failed) {
 				printf(" failed (APIC IDs changed over time)\n");
