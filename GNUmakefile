@@ -30,7 +30,8 @@ BINARY := cpuid$(EXT)
 all: $(BINARY)
 
 CC := gcc
-CFLAGS := -Os -I. -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wwrite-strings -pedantic
+CP := cp -L
+CFLAGS := -Os -I../inc -I. -fno-PIC -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wwrite-strings -pedantic
 LDFLAGS :=
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
@@ -43,9 +44,13 @@ ifneq ($(findstring MINGW,$(uname_S)),)
 LDFLAGS += -lpthread
 endif
 
+ifneq ($(shell $(CC) --version | grep Apple),)
+APPLE_COMPILER := YesPlease
+endif
+
 ifeq ($(uname_S),Darwin)
-CFLAGS += -m32 -pthread -mdynamic-no-pic -F/System/Library/PrivateFrameworks
-LDFLAGS += -m32 -pthread -mdynamic-no-pic -F/System/Library/PrivateFrameworks -framework CHUD
+CFLAGS += -m32 -pthread -mdynamic-no-pic
+LDFLAGS += -m32 -pthread -mdynamic-no-pic -Wl,-F/System/Library/PrivateFrameworks -Wl,-framework,CHUD
 endif
 
 ifdef NO_GNU_GETOPT
@@ -60,6 +65,8 @@ ifneq ($(DEPS),)
 -include $(DEPS)
 endif
 endif
+
+.PHONY: all depend clean distclean
 
 depend: $(DEPS)
 
