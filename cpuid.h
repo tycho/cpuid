@@ -23,6 +23,7 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 /* Allows printing dumps in different formats. */
 void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
+void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
 void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
 

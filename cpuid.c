@@ -278,6 +278,27 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 			reg_to_str(buffer, regs));
 }
 
+void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
+{
+	char buffer[sizeof(struct cpu_regs_t) + 1];
+	if (!indexed)
+		printf("'0x%08x:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
+			state->last_leaf.eax,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx);
+	else
+		printf("'0x%08x,%d:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
+			state->last_leaf.eax,
+			state->last_leaf.ecx,
+			regs->eax,
+			regs->ebx,
+			regs->ecx,
+			regs->edx);
+}
+
+
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
 	printf("  0x%08x 0x%02x: eax=%08x ebx=%08x ecx=%08x edx=%08x\n",

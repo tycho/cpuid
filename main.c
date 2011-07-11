@@ -94,6 +94,7 @@ void version()
 enum {
 	DUMP_FORMAT_DEFAULT,
 	DUMP_FORMAT_VMWARE,
+	DUMP_FORMAT_XEN,
 	DUMP_FORMAT_ETALLEN
 };
 
@@ -119,6 +120,7 @@ int main(int argc, char **argv)
 			{"parse", required_argument, 0, 'f'},
 			{"vmware-vmx", no_argument, &dump_format, DUMP_FORMAT_VMWARE},
 			{"etallen", no_argument, &dump_format, DUMP_FORMAT_ETALLEN},
+			{"xen", no_argument, &dump_format, DUMP_FORMAT_XEN},
 			{"scan-to", required_argument, 0, 2},
 			{0, 0, 0, 0}
 		};
@@ -176,6 +178,11 @@ int main(int argc, char **argv)
 		do_dump = 1;
 		state.cpuid_print = cpuid_dump_vmware;
 		break;
+	case DUMP_FORMAT_XEN:
+		do_dump = 1;
+		state.cpuid_print = cpuid_dump_xen;
+		printf("cpuid = [\n");
+		break;
 	case DUMP_FORMAT_ETALLEN:
 		do_dump = 1;
 		state.cpuid_print = cpuid_dump_etallen;
@@ -188,6 +195,13 @@ int main(int argc, char **argv)
 	}
 
 	run_cpuid(&state, do_dump);
+
+	if (do_dump && dump_format == DUMP_FORMAT_XEN) {
+		/* This isn't a pretty way to do this. I suspect we might
+		 * want pre and post print hooks.
+		 */
+		printf("]\n");
+	}
 
 	if (do_sanity) {
 		ret = sanity_run(&state);
