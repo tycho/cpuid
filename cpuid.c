@@ -280,7 +280,6 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
-	char buffer[sizeof(struct cpu_regs_t) + 1];
 	if (!indexed)
 		printf("'0x%08x:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
 			state->last_leaf.eax,
