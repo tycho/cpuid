@@ -84,13 +84,13 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, REG_ECX, 0x00200000, VENDOR_INTEL                                , "x2APIC"},
 	{ 0x00000001, REG_ECX, 0x00400000, VENDOR_INTEL                                , "MOVBE"},
 	{ 0x00000001, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "POPCNT"},
-/*	{ 0x00000001, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "TSC-Deadline"},
 	{ 0x00000001, REG_ECX, 0x02000000, VENDOR_INTEL                                , "AES"},
 	{ 0x00000001, REG_ECX, 0x04000000, VENDOR_INTEL                                , "XSAVE"},
 	{ 0x00000001, REG_ECX, 0x08000000, VENDOR_INTEL                                , "OSXSAVE"},
 	{ 0x00000001, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX"},
-	{ 0x00000001, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "F16C"},
-/*	{ 0x00000001, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000001, REG_ECX, 0x20000000,                VENDOR_AMD                   , "F16C"},
+	{ 0x00000001, REG_ECX, 0x40000000, VENDOR_INTEL                                , "RDRAND"},
 	{ 0x00000001, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ"},
 
 /*  Extended (8000_0001h) */
@@ -240,9 +240,9 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
 				&& (*reg & p->m_bitmask) != 0)
 			{
-				printf("  %-11s", p->m_name);
+				printf("  %-14s", p->m_name);
 				count++;
-				if (count == 6) {
+				if (count == 4) {
 					count = 0;
 					printf("\n");
 				}
