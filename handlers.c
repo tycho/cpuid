@@ -90,6 +90,7 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 	state->curmax = regs->eax;
+	printf("Maximum basic CPUID leaf: 0x%08x\n\n", state->curmax);
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->edx;
 	*(uint32_t *)(&buf[8]) = regs->ecx;
@@ -416,6 +417,7 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	state->curmax = regs->eax;
+	printf("Maximum extended CPUID leaf: 0x%08x\n\n", state->curmax);
 }
 
 /* EAX = 8000 0002 */
