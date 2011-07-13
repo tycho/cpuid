@@ -23,6 +23,7 @@ void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -76,6 +77,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000005, handle_ext_amdl1cachefeat},
 	{0x80000006, handle_ext_l2cachefeat},
 	{0x80000007, handle_ext_0007},
+	{0x80000008, handle_ext_lmaddr},
 
 	{0, 0}
 };
@@ -666,6 +668,24 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 		/* TODO: Implement this. */
 	}
+}
+
+/* EAX = 8000 0008 */
+void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
+		return;
+
+	/* Long mode address size information */
+	struct eax_addrsize {
+		unsigned physical:8;
+		unsigned linear:8;
+		unsigned reserved:16;
+	};
+
+	struct eax_addrsize *eax = (struct eax_addrsize *)&regs->eax;
+	printf("Physical address size: %d bits\n", eax->physical);
+	printf("Linear address size: %d bits\n", eax->linear);
 }
 
 /* EAX = 4000 0000 */
