@@ -22,6 +22,7 @@ void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -74,6 +75,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000004, handle_ext_pname},
 	{0x80000005, handle_ext_amdl1cachefeat},
 	{0x80000006, handle_ext_l2cachefeat},
+	{0x80000007, handle_ext_0007},
 
 	{0, 0}
 };
@@ -647,6 +649,22 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 			       l3_cache->linesize);
 
 		printf("\n");
+	}
+}
+
+/* EAX = 8000 0007 */
+void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor == VENDOR_INTEL) {
+		/* TSC information */
+
+		/* Bit 8 of EDX indicates whether the Invariant TSC is available */
+		printf("Invariant TSC available: %s\n\n", (regs->edx & 0x100) ? "Yes" : "No");
+	}
+	if (state->vendor == VENDOR_AMD) {
+		/* Advanced Power Management information */
+
+		/* TODO: Implement this. */
 	}
 }
 
