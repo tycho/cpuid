@@ -519,6 +519,11 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
 {
 	if (state->vendor == VENDOR_INTEL) {
+		/*
+		 * Implemented below, but disabled because it's mostly
+		 * worthless. Leaf 0x04 is far better at giving this information.
+		 */
+#if 0
 		static const char *assoc[] = {
 			/* 0x00 */ "Disabled",
 			/* 0x01 */ "Direct mapped",
@@ -553,6 +558,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 			feat->size > 1024 ? 'M' : 'K',
 			assoc[feat->assoc] ? assoc[feat->assoc] : "Unknown",
 			feat->linesize);
+#endif
 	}
 
 	if (state->vendor == VENDOR_AMD) {
