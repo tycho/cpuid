@@ -157,17 +157,53 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
+	struct cpu_regs_t *rvec = NULL;
+	uint8_t *cdesc;
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_CYRIX)) == 0)
 		return;
-	printf("Cache descriptors:\n");
-	print_intel_caches(regs, &state->sig);
+
+	/* I don't think this ever happens, but just in case... */
+	if (m < 1)
+		return;
+
+	rvec = malloc(sizeof(struct cpu_regs_t) * m);
+	if (!rvec)
+		return;
+
+	/* We have the first result already, copy it over. */
+	memcpy(&rvec[0], regs, sizeof(struct cpu_regs_t));
+
+	/* Now we can reuse 'regs' as an offset. */
+	regs = &rvec[1];
 	for (i = 1; i < m; i++) {
 		ZERO_REGS(regs);
 		regs->eax = 2;
 		state->cpuid_call(regs, state);
-		print_intel_caches(regs, &state->sig);
+		regs++;
+	}
+
+	/* Scan for 0xFF descriptor, which says to ignore leaf 0x02 */
+	cdesc = (uint8_t *)rvec;
+	while (cdesc <= (uint8_t *)rvec + (sizeof(struct cpu_regs_t) * m))
+		if (*cdesc++ == 0xFF)
+			goto err;
+
+	/* Printout time. */
+	printf("Cache descriptors:\n");
+	regs = rvec;
+	for (i = 0; i < m; i++) {
+		/* print_intel_caches(regs, &state->sig); */
+		printf("%08x %08x %08x %08x\n",
+				regs->eax,
+				regs->ebx,
+				regs->ecx,
+				regs->edx);
+		regs++;
 	}
 	printf("\n");
+
+err:
+	free(rvec);
 }
 
 /* EAX = 0000 0003 */
