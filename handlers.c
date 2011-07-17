@@ -680,7 +680,7 @@ void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 	struct eax_addrsize *eax = (struct eax_addrsize *)&regs->eax;
 	printf("Physical address size: %d bits\n", eax->physical);
-	printf("Linear address size: %d bits\n", eax->linear);
+	printf("Linear address size: %d bits\n\n", eax->linear);
 }
 
 /* EAX = 4000 0000 */
