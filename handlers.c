@@ -384,7 +384,7 @@ void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	struct ebx_monitor_t *ebx = (struct ebx_monitor_t *)&regs->ebx;
 	struct ecx_monitor_t *ecx = (struct ecx_monitor_t *)&regs->ecx;
 	struct edx_monitor_t *edx = (struct edx_monitor_t *)&regs->edx;
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 	if (!(regs->eax || regs->ebx))
 		return;
@@ -395,8 +395,10 @@ void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		goto no_enumeration;
 	if (ecx->interrupts_as_break)
 		printf("  Interrupts as break-event for MWAIT, even when interrupts off\n");
-	for (i = 0; i < 5; i++) {
-		printf("  C%d sub C-states supported by MWAIT: %d\n", i, (edx->c & (0xF << (i * 4))) >> (i * 4));
+	if ((state->vendor & VENDOR_INTEL) != 0) {
+		for (i = 0; i < 5; i++) {
+			printf("  C%d sub C-states supported by MWAIT: %d\n", i, (edx->c & (0xF << (i * 4))) >> (i * 4));
+		}
 	}
 no_enumeration:
 	printf("\n");
