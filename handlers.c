@@ -18,6 +18,7 @@ void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -65,6 +66,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000004, handle_std_cache04},
 	{0x00000005, handle_std_monitor},
 	{0x00000006, handle_std_power},
+	{0x00000007, handle_std_extfeat},
 	{0x0000000B, handle_std_x2apic},
 
 	/* Hypervisor levels */
@@ -456,17 +458,35 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0007 */
+void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 0, m = regs->eax;
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
+		return;
+	if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
+		return;
+	printf("Structured Extended Feature Flags:\n");
+	while (i <= m) {
+		ZERO_REGS(regs);
+		regs->eax = 0x7;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		print_features(regs, state);
+		i++;
+	}
+	printf("\n");
+}
+
+/* EAX = 0000 0007 */
 void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	uint32_t i = 0;
-	while (1) {
+	uint32_t i = 0, m = regs->eax;
+	while (i <= m) {
 		ZERO_REGS(regs);
 		regs->eax = 0x7;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 		state->cpuid_print(regs, state, TRUE);
-		if (!(regs->eax || regs->ebx))
-			break;
 		i++;
 	}
 }
