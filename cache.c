@@ -333,6 +333,8 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	if (desc->attrs & ECC)
 		strcat(buffer, ", ECC");
 
+	if (desc->attrs & UNDOCUMENTED)
+		strcat(buffer, " (undocumented)");
 out:
 	return strdup(buffer);
 }
