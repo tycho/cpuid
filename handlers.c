@@ -16,6 +16,7 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -59,6 +60,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000002, handle_std_cache02},
 	{0x00000003, handle_std_psn},
 	{0x00000004, handle_std_cache04},
+	{0x00000006, handle_std_power},
 	{0x0000000B, handle_std_x2apic},
 
 	/* Hypervisor levels */
@@ -348,6 +350,61 @@ void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			break;
 		i++;
 	}
+}
+
+/* EAX = 0000 0006 */
+void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct eax_power_t {
+		unsigned temp_sensor:1;
+		unsigned turbo_boost:1;
+		unsigned arat:1;
+		unsigned reserved_1:1;
+		unsigned pln:1;
+		unsigned ecmd:1;
+		unsigned ptm:1;
+		unsigned reserved_2:25;
+	};
+	struct ebx_power_t {
+		unsigned dts_thresholds:4;
+		unsigned reserved:28;
+	};
+	struct ecx_power_t {
+		unsigned hcf:1;
+		unsigned reserved_1:2;
+		unsigned perf_bias:1;
+		unsigned reserved_2:28;
+	};
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+	struct eax_power_t *eax = (struct eax_power_t *)&regs->eax;
+	struct ebx_power_t *ebx = (struct ebx_power_t *)&regs->ebx;
+	struct ecx_power_t *ecx = (struct ecx_power_t *)&regs->ecx;
+
+	/* If we don't have anything to print, skip. */
+	if (!(regs->eax || regs->ebx || regs->ecx))
+		return;
+
+	printf("Thermal and Power Management Features:\n");
+	if (eax->temp_sensor)
+		printf("  Digital temperature sensor\n");
+	if (eax->turbo_boost)
+		printf("  Intel Turbo Boost Technology\n");
+	if (eax->arat)
+		printf("  APIC timer always running\n");
+	if (eax->pln)
+		printf("  Power limit notification controls\n");
+	if (eax->ecmd)
+		printf("  Clock modulation duty cycle extension\n");
+	if (eax->ptm)
+		printf("  Package thermal management\n");
+	if (ebx->dts_thresholds)
+		printf("  Interrupt thresholds in DTS: %d\n", ebx->dts_thresholds);
+	if (ecx->hcf)
+		printf("  Hardware Coordination Feedback Capability\n");
+	if (ecx->perf_bias)
+		printf("  Performance-energy bias preference\n");
+	printf("\n");
 }
 
 /* EAX = 0000 000B */
