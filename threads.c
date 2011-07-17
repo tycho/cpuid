@@ -21,9 +21,12 @@
 
 #elif defined(TARGET_OS_MACOSX)
 
+//#define USE_CHUD
+#ifdef USE_CHUD
 extern int chudProcessorCount();
 extern int utilBindThreadToCPU(int n);
 extern int utilUnbindThreadFromCPU();
+#endif
 
 #endif
 
@@ -130,7 +133,11 @@ unsigned int thread_bind_mask(unsigned int _mask)
 unsigned int thread_bind(unsigned int id)
 {
 #ifdef TARGET_OS_MACOSX
+#ifdef USE_CHUD
 	return (utilBindThreadToCPU(id) == 0) ? 0 : 1;
+#else
+	return 1;
+#endif
 #else
 	return thread_bind_mask(1 << id);
 #endif

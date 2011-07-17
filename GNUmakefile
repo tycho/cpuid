@@ -49,8 +49,10 @@ APPLE_COMPILER := YesPlease
 endif
 
 ifeq ($(uname_S),Darwin)
-CFLAGS += -m32 -pthread -mdynamic-no-pic
+ifneq ($(USE_CHUD),)
+CFLAGS += -m32 -pthread -mdynamic-no-pic -DUSE_CHUD
 LDFLAGS += -m32 -pthread -mdynamic-no-pic -Wl,-F/System/Library/PrivateFrameworks -Wl,-framework,CHUD
+endif
 endif
 
 ifdef NO_GNU_GETOPT
