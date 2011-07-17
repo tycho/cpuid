@@ -197,12 +197,7 @@ void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	printf("Cache descriptors:\n");
 	regs = rvec;
 	for (i = 0; i < m; i++) {
-		/* print_intel_caches(regs, &state->sig); */
-		printf("%08x %08x %08x %08x\n",
-				regs->eax,
-				regs->ebx,
-				regs->ecx,
-				regs->edx);
+		print_intel_caches(regs, &state->sig);
 		regs++;
 	}
 	printf("\n");
