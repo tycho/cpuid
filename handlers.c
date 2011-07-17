@@ -16,6 +16,7 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
@@ -60,6 +61,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000002, handle_std_cache02},
 	{0x00000003, handle_std_psn},
 	{0x00000004, handle_std_cache04},
+	{0x00000005, handle_std_monitor},
 	{0x00000006, handle_std_power},
 	{0x0000000B, handle_std_x2apic},
 
@@ -350,6 +352,50 @@ void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			break;
 		i++;
 	}
+}
+
+/* EAX = 0000 0005 */
+void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	/* MONITOR/MWAIT leaf */
+	struct eax_monitor_t {
+		unsigned smallest_line:16;
+		unsigned reserved:16;
+	};
+	struct ebx_monitor_t {
+		unsigned largest_line:16;
+		unsigned reserved:16;
+	};
+	struct ecx_monitor_t {
+		unsigned enumeration:1;
+		unsigned interrupts_as_break:1;
+		unsigned reserved:20;
+	};
+	struct edx_monitor_t {
+		unsigned c:20;
+		unsigned reserved:12;
+	};
+	unsigned int i;
+	struct eax_monitor_t *eax = (struct eax_monitor_t *)&regs->eax;
+	struct ebx_monitor_t *ebx = (struct ebx_monitor_t *)&regs->ebx;
+	struct ecx_monitor_t *ecx = (struct ecx_monitor_t *)&regs->ecx;
+	struct edx_monitor_t *edx = (struct edx_monitor_t *)&regs->edx;
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+	if (!(regs->eax || regs->ebx))
+		return;
+	printf("MONITOR/MWAIT features:\n");
+	printf("  Smallest monitor-line size: %d bytes\n", eax->smallest_line);
+	printf("  Largest monitor-line size: %d bytes\n", ebx->largest_line);
+	if (!ecx->enumeration)
+		goto no_enumeration;
+	if (ecx->interrupts_as_break)
+		printf("  Interrupts as break-event for MWAIT, even when interrupts off\n");
+	for (i = 0; i < 5; i++) {
+		printf("  C%d sub C-states supported by MWAIT: %d\n", i, (edx->c & (0xF << (i * 4))) >> (i * 4));
+	}
+no_enumeration:
+	printf("\n");
 }
 
 /* EAX = 0000 0006 */
