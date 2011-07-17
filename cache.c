@@ -116,7 +116,7 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0x70, {L1, TRACE,       12, NONE, 0x08, 0}},
 	{ 0x71, {L1, TRACE,       16, NONE, 0x08, 0}},
 	{ 0x72, {L1, TRACE,       32, NONE, 0x08, 0}},
-	{ 0x73, {L1, TRACE,       64, NONE, 0x08, 0}},
+	{ 0x73, {L1, TRACE,       64, UNDOCUMENTED, 0x08, 0}},
 	{ 0x76, {NO, CODE_TLB,     8, PAGES_2M | PAGES_4M, 0xFF, 0}},
 	{ 0x77, {L1, CODE,        16, SECTORED | IA64, 0x04, 64}},
 	{ 0x78, {L2, UNIFIED,   1 MB, NONE, 0x04, 64}},
