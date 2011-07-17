@@ -107,6 +107,19 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	*(uint32_t *)(&buf[4]) = regs->edx;
 	*(uint32_t *)(&buf[8]) = regs->ecx;
 	buf[12] = 0;
+
+	/*
+	 * Ideally, we want to do this sometime in the future, but
+	 * our printout format is currently designed to be handling
+	 * only one vendor.
+	 */
+#if 0
+	if (ignore_vendor) {
+		state->vendor = VENDOR_ANY;
+		return;
+	}
+#endif
+
 	if (strcmp(buf, "GenuineIntel") == 0)
 		state->vendor = VENDOR_INTEL;
 	else if (strcmp(buf, "AuthenticAMD") == 0)
@@ -136,9 +149,9 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 		/* Model is calculated differently on Intel/AMD. */
 		model = state->sig.model;
-		if (state->vendor == VENDOR_INTEL) {
+		if (state->vendor & VENDOR_INTEL) {
 			model += ((state->sig.family == 0xf || state->sig.family == 0x6) ? state->sig.extmodel << 4 : 0);
-		} else if (state->vendor == VENDOR_AMD) {
+		} else if (state->vendor & VENDOR_AMD) {
 			model += (model == 0xf ? state->sig.extmodel << 4 : 0);
 		}
 
@@ -230,14 +243,15 @@ void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		ZERO_REGS(regs);
 		regs->eax = 0x03;
 		state->cpuid_call(regs, state);
-		printf("Processor serial number: %08X-%08X-%08X-%08X\n\n",
+		printf("Processor serial number (Transmeta encoding): %08X-%08X-%08X-%08X\n\n",
 		       regs->eax, regs->ebx, regs->ecx, regs->edx);
-	} else if (state->vendor & VENDOR_INTEL) {
+	}
+	if (state->vendor & VENDOR_INTEL) {
 		uint32_t ser_eax = regs->eax;
 		ZERO_REGS(regs);
 		regs->eax = 0x03;
 		state->cpuid_call(regs, state);
-		printf("Processor serial number: %04X-%04X-%04X-%04X-%04X-%04X\n\n",
+		printf("Processor serial number (Intel encoding): %04X-%04X-%04X-%04X-%04X-%04X\n\n",
 		       ser_eax >> 16, ser_eax & 0xFFFF,
 		       regs->edx >> 16, regs->edx & 0xFFFF,
 		       regs->ecx >> 16, regs->ecx & 0xFFFF);
@@ -276,7 +290,7 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned assoc:10; /* +1 encoded */
 	};
 	uint32_t i = 0;
-	if (state->vendor != VENDOR_INTEL)
+	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 	printf("Deterministic Cache Parameters:\n");
 	if (sizeof(struct eax_cache04_t) != 4 || sizeof(struct ebx_cache04_t) != 4) {
@@ -395,7 +409,7 @@ void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		goto no_enumeration;
 	if (ecx->interrupts_as_break)
 		printf("  Interrupts as break-event for MWAIT, even when interrupts off\n");
-	if ((state->vendor & VENDOR_INTEL) != 0) {
+	if (state->vendor & VENDOR_INTEL) {
 		for (i = 0; i < 5; i++) {
 			printf("  C%d sub C-states supported by MWAIT: %d\n", i, (edx->c & (0xF << (i * 4))) >> (i * 4));
 		}
@@ -437,7 +451,7 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (!(regs->eax || regs->ebx || regs->ecx))
 		return;
 
-	printf("Thermal and Power Management Features:\n");
+	printf("Intel Thermal and Power Management Features:\n");
 	if (eax->temp_sensor)
 		printf("  Digital temperature sensor\n");
 	if (eax->turbo_boost)
@@ -616,7 +630,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 	struct amd_l1_cache_t *cache;
 
 	/* This is an AMD-only leaf. */
-	if (state->vendor != VENDOR_AMD)
+	if ((state->vendor & VENDOR_AMD) == 0)
 		return;
 
 	tlb = (struct amd_l1_tlb_t *)&regs->eax;
@@ -662,7 +676,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 /* EAX = 8000 0006 */
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
 {
-	if (state->vendor == VENDOR_INTEL) {
+	if (state->vendor & VENDOR_INTEL) {
 		/*
 		 * Implemented below, but disabled because it's mostly
 		 * worthless. Leaf 0x04 is far better at giving this information.
@@ -705,7 +719,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 #endif
 	}
 
-	if (state->vendor == VENDOR_AMD) {
+	if (state->vendor & VENDOR_AMD) {
 		static const char *assoc[] = {
 			/* 0x00 */ "Disabled",
 			/* 0x01 */ "Direct mapped",
@@ -796,13 +810,13 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 /* EAX = 8000 0007 */
 void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor == VENDOR_INTEL) {
+	if (state->vendor & VENDOR_INTEL) {
 		/* TSC information */
 
 		/* Bit 8 of EDX indicates whether the Invariant TSC is available */
 		printf("Invariant TSC available: %s\n\n", (regs->edx & 0x100) ? "Yes" : "No");
 	}
-	if (state->vendor == VENDOR_AMD) {
+	if (state->vendor & VENDOR_AMD) {
 		/* Advanced Power Management information */
 
 		struct edx_apm_amd_t {
@@ -822,7 +836,7 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		struct edx_apm_amd_t *edx = (struct edx_apm_amd_t *)&regs->edx;
 		if (!regs->edx)
 			return;
-		printf("Advanced Power Management features:\n");
+		printf("AMD Advanced Power Management features:\n");
 		if (edx->ts)
 			printf("  Temperature Sensor\n");
 		if (edx->fid)
