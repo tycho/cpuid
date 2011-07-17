@@ -35,6 +35,7 @@ void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
@@ -42,6 +43,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	/* Standard levels */
 	{0x00000000, handle_dump_base},
 	{0x00000004, handle_dump_std_04},
+	{0x00000007, handle_dump_std_07},
 	{0x0000000B, handle_dump_std_0B},
 
 	/* Hypervisor levels */
@@ -451,6 +453,22 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (ecx->perf_bias)
 		printf("  Performance-energy bias preference\n");
 	printf("\n");
+}
+
+/* EAX = 0000 0007 */
+void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 0;
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0x7;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+		if (!(regs->eax || regs->ebx))
+			break;
+		i++;
+	}
 }
 
 /* EAX = 0000 000B */
