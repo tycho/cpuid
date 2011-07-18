@@ -398,7 +398,7 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 				 */
 				*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
 				          create_description(&descriptor_49[1]) :
-						  create_description(&descriptor_49[0]);
+				          create_description(&descriptor_49[0]);
 			}
 			else if (buf[i] != 0x00)
 			{

@@ -83,12 +83,12 @@ static int sane_apicid(struct cpuid_state_t *state)
 {
 	int ret = 0;
 	uint32_t hwthreads = thread_count(), i, c,
-	    worker_count, oldbinding;
+	         worker_count, oldbinding;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
 	struct timeval start, now;
 	pthread_t *busy_workers = NULL,
-	    *apic_workers = NULL;
+	          *apic_workers = NULL;
 
 	worker_count = hwthreads / 4 + 1;
 

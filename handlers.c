@@ -159,13 +159,13 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		       "  Family:   0x%02x (%d)\n"
 		       "  Model:    0x%02x (%d)\n"
 		       "  Stepping: 0x%02x (%d)\n\n",
-			*(uint32_t *)&state->sig,
-			state->sig.family + state->sig.extfamily,
-			state->sig.family + state->sig.extfamily,
-			model,
-			model,
-			state->sig.stepping,
-			state->sig.stepping);
+		       *(uint32_t *)&state->sig,
+		       state->sig.family + state->sig.extfamily,
+		       state->sig.family + state->sig.extfamily,
+		       model,
+		       model,
+		       state->sig.stepping,
+		       state->sig.stepping);
 		printf("Local APIC: %d\n"
 		       "Logical processor count: %d\n"
 		       "CLFLUSH size: %d\n"
@@ -327,16 +327,16 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		cacheSize /= 1024;
 
 		printf("  %3u%cB L%d %s cache\n",
-			cacheSize > 1024 ? cacheSize / 1024 : cacheSize,
-			cacheSize > 1024 ? 'M' : 'K',
-			eax->level,
-			cache04_type(eax->type));
+		       cacheSize > 1024 ? cacheSize / 1024 : cacheSize,
+		       cacheSize > 1024 ? 'M' : 'K',
+		       eax->level,
+		       cache04_type(eax->type));
 
 		if (eax->fully_associative) {
 			printf("        fully associative\n");
 		} else {
 			printf("        %d-way set associative\n",
-				ebx->assoc + 1);
+			       ebx->assoc + 1);
 		}
 
 		printf("        %d byte line size\n"
@@ -541,12 +541,12 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		       "  Level number: %d\n"
 		       "  Level type: %d (%s)\n"
 		       "  x2APIC ID: %d\n\n",
-			regs->eax & 0x1f,
-			regs->ebx & 0xffff,
-			regs->ecx & 0xff,
-			(regs->ecx >> 8) & 0xff,
-			x2apic_level_type((regs->ecx >> 8) & 0xff),
-			regs->edx);
+		       regs->eax & 0x1f,
+		       regs->ebx & 0xffff,
+		       regs->ecx & 0xff,
+		       (regs->ecx >> 8) & 0xff,
+		       x2apic_level_type((regs->ecx >> 8) & 0xff),
+		       regs->edx);
 		if (!(regs->eax || regs->ebx))
 			break;
 		i++;
@@ -712,10 +712,10 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state
 
 		printf("L2 cache:\n"
 		       "  %d%cB, %s associativity, %d byte line size\n\n",
-			feat->size > 1024 ? feat->size / 1024 : feat->size,
-			feat->size > 1024 ? 'M' : 'K',
-			assoc[feat->assoc] ? assoc[feat->assoc] : "Unknown",
-			feat->linesize);
+		       feat->size > 1024 ? feat->size / 1024 : feat->size,
+		       feat->size > 1024 ? 'M' : 'K',
+		       assoc[feat->assoc] ? assoc[feat->assoc] : "Unknown",
+		       feat->linesize);
 #endif
 	}
 

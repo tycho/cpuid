@@ -108,24 +108,25 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 		uint32_t pre_change, post_change;
 		const uint32_t id_flag = 0x200000;
 		asm ("pushfl\n\t"          /* Save %eflags to restore later.  */
-			 "pushfl\n\t"          /* Push second copy, for manipulation.  */
-			 "popl %1\n\t"         /* Pop it into post_change.  */
-			 "movl %1,%0\n\t"      /* Save copy in pre_change.   */
-			 "xorl %2,%1\n\t"      /* Tweak bit in post_change.  */
-			 "pushl %1\n\t"        /* Push tweaked copy... */
-			 "popfl\n\t"           /* ... and pop it into %eflags.  */
-			 "pushfl\n\t"          /* Did it change?  Push new %eflags... */
-			 "popl %1\n\t"         /* ... and pop it into post_change.  */
-			 "popfl"               /* Restore original value.  */
-			 : "=&r" (pre_change), "=&r" (post_change)
-			 : "ir" (id_flag));
+		     "pushfl\n\t"          /* Push second copy, for manipulation.  */
+		     "popl %1\n\t"         /* Pop it into post_change.  */
+		     "movl %1,%0\n\t"      /* Save copy in pre_change.   */
+		     "xorl %2,%1\n\t"      /* Tweak bit in post_change.  */
+		     "pushl %1\n\t"        /* Push tweaked copy... */
+		     "popfl\n\t"           /* ... and pop it into %eflags.  */
+		     "pushfl\n\t"          /* Did it change?  Push new %eflags... */
+		     "popl %1\n\t"         /* ... and pop it into post_change.  */
+		     "popfl"               /* Restore original value.  */
+		     : "=&r" (pre_change), "=&r" (post_change)
+		     : "ir" (id_flag));
 		if (((pre_change ^ post_change) & id_flag) == 0)
 			return FALSE;
 		else
 			cpuid_support = TRUE;
 	}
 #endif
-	asm volatile("cpuid"
+	asm volatile(
+	    "cpuid"
 	    : "=a" (*_eax),
 	      "=b" (*_ebx),
 	      "=c" (*_ecx),
@@ -261,52 +262,52 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 	char buffer[sizeof(struct cpu_regs_t) + 1];
 	if (!indexed)
 		printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-			state->last_leaf.eax,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx,
-			reg_to_str(buffer, regs));
+		       state->last_leaf.eax,
+		       regs->eax,
+		       regs->ebx,
+		       regs->ecx,
+		       regs->edx,
+		       reg_to_str(buffer, regs));
 	else
 		printf("CPUID %08x, index %x = %08x %08x %08x %08x | %s\n",
-			state->last_leaf.eax,
-			state->last_leaf.ecx,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx,
-			reg_to_str(buffer, regs));
+		       state->last_leaf.eax,
+		       state->last_leaf.ecx,
+		       regs->eax,
+		       regs->ebx,
+		       regs->ecx,
+		       regs->edx,
+		       reg_to_str(buffer, regs));
 }
 
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
 	if (!indexed)
 		printf("'0x%08x:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
-			state->last_leaf.eax,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx);
+		       state->last_leaf.eax,
+		       regs->eax,
+		       regs->ebx,
+		       regs->ecx,
+		       regs->edx);
 	else
 		printf("'0x%08x,%d:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
-			state->last_leaf.eax,
-			state->last_leaf.ecx,
-			regs->eax,
-			regs->ebx,
-			regs->ecx,
-			regs->edx);
+		       state->last_leaf.eax,
+		       state->last_leaf.ecx,
+		       regs->eax,
+		       regs->ebx,
+		       regs->ecx,
+		       regs->edx);
 }
 
 
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
 	printf("  0x%08x 0x%02x: eax=%08x ebx=%08x ecx=%08x edx=%08x\n",
-		state->last_leaf.eax,
-		state->last_leaf.ecx,
-		regs->eax,
-		regs->ebx,
-		regs->ecx,
-		regs->edx);
+	       state->last_leaf.eax,
+	       state->last_leaf.ecx,
+	       regs->eax,
+	       regs->ebx,
+	       regs->ecx,
+	       regs->edx);
 }
 
 static const char *uint32_to_binary(char *buffer, uint32_t val)
