@@ -441,11 +441,12 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned perf_bias:1;
 		unsigned reserved_2:28;
 	};
-	if ((state->vendor & VENDOR_INTEL) == 0)
-		return;
 	struct eax_power_t *eax = (struct eax_power_t *)&regs->eax;
 	struct ebx_power_t *ebx = (struct ebx_power_t *)&regs->ebx;
 	struct ecx_power_t *ecx = (struct ecx_power_t *)&regs->ecx;
+
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
 
 	/* If we don't have anything to print, skip. */
 	if (!(regs->eax || regs->ebx || regs->ecx))
@@ -864,9 +865,6 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 /* EAX = 8000 0008 */
 void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
-		return;
-
 	/* Long mode address size information */
 	struct eax_addrsize {
 		unsigned physical:8;
@@ -875,6 +873,10 @@ void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	};
 
 	struct eax_addrsize *eax = (struct eax_addrsize *)&regs->eax;
+
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
+		return;
+
 	printf("Physical address size: %d bits\n", eax->physical);
 	printf("Linear address size: %d bits\n\n", eax->linear);
 }
