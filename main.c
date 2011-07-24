@@ -28,7 +28,7 @@ const uint32_t ranges[] = {
 	0xFFFFFFFF
 };
 
-void run_cpuid(struct cpuid_state_t *state, int dump)
+static void run_cpuid(struct cpuid_state_t *state, int dump)
 {
 	uint32_t i;
 	const uint32_t *r;
@@ -71,7 +71,7 @@ void run_cpuid(struct cpuid_state_t *state, int dump)
 	}
 }
 
-void usage(const char *argv0)
+static void usage(const char *argv0)
 {
 	printf("usage: %s [--help] [--dump] [--ignore-vendor] [--parse <filename>]\n\n", argv0);
 	printf("  %-18s %s\n", "-h, --help", "Print this list of options");
@@ -84,7 +84,7 @@ void usage(const char *argv0)
 	exit(0);
 }
 
-void version()
+static void version(void)
 {
 	printf("cpuid version %s\n\n", cpuid_version_long());
 	license();
