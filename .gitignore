@@ -1,3 +1,6 @@
+# SCons junk
+.sconsign.dblite
+
 # Visual Studio junk
 *.vcproj.*.user
 *.suo
