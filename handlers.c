@@ -882,13 +882,6 @@ void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0000 */
-void handle_dump_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	state->curmax = regs->eax;
-	state->cpuid_print(regs, state, FALSE);
-}
-
-/* EAX = 4000 0000 */
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
