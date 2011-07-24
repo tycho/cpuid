@@ -23,16 +23,16 @@
 
 //#define USE_CHUD
 #ifdef USE_CHUD
-extern int chudProcessorCount();
+extern int chudProcessorCount(void);
 extern int utilBindThreadToCPU(int n);
-extern int utilUnbindThreadFromCPU();
+extern int utilUnbindThreadFromCPU(void);
 #endif
 
 #endif
 
 #include "threads.h"
 
-unsigned int thread_count()
+unsigned int thread_count(void)
 {
 	static unsigned int i = 0;
 	uint64_t min = 0, max = (unsigned int)-1;
@@ -53,7 +53,7 @@ unsigned int thread_count()
 	return i;
 }
 
-unsigned int thread_get_binding()
+unsigned int thread_get_binding(void)
 {
 #ifdef TARGET_OS_WINDOWS
 
