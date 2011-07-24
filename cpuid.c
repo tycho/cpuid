@@ -12,7 +12,7 @@
 #endif
 #endif
 
-const char *reg_to_str(char *buffer, struct cpu_regs_t *regs)
+static const char *reg_to_str(char *buffer, struct cpu_regs_t *regs)
 {
 	uint32_t i;
 	buffer[sizeof(struct cpu_regs_t)] = 0;
