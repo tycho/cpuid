@@ -1,25 +1,36 @@
-env = Environment()
+import os
+env = Environment(ENV=os.environ)
 
 debug = ARGUMENTS.get('debug', 0)
 
-# Optimization levels
-if int(debug):
-	env.Append(CFLAGS='-O0 -ggdb')
-else:
-	env.Append(CFLAGS='-O2')
+if env['CC'] == 'gcc':
+	# Optimization levels
+	if int(debug):
+		env.Append(CFLAGS='-O0 -ggdb')
+	else:
+		env.Append(CFLAGS='-O2')
 
-# Basic CFLAGS for correctness
-env.Append(CFLAGS='-std=gnu89 -fno-strict-aliasing')
+	# Basic CFLAGS for correctness
+	env.Append(CFLAGS='-std=gnu89 -fno-strict-aliasing')
 
-# Standard search path
-env.Append(CFLAGS='-I.')
+	# Standard search path
+	env.Append(CFLAGS='-I.')
 
-# Warning flags
-env.Append(CFLAGS='-Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Werror=declaration-after-statement')
+	# Warning flags
+	env.Append(CFLAGS='-Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Werror=declaration-after-statement')
 
-# pthreads
-env.Append(CFLAGS='-pthread')
-env.Append(LINKFLAGS='-pthread')
+	# pthreads
+	env.Append(CFLAGS='-pthread')
+	env.Append(LINKFLAGS='-pthread')
+elif env['CC'] == 'cl':
+	# Optimization levels
+	if int(debug):
+		env.Append(CFLAGS=['/Od', '/MTd'])
+	else:
+		env.Append(CFLAGS=['/O2', '/MT'])
+
+	# Standard search path
+	env.Append(CFLAGS=['/I.', '/Imsvc'])
 
 sources = [
 	'cache.c',
