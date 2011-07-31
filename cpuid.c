@@ -281,6 +281,9 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
+	/* Skip the hypervisor leaf. */
+	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
+		return;
 	if (!indexed)
 		printf("'0x%08x:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
 		       state->last_leaf.eax,
@@ -325,6 +328,9 @@ void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __u
 	char buffer[33];
 	/* Not sure what VMware's format is for that. */
 	if (indexed)
+		return;
+	/* Skip the hypervisor leaf. */
+	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
 		return;
 	printf("cpuid.%x.eax = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->eax));
 	printf("cpuid.%x.ebx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->ebx));
