@@ -1,18 +1,21 @@
 # SCons junk
-.sconsign.dblite
+/.sconf_temp
+/.sconsign.dblite
+/config.log
 
 # Visual Studio junk
-*.vcproj.*.user
-*.suo
-*.ncb
+/msvc/*.vcproj.*.user
+/*.suo
+/*.ncb
+*.obj
 
 # Intermediate objects
 *.d
 *.o
-.cflags
-build.h
-license.h
+/.cflags
+/build.h
+/license.h
 
 # Output binaries
-cpuid
-cpuid.exe
+/cpuid
+/cpuid.exe

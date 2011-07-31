@@ -44,6 +44,10 @@ ifneq ($(findstring MINGW,$(uname_S)),)
 LDFLAGS += -lpthread
 endif
 
+ifneq ($(findstring CYGWIN,$(uname_S)),)
+LDFLAGS += -lwinmm
+endif
+
 ifneq ($(shell $(CC) --version | grep Apple),)
 APPLE_COMPILER := YesPlease
 endif

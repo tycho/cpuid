@@ -1,16 +1,22 @@
 #include "prefix.h"
 
+#ifdef TARGET_OS_WINDOWS
+#include <windows.h>
+#else
 #define _USE_GNU
 #include <pthread.h>
+#include <unistd.h>
+#include <sys/time.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
 
 #include "cpuid.h"
 #include "sanity.h"
 #include "state.h"
 #include "threads.h"
+#include "util.h"
 
 typedef int(*sanity_handler_t)(struct cpuid_state_t *state);
 
@@ -39,6 +45,18 @@ static uint8_t get_apicid_for_cpu(struct cpuid_state_t *state, uint32_t index)
 	return get_apicid(state);
 }
 
+#ifdef TARGET_OS_WINDOWS
+DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
+{
+	uint8_t *flag = (uint8_t *)flagptr;
+	uint32_t hwthreads = thread_count();
+	while (*flag) {
+		SetThreadAffinityMask(GetCurrentThread(), 1 << (rand() % hwthreads));
+		Sleep(1);
+	}
+	return 0;
+}
+#else
 static void *apic_nonsensical_worker_thread(void *flagptr)
 {
 	uint8_t *flag = (uint8_t *)flagptr;
@@ -51,6 +69,7 @@ static void *apic_nonsensical_worker_thread(void *flagptr)
 	pthread_exit(NULL);
 	return NULL;
 }
+#endif
 
 struct apic_validate_t {
 	struct cpuid_state_t *state;
@@ -60,6 +79,20 @@ struct apic_validate_t {
 	uint8_t failed;
 };
 
+#ifdef TARGET_OS_WINDOWS
+DWORD WINAPI apic_validation_thread(LPVOID ptr)
+{
+	struct apic_validate_t *meta = (struct apic_validate_t *)ptr;
+	SetThreadAffinityMask(GetCurrentThread(), 1 << meta->index);
+	while (!meta->failed && *meta->worker_flag) {
+		Sleep(5);
+		if (get_apicid(meta->state) != meta->expected) {
+			meta->failed = 1;
+		}
+	}
+	return 0;
+}
+#else
 static void *apic_validation_thread(void *ptr)
 {
 	struct apic_validate_t *meta = (struct apic_validate_t *)ptr;
@@ -73,11 +106,18 @@ static void *apic_validation_thread(void *ptr)
 	pthread_exit(NULL);
 	return NULL;
 }
+#endif
 
 static int apic_compare(const void *a, const void *b)
 {
 	return (*(const uint8_t *)a - *(const uint8_t *)b);
 }
+
+#ifdef TARGET_OS_WINDOWS
+typedef HANDLE thread_handle_t;
+#else
+typedef pthread_t thread_handle_t;
+#endif
 
 static int sane_apicid(struct cpuid_state_t *state)
 {
@@ -86,9 +126,9 @@ static int sane_apicid(struct cpuid_state_t *state)
 	         worker_count, oldbinding;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
-	struct timeval start, now;
-	pthread_t *busy_workers = NULL,
-	          *apic_workers = NULL;
+	double start, now;
+	thread_handle_t *busy_workers = NULL,
+	                *apic_workers = NULL;
 
 	worker_count = hwthreads / 4 + 1;
 
@@ -119,31 +159,39 @@ static int sane_apicid(struct cpuid_state_t *state)
 	/* Spawn a few busy threads to incur thread migrations,
 	   if they're going to happen at all. */
 	worker_flag = 1;
-	busy_workers = malloc(worker_count * sizeof(pthread_t));
+	busy_workers = malloc(worker_count * sizeof(thread_handle_t));
 	for (i = 0; i < worker_count; i++)
+#ifdef TARGET_OS_WINDOWS
+		busy_workers[i] = CreateThread(NULL, 0, apic_nonsensical_worker_thread, &worker_flag, 0, NULL);
+#else
 		pthread_create(&busy_workers[i], NULL, apic_nonsensical_worker_thread, &worker_flag);
+#endif
 
 	/* Now verify that the APIC IDs don't change over time. */
 	apic_state = malloc(hwthreads * sizeof(struct apic_validate_t));
-	apic_workers = malloc(hwthreads * sizeof(pthread_t));
+	apic_workers = malloc(hwthreads * sizeof(thread_handle_t));
 	memset(apic_state, 0, hwthreads * sizeof(struct apic_validate_t));
 	for (i = 0; i < hwthreads; i++) {
 		apic_state[i].state = state;
 		apic_state[i].index = i;
 		apic_state[i].expected = apic_ids[i];
 		apic_state[i].worker_flag = &worker_flag;
+#ifdef TARGET_OS_WINDOWS
+		apic_workers[i] = CreateThread(NULL, 0, apic_validation_thread, &apic_state[i], 0, NULL);
+#else
 		pthread_create(&apic_workers[i], NULL, apic_validation_thread, &apic_state[i]);
+#endif
 	}
 	free(apic_ids);
 
 	/* Occasionally signal workers to run validation checks. */
-	gettimeofday(&start, NULL);
+	start = time_sec();
 	c = 1;
 	printf(".");
 	fflush(stdout);
 	while(worker_flag) {
-		gettimeofday(&now, NULL);
-		if (now.tv_sec - start.tv_sec > 30)
+		now = time_sec();
+		if (now - start > 30.0)
 			break;
 		if (c % 100 == 0) {
 			c = 1;
@@ -152,7 +200,11 @@ static int sane_apicid(struct cpuid_state_t *state)
 		} else {
 			c++;
 		}
+#ifdef TARGET_OS_WINDOWS
+		Sleep(10);
+#else
 		usleep(10000);
+#endif
 		for (i = 0; i < hwthreads; i++) {
 			if (apic_state[i].failed) {
 				printf(" failed (APIC IDs changed over time)\n");
@@ -168,16 +220,28 @@ cleanup:
 	/* Wait for workers to exit. */
 	worker_flag = 0;
 	if (busy_workers) {
+#ifdef TARGET_OS_WINDOWS
+		WaitForMultipleObjects(worker_count, busy_workers, TRUE, INFINITE);
+		for (i = 0; i < worker_count; i++)
+			CloseHandle(busy_workers[i]);
+#else
 		for (i = 0; i < worker_count; i++) {
 			pthread_join(busy_workers[i], NULL);
 		}
+#endif
 		free(busy_workers);
 	}
 
 	if (apic_workers) {
+#ifdef TARGET_OS_WINDOWS
+		WaitForMultipleObjects(hwthreads, apic_workers, TRUE, INFINITE);
+		for (i = 0; i < hwthreads; i++)
+			CloseHandle(apic_workers[i]);
+#else
 		for (i = 0; i < hwthreads; i++) {
 			pthread_join(apic_workers[i], NULL);
 		}
+#endif
 		free(apic_workers);
 	}
 	
@@ -231,9 +295,19 @@ int sanity_run(struct cpuid_state_t *state)
 {
 	sanity_handler_t *p = handlers;
 	unsigned int ret = 0;
+#ifdef TARGET_OS_WINDOWS
+	UINT res;
+    TIMECAPS tc;
+    timeGetDevCaps(&tc, sizeof(TIMECAPS));
+	res = min(max(tc.wPeriodMin, 0), tc.wPeriodMax);
+    timeBeginPeriod(res);
+#endif
 	while (*p) {
 		if ((*p++)(state) != 0)
 			ret = p - handlers;
 	}
+#ifdef TARGET_OS_WINDOWS
+	timeEndPeriod(res);
+#endif
 	return ret;
 }

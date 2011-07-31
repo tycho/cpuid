@@ -32,6 +32,9 @@ elif env['CC'] == 'cl':
 	# Standard search path
 	env.Append(CFLAGS=['/I.', '/Imsvc'])
 
+	# For high resolution timers
+	env.Append(LINKFLAGS='winmm.lib')
+
 sources = [
 	'cache.c',
 	'cpuid.c',

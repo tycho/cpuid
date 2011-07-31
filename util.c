@@ -3,6 +3,11 @@
 #include "util.h"
 
 #include <ctype.h>
+#ifdef TARGET_OS_WINDOWS
+#include <windows.h>
+#else
+#include <sys/time.h>
+#endif
 
 void squeeze(char *str)
 {
@@ -22,4 +27,18 @@ void squeeze(char *str)
 		r++;
 	}
 	str[w] = 0;
+}
+
+double time_sec(void)
+{
+#ifdef TARGET_OS_WINDOWS
+	LARGE_INTEGER freq, ctr;
+	QueryPerformanceFrequency(&freq);
+	QueryPerformanceCounter(&ctr);
+	return (double)ctr.QuadPart / (double)freq.QuadPart;
+#else
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return tv.tv_sec + (tv.tv_usec * 1000000);
+#endif
 }
