@@ -112,13 +112,13 @@ struct {
 static int do_sanity = 0;
 static int do_dump = 0;
 static int dump_format = DUMP_FORMAT_DEFAULT;
-static int cpu_index = 0;
 
 int main(int argc, char **argv)
 {
 	const char *file = NULL;
 	struct cpuid_state_t state;
 	int c, ret = 0;
+	int cpu_start = 0, cpu_end = 0;
 
 	while (TRUE) {
 		static struct option long_options[] = {
@@ -150,12 +150,16 @@ int main(int argc, char **argv)
 			break;
 		case 'c':
 			assert(optarg);
-			if (sscanf(optarg, "%d", &cpu_index) != 1) {
-				printf("That wasn't an integer.\n");
+			if (sscanf(optarg, "%d", &cpu_start) != 1) {
+				printf("Option --cpu= requires an integer parameter.\n");
 				exit(1);
 			}
-			if (cpu_index < 0) {
-				printf("Hah. Very funny. Zero or above, please.\n");
+			if (cpu_start == -1) {
+				cpu_start = 0;
+				cpu_end = thread_count() - 1;
+			}
+			if (cpu_start >= thread_count()) {
+				printf("CPU %d doesn't seem to exist.\n", cpu_start);
 				exit(1);
 			}
 			break;
@@ -188,8 +192,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	thread_bind(cpu_index);
-
 	INIT_CPUID_STATE(&state);
 
 	switch(dump_format) {
@@ -197,9 +199,11 @@ int main(int argc, char **argv)
 		state.cpuid_print = cpuid_dump_normal;
 		break;
 	case DUMP_FORMAT_VMWARE:
+		cpu_start = cpu_end = 0;
 		state.cpuid_print = cpuid_dump_vmware;
 		break;
 	case DUMP_FORMAT_XEN:
+		cpu_start = cpu_end = 0;
 		state.cpuid_print = cpuid_dump_xen;
 		printf("cpuid = [\n");
 		break;
@@ -208,12 +212,22 @@ int main(int argc, char **argv)
 		break;
 	}
 
-	if (file) {
-		cpuid_load_from_file(file, &state);
-		state.cpuid_call = cpuid_pseudo;
-	}
+	for (c = cpu_start; c <= cpu_end; c++) {
+		thread_bind(c);
 
-	run_cpuid(&state, do_dump);
+		if (file) {
+			cpuid_load_from_file(file, &state);
+			state.cpuid_call = cpuid_pseudo;
+		}
+
+		switch(dump_format) {
+		case DUMP_FORMAT_DEFAULT:
+		case DUMP_FORMAT_ETALLEN:
+			printf("CPU %d:\n", c);
+			break;
+		}
+		run_cpuid(&state, do_dump);
+	}
 
 	if (do_dump && dump_format == DUMP_FORMAT_XEN) {
 		/* This isn't a pretty way to do this. I suspect we might
