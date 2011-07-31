@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 				cpu_start = 0;
 				cpu_end = thread_count() - 1;
 			}
-			if (cpu_start >= thread_count()) {
+			if ((uint32_t)cpu_start >= thread_count()) {
 				printf("CPU %d doesn't seem to exist.\n", cpu_start);
 				exit(1);
 			}
