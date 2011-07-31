@@ -47,13 +47,14 @@ sources = [
 	'version.c',
 ]
 
-conf = Configure(env)
+if not env.GetOption('clean'):
+	conf = Configure(env)
 
-if not conf.CheckHeader('getopt.h') or not conf.CheckFunc('getopt_long'):
-	conf.env.Append(CFLAGS='-Igetopt')
-	sources.append('getopt/getopt_long.c')
+	if not conf.CheckHeader('getopt.h') or not conf.CheckFunc('getopt_long'):
+		conf.env.Append(CFLAGS='-Igetopt')
+		sources.append('getopt/getopt_long.c')
 
-env = conf.Finish()
+	env = conf.Finish()
 
 env.Command('build.h', '', 'perl tools/build.pl build.h')
 env.Command('license.h', '#COPYING', 'perl tools/license.pl COPYING license.h')
