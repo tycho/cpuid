@@ -92,10 +92,21 @@ static void version(void)
 }
 
 enum {
-	DUMP_FORMAT_DEFAULT,
+	DUMP_FORMAT_DEFAULT = 1,
 	DUMP_FORMAT_VMWARE,
 	DUMP_FORMAT_XEN,
 	DUMP_FORMAT_ETALLEN
+};
+
+struct {
+	const char *name;
+	int value;
+} formats [] = {
+	{ "default",  DUMP_FORMAT_DEFAULT },
+	{ "vmware",   DUMP_FORMAT_VMWARE },
+	{ "xen",      DUMP_FORMAT_XEN },
+	{ "etallen",  DUMP_FORMAT_ETALLEN },
+	{ NULL, 0 }
 };
 
 static int do_sanity = 0;
@@ -118,15 +129,13 @@ int main(int argc, char **argv)
 			{"cpu", required_argument, 0, 'c'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
-			{"vmware-vmx", no_argument, &dump_format, DUMP_FORMAT_VMWARE},
-			{"etallen", no_argument, &dump_format, DUMP_FORMAT_ETALLEN},
-			{"xen", no_argument, &dump_format, DUMP_FORMAT_XEN},
+			{"format", required_argument, 0, 'o'},
 			{"scan-to", required_argument, 0, 2},
 			{0, 0, 0, 0}
 		};
 		int option_index = 0;
 
-		c = getopt_long(argc, argv, "c:hdvf:", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hdvo:f:", long_options, &option_index);
 		if (c == -1)
 			break;
 		switch (c) {
@@ -156,6 +165,20 @@ int main(int argc, char **argv)
 		case 'f':
 			file = optarg;
 			break;
+		case 'o':
+			assert(optarg);
+			for (c = 0; formats[c].name != NULL; c++) {
+				if (0 == strcmp(optarg, formats[c].name)) {
+					do_dump = 1;
+					dump_format = formats[c].value;
+					break;
+				}
+			}
+			if (!formats[c].name) {
+				printf("Unrecognized format: '%s'\n", optarg);
+				exit(1);
+			}
+			break;
 		case 'v':
 			version();
 		case 'h':
@@ -169,22 +192,18 @@ int main(int argc, char **argv)
 
 	INIT_CPUID_STATE(&state);
 
-	/* Non-default dump format settings imply --dump. */
 	switch(dump_format) {
 	case DUMP_FORMAT_DEFAULT:
 		state.cpuid_print = cpuid_dump_normal;
 		break;
 	case DUMP_FORMAT_VMWARE:
-		do_dump = 1;
 		state.cpuid_print = cpuid_dump_vmware;
 		break;
 	case DUMP_FORMAT_XEN:
-		do_dump = 1;
 		state.cpuid_print = cpuid_dump_xen;
 		printf("cpuid = [\n");
 		break;
 	case DUMP_FORMAT_ETALLEN:
-		do_dump = 1;
 		state.cpuid_print = cpuid_dump_etallen;
 		break;
 	}
