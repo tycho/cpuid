@@ -104,6 +104,8 @@
 #endif
 #if defined (__CYGWIN__) || defined (__CYGWIN32__)
 #define TARGET_COMPILER_CYGWIN
+#define TARGET_OS_WINDOWS
+#define OS_DETECTED
 #endif
 #if defined (__MINGW32__)
 #define TARGET_COMPILER_MINGW
