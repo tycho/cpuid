@@ -29,7 +29,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Generating build.h and license.h"
-				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -67,6 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -105,7 +106,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Generating build.h and license.h"
-				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -124,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -146,6 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)\$(TargetName).pdb"
@@ -185,7 +187,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Generating build.h and license.h"
-				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -204,7 +206,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -223,6 +225,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -263,7 +266,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Generating build.h and license.h"
-				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h"
+				CommandLine="set PATH=%PATH%;c:\perl\bin;c:\perl64\bin;C:\msysgit\bin;C:\msysgit\mingw\bin;C:\cygwin\bin&#x0D;&#x0A;cd $(ProjectDir)\..&#x0D;&#x0A;perl tools/build.pl build.h&#x0D;&#x0A;perl tools/license.pl COPYING license.h&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -283,7 +286,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="$(ProjectDir);$(ProjectDir)\..;$(ProjectDir)\..\getopt"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
@@ -304,6 +307,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="winmm.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)\$(TargetName).pdb"
@@ -427,7 +431,23 @@
 			>
 		</File>
 		<File
+			RelativePath="..\sanity.c"
+			>
+		</File>
+		<File
+			RelativePath="..\sanity.h"
+			>
+		</File>
+		<File
 			RelativePath="..\state.h"
+			>
+		</File>
+		<File
+			RelativePath="..\threads.c"
+			>
+		</File>
+		<File
+			RelativePath="..\threads.h"
 			>
 		</File>
 		<File
