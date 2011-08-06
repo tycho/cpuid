@@ -297,10 +297,9 @@ int sanity_run(struct cpuid_state_t *state)
 	unsigned int ret = 0;
 #ifdef TARGET_OS_WINDOWS
 	UINT res;
-    TIMECAPS tc;
-    timeGetDevCaps(&tc, sizeof(TIMECAPS));
-	res = min(max(tc.wPeriodMin, 0), tc.wPeriodMax);
-    timeBeginPeriod(res);
+	TIMECAPS tc;
+	timeGetDevCaps(&tc, sizeof(TIMECAPS));
+	timeBeginPeriod(tc.wPeriodMin);
 #endif
 	while (*p) {
 		if ((*p++)(state) != 0)
