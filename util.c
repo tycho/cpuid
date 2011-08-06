@@ -39,6 +39,6 @@ double time_sec(void)
 #else
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	return tv.tv_sec + (tv.tv_usec * 1000000);
+	return (double)tv.tv_sec + ((double)tv.tv_usec / 1000000.0);
 #endif
 }
