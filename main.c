@@ -17,27 +17,24 @@
 #include <getopt.h>
 
 int ignore_vendor = 0;
-uint32_t scan_to = 0;
-
-const uint32_t ranges[] = {
-	0x00000000,
-	0x40000000,
-	0x80000000,
-	0x80860000,
-	0xC0000000,
-	0xFFFFFFFF
-};
+static uint32_t scan_to = 0;
 
 static void run_cpuid(struct cpuid_state_t *state, int dump)
 {
 	uint32_t i;
-	const uint32_t *r;
-	struct cpu_regs_t cr_tmp;
+	uint32_t r;
+	struct cpu_regs_t cr_tmp, ignore;
 	const struct cpuid_leaf_handler_index_t *h;
 
-	for (r = ranges; *r != 0xFFFFFFFF; r++) {
-		state->curmax = *r;
-		for (i = *r; i <= (scan_to ? *r + scan_to : state->curmax); i++) {
+
+	/* Arbitrary leaf that's probably never ever used. */
+	ZERO_REGS(&ignore);
+	ignore.eax = 0xBEEFBABE;
+	state->cpuid_call(&ignore, state);
+
+	for (r = 0x00000000; r != 0xFFFF0000; r += 0x00010000) {
+		state->curmax = r;
+		for (i = r; i <= (scan_to ? r + scan_to : state->curmax); i++) {
 
 			/* If a particular range is unsupported, the processor can report
 			 * a really wacky upper boundary. This is a quick sanity check,
@@ -54,6 +51,12 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 */
 			cr_tmp.eax = i;
 			state->cpuid_call(&cr_tmp, state);
+
+			/* Typically, if the range is invalid, the CPU gives an obvious
+			 * "bogus" result. We try to catch that here.
+			 */
+			if (i == r && 0 == memcmp(&ignore, &cr_tmp, sizeof(struct cpu_regs_t)))
+				break;
 
 			for (h = dump ? dump_handlers : decode_handlers;
 			     h->handler;
