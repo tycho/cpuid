@@ -54,8 +54,13 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 
 			/* Typically, if the range is invalid, the CPU gives an obvious
 			 * "bogus" result. We try to catch that here.
+			 *
+			 * We don't compare the last byte of EDX (size - 1) because on
+			 * certain very broken OSes (i.e. Mac OS X) there are no APIs to
+			 * force threads to be affinitized to one core. This makes the
+			 * value of EDX a bit nondeterministic when CPUID is executed.
 			 */
-			if (i == r && 0 == memcmp(&ignore, &cr_tmp, sizeof(struct cpu_regs_t)))
+			if (i == r && 0 == memcmp(&ignore, &cr_tmp, sizeof(struct cpu_regs_t) - 1))
 				break;
 
 			for (h = dump ? dump_handlers : decode_handlers;
