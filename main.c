@@ -32,7 +32,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 	ignore.eax = 0xBEEFBABE;
 	state->cpuid_call(&ignore, state);
 
-	for (r = 0x00000000; r != 0xFFFF0000; r += 0x00010000) {
+	for (r = 0x00000000;; r += 0x00010000) {
 		state->curmax = r;
 		for (i = r; i <= (scan_to ? r + scan_to : state->curmax); i++) {
 
@@ -71,6 +71,15 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			else if (dump)
 				state->cpuid_print(&cr_tmp, state, FALSE);
 		}
+
+		/* Terminating condition.
+		 * This is an awkward way to terminate the loop, but if we used
+		 * r != 0xFFFF0000 as the terminating condition in the outer loop,
+		 * then we would effectively skip probing of 0xFFFF0000. So we
+		 * turn this into an awkward do/while+for combination.
+		 */
+		if (r == 0xFFFF0000)
+			break;
 	}
 }
 
