@@ -5,6 +5,18 @@ if [ ! -x ../../cpuid ]; then
 	exit 1
 fi
 
+T=$(which curl 2>/dev/null)
+if [ "x$T" == "x" ]; then
+	echo "Please install curl, it's needed for fetching dumps."
+	exit 1
+fi
+
+T=$(which parallel 2>/dev/null)
+if [ "x$T" == "x" ]; then
+	echo "Please install GNU parallel, it's needed for fetching dumps."
+	exit 1
+fi
+
 if [ `ls *.txt 2>/dev/null | wc -l` -lt 1 ]; then
 	echo "Fetching snapshot from Amazon S3..."
 	curl -s "https://s3.amazonaws.com/neunon/cpu-world-dumps.tar.bz2" | tar xjf -
