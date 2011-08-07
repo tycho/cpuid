@@ -2,6 +2,11 @@ import os
 import re
 import subprocess
 
+def subprocess_output(cmdline):
+	p = subprocess.Popen(cmdline.split(" "), stdout=subprocess.PIPE)
+	stdout, stderr = p.communicate()
+	return stdout.rstrip()
+
 def describe_revision():
 	if os.path.isdir('.git'):
 		#
@@ -9,18 +14,18 @@ def describe_revision():
 		# I concluded that it's highly unlikely that people would
 		# have the git repo checked out, but not have git.
 		#
-		hash = subprocess.check_output("git rev-list HEAD~1..HEAD".split(" ")).rstrip()
-		tag = subprocess.check_output("git describe --abbrev=0".split(" ")).rstrip()
-		n = int(subprocess.check_output(("git rev-list --count %s..HEAD" % tag).split(" ")).rstrip())
+		hash = subprocess_output("git rev-list HEAD~1..HEAD")
+		tag = subprocess_output("git describe --abbrev=0")
+		n = len(subprocess_output(("git rev-list %s..HEAD" % tag)).split('\n'))
 		return ('git', tag, n, hash)
 	elif os.path.isdir('.hg'):
 		#
 		# I considered using the Mercurial API directly, but the
 		# Mercurial wiki highly discourages it.
 		#
-		hash = subprocess.check_output("hg tip --template {node}".split(" "))
-		tag = subprocess.check_output("hg tip --template {latesttag}".split(" "))
-		n = int(subprocess.check_output("hg tip --template {latesttagdistance}".split(" ")))
+		hash = subprocess_output("hg tip --template {node}")
+		tag = subprocess_output("hg tip --template {latesttag}")
+		n = int(subprocess_output("hg tip --template {latesttagdistance}"))
 		return ('hg', tag, n, hash)
 
 def generate_build_header(**kwargs):
