@@ -22,7 +22,10 @@ def describe_revision():
 		#
 		hash = subprocess_output("git rev-list HEAD~1..HEAD")
 		tag = subprocess_output("git describe --abbrev=0")
-		n = subprocess_output(("git rev-list %s..HEAD" % tag)).count('\n')
+		revs = subprocess_output("git rev-list %s..HEAD" % (tag)).split('\n')
+		if len(revs) and revs[0] == '':
+			revs = []
+		n = len(revs)
 		return ('git', tag, n, hash)
 	elif os.path.isdir('.hg'):
 		#
