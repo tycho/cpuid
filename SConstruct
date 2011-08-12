@@ -7,6 +7,12 @@ def subprocess_output(cmdline):
 	stdout, stderr = p.communicate()
 	return stdout.rstrip()
 
+def read_whole_file(path):
+	f = open(path)
+	r = f.read().rstrip()
+	f.close()
+	return r
+
 def describe_revision():
 	if os.path.isdir('.git'):
 		#
@@ -27,6 +33,11 @@ def describe_revision():
 		tag = subprocess_output("hg tip --template {latesttag}")
 		n = int(subprocess_output("hg tip --template {latesttagdistance}"))
 		return ('hg', tag, n, hash)
+	else:
+		tag = read_whole_file('tools/release_ver')
+		n = 0
+		hash = 'no-hash'
+		return ('rel', tag, n, hash)
 
 def generate_build_header(**kwargs):
 	env = kwargs['env']
