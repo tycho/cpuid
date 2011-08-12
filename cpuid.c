@@ -304,7 +304,7 @@ void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL i
 
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
-	printf("  0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x\n",
+	printf("   0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x\n",
 	       state->last_leaf.eax,
 	       state->last_leaf.ecx,
 	       regs->eax,
