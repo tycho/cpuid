@@ -5,6 +5,7 @@
 #include "feature.h"
 #include "handlers.h"
 #include "state.h"
+#include "threads.h"
 #include "util.h"
 
 #include <stdio.h>
@@ -524,12 +525,47 @@ static const char *x2apic_level_type(uint8_t type)
 /* EAX = 0000 000B */
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	uint32_t i = 0;
+	uint32_t i;
+	uint32_t threads, cores;
+
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 	if (!regs->eax && !regs->ebx)
 		return;
 	printf("Processor Topology:\n");
+
+	/* Inferrence */
+	i = 0;
+	threads = cores = 0;
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0xb;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
+			break;
+		switch ((regs->ecx >> 8) & 0xff) {
+		case 1: /* Thread level */
+			threads = regs->ebx & 0xffff;
+			break;
+		case 2: /* Core level */
+			cores = regs->ebx & 0xffff;
+			break;
+		}
+		if (!(regs->eax || regs->ebx))
+			break;
+		i++;
+	}
+	if (threads && cores) {
+		cores /= threads;
+		printf("  Inferred information:\n");
+		printf("    Logical per socket:  %u\n", cores * threads);
+		printf("    Cores per socket:    %u\n", cores);
+		printf("    Threads per core:    %u\n\n", threads);
+	}
+
+	/* Intel specification */
+	i = 0;
 	while (1) {
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
