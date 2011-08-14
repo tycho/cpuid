@@ -198,8 +198,10 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 				r = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
 				           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 				if (r != 6) {
-					printf("Couldn't parse: '%s'\n", linebuf);
-					continue;
+					r = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
+					           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+					if (r != 6)
+						continue;
 				}
 			}
 
@@ -260,23 +262,14 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
 	char buffer[sizeof(struct cpu_regs_t) + 1];
-	if (!indexed)
-		printf("CPUID %08x, results = %08x %08x %08x %08x | %s\n",
-		       state->last_leaf.eax,
-		       regs->eax,
-		       regs->ebx,
-		       regs->ecx,
-		       regs->edx,
-		       reg_to_str(buffer, regs));
-	else
-		printf("CPUID %08x, index %x = %08x %08x %08x %08x | %s\n",
-		       state->last_leaf.eax,
-		       state->last_leaf.ecx,
-		       regs->eax,
-		       regs->ebx,
-		       regs->ecx,
-		       regs->edx,
-		       reg_to_str(buffer, regs));
+	printf("CPUID %08x:%02x = %08x %08x %08x %08x | %s\n",
+	       state->last_leaf.eax,
+	       state->last_leaf.ecx,
+	       regs->eax,
+	       regs->ebx,
+	       regs->ecx,
+	       regs->edx,
+	       reg_to_str(buffer, regs));
 }
 
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
