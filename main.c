@@ -174,6 +174,8 @@ int main(int argc, char **argv)
 			break;
 		case 'd':
 			do_dump = 1;
+			if (cpu_start == 0 && cpu_end == 0)
+				cpu_start = -1;
 			break;
 		case 'f':
 			file = optarg;
