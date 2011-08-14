@@ -17,6 +17,8 @@
    which MSVC does understand. */
 #define C99
 
+#define NOMINMAX
+
 #pragma warning (error: 4013)
 
 #endif
