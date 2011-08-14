@@ -19,7 +19,7 @@ fi
 
 if [ `ls *.txt 2>/dev/null | wc -l` -lt 1 ]; then
 	echo "Fetching snapshot from Amazon S3..."
-	curl -s "https://s3.amazonaws.com/neunon/cpu-world-dumps.tar.bz2" | tar xjf -
+	curl -s "http://s3.amazonaws.com/neunon/cpu-world-dumps.tar.bz2" | tar xjf -
 fi
 
 LIMIT=`curl -s "http://www.cpu-world.com/cgi-bin/CPUID.pl" | grep '<td><a href="/cgi-bin/CPUID.pl?CPUID=' | perl -pe 's/^.*<td><a href="\/cgi-bin\/CPUID\.pl\?CPUID=([0-9]+)".*$/$1/g' | head -n 1`
