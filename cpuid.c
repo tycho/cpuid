@@ -146,37 +146,63 @@ BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 {
 	struct cpuid_leaf_t *leaf;
-	size_t linecount = 0;
+	size_t i, cpucount, leafcount, leafcount_tmp;
 	FILE *file = fopen(filename, "r");
+
 	if (!file)
 		return FALSE;
 
+	cpucount = 0;
+	leafcount = 0;
+	leafcount_tmp = 0;
 	while(TRUE) {
-		char linebuf[85];
+		char linebuf[128];
 
 		if(!fgets(linebuf, sizeof(linebuf), file))
 			break;
 
+		/* CPU %d:\n */
+		if (strncmp(linebuf, "CPU ", 4) == 0) {
+			uint32_t id;
+			sscanf(linebuf, "CPU %u:", &id);
+			cpucount = max(cpucount, id + 1);
+			leafcount = max(leafcount, leafcount_tmp);
+			leafcount_tmp = 0;
+		}
+
+		/* CPUID %08x:%02x [...] */
 		if (strncmp(linebuf, "CPUID", 5) == 0) {
-			linecount++;
+			leafcount_tmp++;
 		}
 	}
+	leafcount = max(leafcount, leafcount_tmp);
 
-	if (linecount < 1)
+	if (leafcount < 1)
 		goto fail;
 
-	state->cpuid_leaves = (struct cpuid_leaf_t *)malloc(sizeof(struct cpuid_leaf_t) * (linecount + 1));
-	assert(state->cpuid_leaves);
+	/* Compatibility with old dumps with only one CPU. */
+	if (cpucount < 1)
+		cpucount = 1;
 
-	memset(state->cpuid_leaves, 0, sizeof(struct cpuid_leaf_t) * (linecount + 1));
+	state->cpu_logical_count = cpucount;
+
+	state->cpuid_leaves = (struct cpuid_leaf_t **)malloc(sizeof(struct cpuid_leaf_t *) * (cpucount + 1));
+	assert(state->cpuid_leaves);
+	for (i = 0; i < cpucount; i++) {
+		state->cpuid_leaves[i] = (struct cpuid_leaf_t *)malloc(sizeof(struct cpuid_leaf_t) * (leafcount + 1));
+		assert(state->cpuid_leaves[i]);
+		memset(state->cpuid_leaves[i], 0xFF, sizeof(struct cpuid_leaf_t) * (leafcount + 1));
+	}
+
+	state->cpuid_leaves[cpucount] = NULL;
 
 	/* Now do the actual read. */
 	rewind(file);
 
-	leaf = state->cpuid_leaves;
+	leaf = NULL;
 	while(TRUE) {
 		size_t s;
-		char linebuf[85];
+		char linebuf[128];
 
 		if(!fgets(linebuf, sizeof(linebuf), file))
 			break;
@@ -186,6 +212,28 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		if (s)
 			linebuf[s] = 0;
 
+		if (strncmp(linebuf, "CPU ", 4) == 0) {
+			uint32_t id;
+			int r;
+
+			r = sscanf(linebuf, "CPU %u:", &id);
+			assert(r == 1);
+
+			/* We already have a leaf. Finalize it. */
+			if (leaf) {
+				leaf->input.eax = 0xFFFFFFFF;
+				leaf->input.ecx = 0xFFFFFFFF;
+
+				leaf->output.eax = 0xFFFFFFFF;
+				leaf->output.ebx = 0xFFFFFFFF;
+				leaf->output.ecx = 0xFFFFFFFF;
+				leaf->output.edx = 0xFFFFFFFF;
+			}
+
+			assert(id < state->cpu_logical_count);
+			leaf = state->cpuid_leaves[id];
+		}
+
 		if (strncmp(linebuf, "CPUID", 5) == 0) {
 			/* Probably a valid line. */
 			uint32_t eax_in, ecx_in = 0;
@@ -193,18 +241,23 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 
 			/* First format, no ecx input. */
 			int r = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
-			               &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 			if (r != 5) {
 				r = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
-				           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+						   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 				if (r != 6) {
 					r = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
-					           &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+							   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
 					if (r != 6)
 						continue;
 				}
 			}
 
+			if (!leaf) {
+				/* No 'CPU %u:' header, assumed CPU 0 */
+				leaf = state->cpuid_leaves[0];
+			}
+			assert(leaf);
 			leaf->input.eax = eax_in;
 			leaf->input.ecx = ecx_in;
 
@@ -217,7 +270,12 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		}
 	}
 
-	/* Sentinel values */
+	/* Sentinel values
+	 *
+	 * It may seem strange to populate these again, but it's possible
+	 * to have a file without 'CPU %u:' lines, so we only have CPU 0.
+	 * This also means we never hit the sentinel population above.
+	 */
 	leaf->input.eax = 0xFFFFFFFF;
 	leaf->input.ecx = 0xFFFFFFFF;
 
@@ -243,7 +301,7 @@ BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
 
 	/* Iterate through the loaded leaves and find a match. */
-	leaf = state->cpuid_leaves;
+	leaf = state->cpuid_leaves[state->cpu_bound_index];
 	while(leaf && leaf->input.eax != 0xFFFFFFFF) {
 		if (leaf->input.eax == regs->eax &&
 		    leaf->input.ecx == regs->ecx) {
