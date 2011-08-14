@@ -236,7 +236,7 @@ fail:
 	return FALSE;
 }
 
-BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct cpuid_leaf_t *leaf;
 
@@ -259,7 +259,7 @@ BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	return TRUE;
 }
 
-void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
+void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
 {
 	char buffer[sizeof(struct cpu_regs_t) + 1];
 	printf("CPUID %08x:%02x = %08x %08x %08x %08x | %s\n",

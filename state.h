@@ -2,6 +2,7 @@
 #define __state_h
 
 #include "cpuid.h"
+#include "threads.h"
 #include "vendor.h"
 
 struct cpu_signature_t {
@@ -22,9 +23,16 @@ struct cpuid_leaf_t {
 
 struct cpuid_state_t
 {
+	thread_bind_handler_t thread_bind;
+	thread_count_handler_t thread_count;
 	cpuid_call_handler_t cpuid_call;
 	cpuid_print_handler_t cpuid_print;
-	struct cpuid_leaf_t *cpuid_leaves;
+
+	/* These two are stubs for thread_bind/thread_count. */
+	uint32_t cpu_bound_index;
+	uint32_t cpu_logical_count;
+
+	struct cpuid_leaf_t **cpuid_leaves;
 	struct cpu_regs_t last_leaf;
 	struct cpu_signature_t sig;
 	cpu_vendor_t vendor;
@@ -37,6 +45,8 @@ struct cpuid_state_t
 	memset((x), 0, sizeof(struct cpuid_state_t)); \
 	(x)->cpuid_print = cpuid_dump_normal; \
 	(x)->cpuid_call = cpuid_native; \
+	(x)->thread_bind = thread_bind_native; \
+	(x)->thread_count = thread_count_native; \
 	}
 
 #define FREE_CPUID_STATE(x) { \

@@ -19,7 +19,7 @@ typedef void(*cpuid_print_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *
 
 /* Makes a lot of calls easier to do. */
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-BOOL cpuid_pseudo(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 /* Allows printing dumps in different formats. */
 void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);

@@ -171,14 +171,6 @@ int main(int argc, char **argv)
 				printf("Option --cpu= requires an integer parameter.\n");
 				exit(1);
 			}
-			if (cpu_start == -1) {
-				cpu_start = 0;
-				cpu_end = thread_count() - 1;
-			}
-			if ((uint32_t)cpu_start >= thread_count()) {
-				printf("CPU %d doesn't seem to exist.\n", cpu_start);
-				exit(1);
-			}
 			break;
 		case 'd':
 			do_dump = 1;
@@ -229,13 +221,27 @@ int main(int argc, char **argv)
 		break;
 	}
 
-	for (c = cpu_start; c <= cpu_end; c++) {
-		thread_bind(c);
+	if (file) {
+		cpuid_load_from_file(file, &state);
+		state.cpuid_call = cpuid_stub;
+		state.thread_bind = thread_bind_stub;
+		state.thread_count = thread_count_stub;
+	}
 
-		if (file) {
-			cpuid_load_from_file(file, &state);
-			state.cpuid_call = cpuid_pseudo;
-		}
+	if (cpu_start == -1) {
+		cpu_start = 0;
+		cpu_end = state.thread_count(&state) - 1;
+	} else {
+		cpu_end = cpu_start;
+	}
+
+	if ((uint32_t)cpu_start >= state.thread_count(&state)) {
+		printf("CPU %d doesn't seem to exist.\n", cpu_start);
+		exit(1);
+	}
+
+	for (c = cpu_start; c <= cpu_end; c++) {
+		state.thread_bind(&state, c);
 
 		switch(dump_format) {
 		case DUMP_FORMAT_DEFAULT:

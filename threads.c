@@ -30,20 +30,21 @@ extern int utilUnbindThreadFromCPU(void);
 
 #endif
 
+#include "state.h"
 #include "threads.h"
 
-unsigned int thread_count(void)
+uint32_t thread_count_native(struct cpuid_state_t *state)
 {
 	static unsigned int i = 0;
 	uint64_t min = 0, max = (unsigned int)-1;
 	if (i) return i;
-	if (thread_bind(0) != 0) {
+	if (state->thread_bind(state, 0) != 0) {
 		fprintf(stderr, "ERROR: thread_bind() doesn't appear to be working correctly.\n");
 		abort();
 	}
 	while(max - min > 0) {
 		i = (max + min) >> 1;
-		if (thread_bind(i) == 0) {
+		if (thread_bind_native(state, i) == 0) {
 			min = i + 1;
 		} else {
 			max = i;
@@ -51,6 +52,11 @@ unsigned int thread_count(void)
 	}
 	i = min;
 	return i;
+}
+
+uint32_t thread_count_stub(struct cpuid_state_t *state)
+{
+	return state->cpu_logical_count;
 }
 
 unsigned int thread_get_binding(void)
@@ -130,7 +136,7 @@ unsigned int thread_bind_mask(unsigned int _mask)
 #endif
 }
 
-unsigned int thread_bind(unsigned int id)
+int thread_bind_native(__unused struct cpuid_state_t *state, uint32_t id)
 {
 #ifdef TARGET_OS_MACOSX
 #ifdef USE_CHUD
@@ -141,4 +147,11 @@ unsigned int thread_bind(unsigned int id)
 #else
 	return thread_bind_mask(1 << id);
 #endif
+}
+
+int thread_bind_stub(struct cpuid_state_t *state, uint32_t id)
+{
+	assert(id < state->cpu_logical_count);
+	state->cpu_bound_index = id;
+	return 0;
 }

@@ -41,7 +41,7 @@ static uint8_t get_apicid(struct cpuid_state_t *state)
 
 static uint8_t get_apicid_for_cpu(struct cpuid_state_t *state, uint32_t index)
 {
-	thread_bind(index);
+	state->thread_bind(state, index);
 	return get_apicid(state);
 }
 
@@ -49,7 +49,7 @@ static uint8_t get_apicid_for_cpu(struct cpuid_state_t *state, uint32_t index)
 DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
 {
 	uint8_t *flag = (uint8_t *)flagptr;
-	uint32_t hwthreads = thread_count();
+	uint32_t hwthreads = thread_count_native(NULL);
 	while (*flag) {
 		SetThreadAffinityMask(GetCurrentThread(), 1 << (rand() % hwthreads));
 		Sleep(1);
@@ -60,10 +60,10 @@ DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
 static void *apic_nonsensical_worker_thread(void *flagptr)
 {
 	uint8_t *flag = (uint8_t *)flagptr;
-	uint32_t hwthreads = thread_count();
+	uint32_t hwthreads = thread_count_native(NULL);
 	struct timeval tv;
 	while (*flag) {
-		thread_bind(rand() % hwthreads);
+		thread_bind_native(NULL, rand() % hwthreads);
 		gettimeofday(&tv, NULL);
 	}
 	pthread_exit(NULL);
@@ -96,7 +96,7 @@ DWORD WINAPI apic_validation_thread(LPVOID ptr)
 static void *apic_validation_thread(void *ptr)
 {
 	struct apic_validate_t *meta = (struct apic_validate_t *)ptr;
-	thread_bind(meta->index);
+	thread_bind_native(NULL, meta->index);
 	while (!meta->failed && *meta->worker_flag) {
 		usleep(5000);
 		if (get_apicid(meta->state) != meta->expected) {
@@ -122,7 +122,7 @@ typedef pthread_t thread_handle_t;
 static int sane_apicid(struct cpuid_state_t *state)
 {
 	int ret = 0;
-	uint32_t hwthreads = thread_count(), i, c,
+	uint32_t hwthreads = thread_count_native(NULL), i, c,
 	         worker_count, oldbinding;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
