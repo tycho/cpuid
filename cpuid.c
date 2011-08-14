@@ -165,8 +165,8 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		if (strncmp(linebuf, "CPU ", 4) == 0) {
 			uint32_t id;
 			sscanf(linebuf, "CPU %u:", &id);
-			cpucount = max(cpucount, id + 1);
-			leafcount = max(leafcount, leafcount_tmp);
+			cpucount = (cpucount > id + 1) ? cpucount : id + 1;
+			leafcount = (leafcount > leafcount_tmp) ? leafcount : leafcount_tmp;
 			leafcount_tmp = 0;
 		}
 
@@ -175,7 +175,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			leafcount_tmp++;
 		}
 	}
-	leafcount = max(leafcount, leafcount_tmp);
+	leafcount = (leafcount > leafcount_tmp) ? leafcount : leafcount_tmp;
 
 	if (leafcount < 1)
 		goto fail;
