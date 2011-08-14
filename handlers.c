@@ -557,8 +557,10 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		i++;
 	}
 	if (threads && cores) {
+		uint32_t total = state->thread_count(state);
 		cores /= threads;
 		printf("  Inferred information:\n");
+		printf("    Logical total:       %u%s\n", total, (total >= cores * threads) ? "" : " (?)");
 		printf("    Logical per socket:  %u\n", cores * threads);
 		printf("    Cores per socket:    %u\n", cores);
 		printf("    Threads per core:    %u\n\n", threads);
