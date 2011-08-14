@@ -42,7 +42,7 @@ unsigned int thread_count(void)
 		abort();
 	}
 	while(max - min > 0) {
-		i = (max + min) >> 1LL;
+		i = (max + min) >> 1;
 		if (thread_bind(i) == 0) {
 			min = i + 1;
 		} else {
