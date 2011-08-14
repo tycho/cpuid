@@ -56,6 +56,7 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 
 uint32_t thread_count_stub(struct cpuid_state_t *state)
 {
+	assert(state);
 	return state->cpu_logical_count;
 }
 
@@ -151,6 +152,7 @@ int thread_bind_native(__unused struct cpuid_state_t *state, uint32_t id)
 
 int thread_bind_stub(struct cpuid_state_t *state, uint32_t id)
 {
+	assert(state);
 	assert(id < state->cpu_logical_count);
 	state->cpu_bound_index = id;
 	return 0;
