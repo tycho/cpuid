@@ -17,9 +17,9 @@ void squeeze(char *str)
 	r=w=0;
 	while (str[r])
 	{
-		if (isspace(str[r]) || iscntrl(str[r]))
+		if (isspace((int)(str[r])) || iscntrl((int)(str[r])))
 		{
-			if (w > 0 && !isspace(str[w-1]))
+			if (w > 0 && !isspace((int)(str[w-1])))
 				str[w++] = ' ';
 		}
 		else
