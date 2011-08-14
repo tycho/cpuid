@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 		printf("]\n");
 	}
 
-	if (do_sanity) {
+	if (do_sanity && !file) {
 		ret = sanity_run(&state);
 	}
 
