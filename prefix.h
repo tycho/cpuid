@@ -16,6 +16,9 @@
    this so that the below actually uses the 'inline' keyword,
    which MSVC does understand. */
 #define C99
+
+#pragma warning (error: 4013)
+
 #endif
 
 #if defined(__STDC__)
