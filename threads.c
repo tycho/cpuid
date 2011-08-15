@@ -79,6 +79,10 @@ unsigned int thread_get_binding(void)
 	pth = pthread_self();
 	CPU_ZERO(&mask);
 	ret = pthread_getaffinity_np(pth, sizeof(mask), &mask);
+	if (ret != 0) {
+		fprintf(stderr, "ERROR: pthread_getaffinity_np() failed (returned %d)\n", ret);
+		abort();
+	}
 
 	mask_id = 0;
 	for (ret = 0; ret < 32; ret++) {
