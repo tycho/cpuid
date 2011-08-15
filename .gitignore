@@ -5,6 +5,8 @@
 
 # Visual Studio junk
 /msvc/*.vcproj.*.user
+/msvc/*.plg
+/*.opt
 /*.suo
 /*.ncb
 *.obj
