@@ -210,11 +210,11 @@ int main(int argc, char **argv)
 		state.cpuid_print = cpuid_dump_normal;
 		break;
 	case DUMP_FORMAT_VMWARE:
-		cpu_start = cpu_end = 0;
+		cpu_start = 0;
 		state.cpuid_print = cpuid_dump_vmware;
 		break;
 	case DUMP_FORMAT_XEN:
-		cpu_start = cpu_end = 0;
+		cpu_start = 0;
 		state.cpuid_print = cpuid_dump_xen;
 		printf("cpuid = [\n");
 		break;
