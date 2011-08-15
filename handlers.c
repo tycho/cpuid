@@ -27,7 +27,7 @@ void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -86,7 +86,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000005, handle_ext_amdl1cachefeat},
 	{0x80000006, handle_ext_l2cachefeat},
 	{0x80000007, handle_ext_0007},
-	{0x80000008, handle_ext_lmaddr},
+	{0x80000008, handle_ext_0008},
 
 	{0, 0}
 };
@@ -901,7 +901,7 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 0008 */
-void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	/* Long mode address size information */
 	struct eax_addrsize {
@@ -916,7 +916,26 @@ void handle_ext_lmaddr(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		return;
 
 	printf("Physical address size: %d bits\n", eax->physical);
-	printf("Linear address size: %d bits\n\n", eax->linear);
+	printf("Linear address size: %d bits\n", eax->linear);
+	printf("\n");
+
+	if ((state->vendor & VENDOR_AMD) != 0) {
+		struct ecx_apiccore {
+			unsigned nc:8;
+			unsigned reserved_1:4;
+			unsigned apicidcoreidsize:4;
+			unsigned reserved_2:16;
+		};
+
+		struct ecx_apiccore *ecx = (struct ecx_apiccore *)&regs->ecx;
+
+		uint32_t nc = ecx->nc + 1;
+		uint32_t mnc = ecx->apicidcoreidsize ? 1 << ecx->apicidcoreidsize : nc;
+
+		printf("Core count: %u\n", nc);
+		printf("Maximum core count: %u\n", mnc);
+		printf("\n");
+	}
 }
 
 /* EAX = 4000 0000 */
