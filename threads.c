@@ -38,7 +38,7 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 	static unsigned int i = 0;
 	uint64_t min = 0, max = (unsigned int)-1;
 	if (i) return i;
-	if (state->thread_bind(state, 0) != 0) {
+	if (thread_bind_native(state, 0) != 0) {
 		fprintf(stderr, "ERROR: thread_bind() doesn't appear to be working correctly.\n");
 		abort();
 	}
