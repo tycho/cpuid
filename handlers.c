@@ -930,7 +930,7 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		struct ecx_apiccore *ecx = (struct ecx_apiccore *)&regs->ecx;
 
 		uint32_t nc = ecx->nc + 1;
-		uint32_t mnc = ecx->apicidcoreidsize ? 1 << ecx->apicidcoreidsize : nc;
+		uint32_t mnc = (ecx->apicidcoreidsize > 0) ? (1u << ecx->apicidcoreidsize) : nc;
 
 		printf("Core count: %u\n", nc);
 		printf("Maximum core count: %u\n", mnc);
