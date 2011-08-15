@@ -19,7 +19,10 @@
 
 #define NOMINMAX
 
+#if _MSC_VER <= 1200
 #pragma warning (error: 4013)
+#pragma warning (disable: 4761)
+#endif
 
 #endif
 
