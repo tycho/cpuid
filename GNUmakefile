@@ -41,7 +41,7 @@ LDFLAGS += -pthread
 endif
 
 ifneq ($(findstring MINGW,$(uname_S)),)
-LDFLAGS += -lpthread
+LDFLAGS += -lpthread -lwinmm
 endif
 
 ifneq ($(findstring CYGWIN,$(uname_S)),)
