@@ -31,9 +31,13 @@ all: $(BINARY)
 
 CC := gcc
 CP := cp -L
-CFLAGS := -Os -I../inc -I. -fno-PIC -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wwrite-strings -pedantic
+CFLAGS := -Os -I../inc -I. -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wwrite-strings -pedantic
 LDFLAGS :=
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
+
+ifneq ($(CC),clang)
+CFLAGS += -fno-PIC
+endif
 
 ifeq ($(uname_S),Linux)
 CFLAGS += -pthread
