@@ -40,6 +40,11 @@ CFLAGS += -pthread
 LDFLAGS += -pthread
 endif
 
+ifeq ($(uname_S),FreeBSD)
+CFLAGS += -pthread
+LDFLAGS += -pthread
+endif
+
 ifneq ($(findstring MINGW,$(uname_S)),)
 LDFLAGS += -lpthread -lwinmm
 endif

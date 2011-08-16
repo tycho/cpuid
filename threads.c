@@ -14,6 +14,7 @@
 
 #elif defined(TARGET_OS_FREEBSD)
 
+#include <pthread.h>
 #include <pthread_np.h>
 #include <sys/param.h>
 #include <sys/cpuset.h>
