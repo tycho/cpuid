@@ -860,44 +860,36 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (state->vendor & VENDOR_AMD) {
 		/* Advanced Power Management information */
 
-		struct edx_apm_amd_t {
-			unsigned ts:1;
-			unsigned fid:1;
-			unsigned vid:1;
-			unsigned ttp:1;
-			unsigned tm:1;
-			unsigned reserved_1:1;
-			unsigned mult100mhz:1;
-			unsigned hwpstate:1;
-			unsigned tscinvariant:1;
-			unsigned cpb:1;
-			unsigned efreqro:1;
-			unsigned reserved_2:21;
+		struct edx_apm_amd_feature_t {
+			unsigned int mask;
+			const char *name;
+		} features[] = {
+			{0x00000001, "Temperature Sensor"},
+			{0x00000002, "Frequency ID Control"},
+			{0x00000004, "Voltage ID Control"},
+			{0x00000008, "THERMTRIP"},
+			{0x00000010, "Hardware thermal control"},
+			{0x00000040, "100 MHz multiplier control"},
+			{0x00000080, "Hardware P-state control"},
+			{0x00000100, "Invariant TSC"},
+			{0x00000200, "Core performance boost"},
+			{0x00000400, "Read-only effective frequency interface"},
+			{0x00000000, NULL}
 		};
-		struct edx_apm_amd_t *edx = (struct edx_apm_amd_t *)&regs->edx;
-		if (!regs->edx)
-			return;
+		struct edx_apm_amd_feature_t *feat;
+		unsigned int unaccounted;
 		printf("AMD Advanced Power Management features:\n");
-		if (edx->ts)
-			printf("  Temperature Sensor\n");
-		if (edx->fid)
-			printf("  Frequency ID Control\n");
-		if (edx->vid)
-			printf("  Voltage ID Control\n");
-		if (edx->ttp)
-			printf("  THERMTRIP\n");
-		if (edx->tm)
-			printf("  Hardware thermal control\n");
-		if (edx->mult100mhz)
-			printf("  100 MHz multiplier Control\n");
-		if (edx->hwpstate)
-			printf("  Hardware P-state control\n");
-		if (edx->tscinvariant)
-			printf("  Invariant TSC\n");
-		if (edx->cpb)
-			printf("  Core performance boost\n");
-		if (edx->efreqro)
-			printf("  Read-only effective frequency interface\n");
+		unaccounted = 0;
+		for (feat = features; feat->mask; feat++) {
+			unaccounted |= feat->mask;
+			if (regs->edx & feat->mask) {
+				printf("  %s\n", feat->name);
+			}
+		}
+		unaccounted = (regs->edx & ~unaccounted);
+		if (unaccounted) {
+			printf("  Undocumented feature bits: 0x%08x\n", unaccounted);
+		}
 		printf("\n");
 	}
 }
