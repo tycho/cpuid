@@ -28,6 +28,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *st
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -87,6 +88,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000006, handle_ext_l2cachefeat},
 	{0x80000007, handle_ext_0007},
 	{0x80000008, handle_ext_0008},
+	{0x8000000A, handle_ext_svm},
 
 	{0, 0}
 };
@@ -936,6 +938,69 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("Maximum core count: %u\n", mnc);
 		printf("\n");
 	}
+}
+
+/* EAX = 8000 000A */
+void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct eax_svm {
+		unsigned svmrev:8;
+		unsigned reserved:24;
+	};
+
+	struct ebx_svm {
+		unsigned nasid:32;
+	};
+
+	struct edx_svm_feat {
+		unsigned int mask;
+		const char *name;
+	} features[] = {
+		{0x00000001, "Nested paging"},
+		{0x00000002, "LBR virtualization"},
+		{0x00000004, "SVM lock"},
+		{0x00000008, "NRIP save"},
+		{0x00000010, "MSR-based TSC rate control"},
+		{0x00000020, "VMCB clean bits"},
+		{0x00000040, "Flush by ASID"},
+		{0x00000080, "Decode assists"},
+		{0x00000400, "Pause intercept filter"},
+		{0x00001000, "PAUSE filter threshold"},
+		{0x00000000, NULL}
+	};
+
+	struct eax_svm *eax = (struct eax_svm *)&regs->eax;
+	struct ebx_svm *ebx = (struct ebx_svm *)&regs->ebx;
+	struct edx_svm_feat *feat;
+	struct cpu_regs_t feat_check;
+	unsigned int unaccounted;
+
+	if (!(state->vendor & VENDOR_AMD))
+		return;
+
+	/* First check for SVM feature bit. */
+	ZERO_REGS(&feat_check);
+	feat_check.eax = 0x80000001;
+	state->cpuid_call(&feat_check, state);
+	if (!(feat_check.ecx & 0x04))
+		return;
+
+	printf("SVM Features and Revision Information:\n");
+	printf("  Revision: %u\n", eax->svmrev);
+	printf("  NASID: %u\n", ebx->nasid);
+	printf("  Features:\n");
+	unaccounted = 0;
+	for (feat = features; feat->mask; feat++) {
+		unaccounted |= feat->mask;
+		if (regs->edx & feat->mask) {
+			printf("    %s\n", feat->name);
+		}
+	}
+	unaccounted = (regs->edx & ~unaccounted);
+	if (unaccounted) {
+		printf("  Undocumented feature bits: 0x%08x\n", unaccounted);
+	}
+	printf("\n");
 }
 
 /* EAX = 4000 0000 */
