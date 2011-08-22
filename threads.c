@@ -22,6 +22,8 @@
 
 #elif defined(TARGET_OS_MACOSX)
 
+#include <sys/sysctl.h>
+
 //#define USE_CHUD
 #ifdef USE_CHUD
 extern int chudProcessorCount(void);
@@ -36,6 +38,15 @@ extern int utilUnbindThreadFromCPU(void);
 
 uint32_t thread_count_native(struct cpuid_state_t *state)
 {
+#ifdef TARGET_OS_MACOSX
+	uint32_t count;
+	size_t  size = sizeof(count);
+
+	if (sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
+		return 1;
+
+	return count;
+#else
 	static unsigned int i = 0;
 	uint64_t min = 0, max = (unsigned int)-1;
 	if (i) return i;
@@ -53,6 +64,7 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 	}
 	i = min;
 	return i;
+#endif
 }
 
 uint32_t thread_count_stub(struct cpuid_state_t *state)
