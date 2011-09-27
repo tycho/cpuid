@@ -171,7 +171,8 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		}
 
 		/* CPUID %08x:%02x [...] */
-		if (strncmp(linebuf, "CPUID", 5) == 0) {
+		if (strncmp(linebuf, "CPUID", 5) == 0 ||
+			strncmp(linebuf, "   0x", 4) == 0) {
 			leafcount_tmp++;
 		}
 	}
@@ -252,6 +253,32 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 						continue;
 				}
 			}
+
+			if (!leaf) {
+				/* No 'CPU %u:' header, assumed CPU 0 */
+				leaf = state->cpuid_leaves[0];
+			}
+			assert(leaf);
+			leaf->input.eax = eax_in;
+			leaf->input.ecx = ecx_in;
+
+			leaf->output.eax = eax_out;
+			leaf->output.ebx = ebx_out;
+			leaf->output.ecx = ecx_out;
+			leaf->output.edx = edx_out;
+
+			leaf++;
+		} else  if (strncmp(linebuf, "   0x", 4) == 0) {
+			/* Probably a valid line. */
+			uint32_t eax_in, ecx_in = 0;
+			uint32_t eax_out, ebx_out, ecx_out, edx_out;
+
+			/* First format, no ecx input. */
+			int r = sscanf(linebuf, "   0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x",
+			               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+
+			if (r != 6)
+				continue;
 
 			if (!leaf) {
 				/* No 'CPU %u:' header, assumed CPU 0 */
