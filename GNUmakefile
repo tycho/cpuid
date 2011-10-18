@@ -1,7 +1,10 @@
 
 MAKEFLAGS += -Rr
 
-ifneq ($(findstring MINGW,$(shell uname -s 2> /dev/null)),)
+uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+
+ifneq ($(findstring MINGW,$(uname_S)),)
 win32 = Yep
 endif
 
@@ -21,9 +24,6 @@ ifndef V
         export V
 endif
 endif
-
-uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
-uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 
 BINARY := cpuid$(EXT)
 
