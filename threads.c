@@ -48,7 +48,6 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 	return count;
 #else
 	static unsigned int i = 0;
-	uint32_t c;
 	if (i) return i;
 	if (thread_bind_native(state, 0) != 0) {
 		fprintf(stderr, "ERROR: thread_bind() doesn't appear to be working correctly.\n");
@@ -68,12 +67,12 @@ uint32_t thread_count_stub(struct cpuid_state_t *state)
 	return state->cpu_logical_count;
 }
 
-unsigned int thread_get_binding(void)
+uintptr_t thread_get_binding(void)
 {
 #ifdef TARGET_OS_WINDOWS
 
 	HANDLE hThread = GetCurrentThread();
-	DWORD mask = SetThreadAffinityMask(hThread, 1);
+	DWORD_PTR mask = SetThreadAffinityMask(hThread, 1);
 	SetThreadAffinityMask(hThread, mask);
 
 	return mask;
@@ -110,13 +109,13 @@ unsigned int thread_get_binding(void)
 #endif
 }
 
-unsigned int thread_bind_mask(unsigned int _mask)
+uintptr_t thread_bind_mask(uintptr_t _mask)
 {
 #ifdef TARGET_OS_WINDOWS
 
 	DWORD ret;
 	HANDLE hThread = GetCurrentThread();
-	ret = SetThreadAffinityMask(hThread, _mask);
+	ret = SetThreadAffinityMask(hThread, (DWORD_PTR)_mask);
 
 	return (ret != 0) ? 0 : 1;
 
@@ -129,7 +128,7 @@ unsigned int thread_bind_mask(unsigned int _mask)
 	pth = pthread_self();
 
 	CPU_ZERO(&mask);
-	for (ret = 0; ret < 32; ret++) {
+	for (ret = 0; ret < 64; ret++) {
 		if (_mask & 1)
 			CPU_SET(ret, &mask);
 		_mask >>= 1;

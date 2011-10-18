@@ -15,7 +15,7 @@ int thread_bind_stub(struct cpuid_state_t *state, uint32_t id);
 uint32_t thread_count_stub(struct cpuid_state_t *state);
 
 /* These aren't used during CPUID runs, just in sanity check runs. */
-unsigned int thread_get_binding(void);
-unsigned int thread_bind_mask(unsigned int mask);
+uintptr_t thread_get_binding(void);
+uintptr_t thread_bind_mask(uintptr_t mask);
 
 #endif

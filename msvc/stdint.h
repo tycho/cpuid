@@ -19,4 +19,7 @@ typedef unsigned long long uint64_t;
 typedef unsigned __int64 uint64_t;
 #endif
 
+#include <windows.h>
+typedef DWORD_PTR uintptr_t;
+
 #endif
