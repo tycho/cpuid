@@ -114,7 +114,7 @@ if env['CC'] == 'gcc':
 	if int(debug):
 		env.Append(CFLAGS='-O0 -ggdb')
 	else:
-		env.Append(CFLAGS='-O2')
+		env.Append(CFLAGS='-Os')
 
 	# Basic CFLAGS for correctness
 	env.Append(CFLAGS='-std=gnu89 -fno-strict-aliasing')
