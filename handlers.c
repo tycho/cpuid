@@ -29,6 +29,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state
 void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -40,6 +41,7 @@ void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
 {
@@ -54,6 +56,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 
 	/* Extended levels */
 	{0x80000000, handle_dump_base},
+	{0x8000001D, handle_dump_ext_1D},
 
 	{0, 0}
 };
@@ -89,6 +92,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000007, handle_ext_0007},
 	{0x80000008, handle_ext_0008},
 	{0x8000000A, handle_ext_svm},
+	{0x8000001D, handle_ext_cacheprop},
 
 	{0, 0}
 };
@@ -991,6 +995,140 @@ void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	unaccounted = (regs->edx & ~unaccounted);
 	if (unaccounted) {
 		printf("  Undocumented feature bits: 0x%08x\n", unaccounted);
+	}
+	printf("\n");
+}
+
+/* EAX = 8000 001D */
+void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct cpu_regs_t feat_check;
+	uint32_t i = 0, has_extended_topology = 0;
+
+	ZERO_REGS(&feat_check);
+	feat_check.eax = 0x80000001;
+	state->cpuid_call(&feat_check, state);
+	has_extended_topology = (feat_check.ecx & 0x400000) ? 1 : 0;
+
+	if (!has_extended_topology)
+		state->cpuid_print(regs, state, TRUE);
+	else
+		while (1) {
+			ZERO_REGS(regs);
+			regs->eax = 0x8000001D;
+			regs->ecx = i;
+			state->cpuid_call(regs, state);
+			if (regs->eax == 0)
+				break;
+			state->cpuid_print(regs, state, TRUE);
+			i++;
+		}
+}
+
+/* EAX = 8000 001D */
+void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct eax_cache {
+		unsigned type:5;
+		unsigned level:3;
+		unsigned selfinit:1;
+		unsigned fullyassoc:1;
+		unsigned reserved_1:4;
+		unsigned sharing:12;
+		unsigned reserved_2:6;
+	};
+	struct ebx_cache {
+		unsigned linesize:12;
+		unsigned partitions:10;
+		unsigned ways:10;
+	};
+	struct ecx_cache {
+		unsigned sets:32;
+	};
+	struct edx_cache_feat {
+		unsigned int mask;
+		const char *name;
+	} features[] = {
+		{0x00000001, "WBINVD not guaranteed"},
+		{0x00000002, "cache inclusive"},
+		{0x00000000, NULL}
+	};
+
+	const char *sizes[] = {
+		"B",
+		"KB",
+		"MB",
+		NULL
+	};
+
+	struct eax_cache *eax = (struct eax_cache *)&regs->eax;
+	struct ebx_cache *ebx = (struct ebx_cache *)&regs->ebx;
+	struct ecx_cache *ecx = (struct ecx_cache *)&regs->ecx;
+	struct edx_cache_feat *feat;
+	struct cpu_regs_t feat_check;
+	unsigned int i = 1;
+	unsigned int unaccounted;
+
+	if (!(state->vendor & VENDOR_AMD))
+		return;
+
+	/* First check for Extended Topology feature bit. */
+	ZERO_REGS(&feat_check);
+	feat_check.eax = 0x80000001;
+	state->cpuid_call(&feat_check, state);
+	if (!(feat_check.ecx & 0x400000))
+		return;
+
+	printf("AMD Extended Cache Topology:\n");
+	while (1) {
+		char assoc[32];
+		const char *type, **size_str = sizes;
+		uint32_t size;
+
+		switch (eax->type) {
+		case 0x1: type = " data"; break;
+		case 0x2: type = " code"; break;
+		case 0x3: type = ""; break;
+		default:  type = " unknown"; break;
+		}
+
+		if (eax->fullyassoc)
+			sprintf(assoc, "fully associative");
+		else {
+			sprintf(assoc, "%d-way set associative", ebx->ways + 1);
+		}
+
+		size = (ebx->linesize + 1) * (ebx->ways + 1) * (ecx->sets + 1);
+
+		while (size / 1024 > 0) {
+			size_str++;
+			if (!*size_str) {
+				size_str--;
+				break;
+			}
+			size /= 1024;
+		}
+
+		printf("  %2d%s L%d%s cache, %s%s, %d cores sharing",
+			size, *size_str, eax->level, type, assoc, eax->selfinit ? "" : ", needs soft-init", eax->sharing + 1);
+
+		/* Cache feature bits */
+		unaccounted = 0;
+		for (feat = features; feat->mask; feat++) {
+			unaccounted |= feat->mask;
+			if (regs->edx & feat->mask) {
+				printf(", %s", feat->name);
+			}
+		}
+
+		printf("\n");
+		ZERO_REGS(regs);
+		regs->eax = 0x8000001D;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		i++;
+		if (!regs->eax)
+			break;
 	}
 	printf("\n");
 }
