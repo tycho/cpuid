@@ -30,6 +30,7 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -93,6 +94,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000008, handle_ext_0008},
 	{0x8000000A, handle_ext_svm},
 	{0x8000001D, handle_ext_cacheprop},
+	{0x8000001E, handle_ext_extapic},
 
 	{0, 0}
 };
@@ -1131,6 +1133,52 @@ void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			break;
 	}
 	printf("\n");
+}
+
+/* EAX = 8000 001E */
+void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct eax_extapic {
+		unsigned extapicid:32;
+	};
+	struct ebx_computeunit {
+		unsigned compute_unit_id:8;
+		unsigned cores_per_unit:2;
+		unsigned reserved:22;
+	};
+	struct ecx_nodeid {
+		unsigned nodeid:8;
+		unsigned nodes_per_processor:3;
+		unsigned reserved:21;
+	};
+
+	struct eax_extapic *eax = (struct eax_extapic *)&regs->eax;
+	struct ebx_computeunit *ebx = (struct ebx_computeunit *)&regs->ebx;
+	struct ecx_nodeid *ecx = (struct ecx_nodeid *)&regs->ecx;
+	struct cpu_regs_t feat_check;
+
+	if (!(state->vendor & VENDOR_AMD))
+		return;
+
+	/* First check for Extended Topology feature bit. */
+	ZERO_REGS(&feat_check);
+	feat_check.eax = 0x80000001;
+	state->cpuid_call(&feat_check, state);
+	if (!(feat_check.ecx & 0x400000))
+		return;
+
+	printf("AMD Extended Topology:\n");
+	printf("  Extended APIC ID: 0x%08x\n", eax->extapicid);
+	printf("  Compute unit ID: %d\n", ebx->compute_unit_id + 1);
+	printf("  Cores per unit: %d\n", ebx->cores_per_unit);
+	printf("  Node ID: %d\n", ecx->nodeid);
+
+	/* Only defined for 0b0 and 0b1 right now. */
+	if (ecx->nodes_per_processor < 2) {
+		printf("  Nodes per processor: %d\n", ecx->nodes_per_processor + 1);
+	} else {
+		printf("  Nodes per processor: UNKNOWN (0x%02x)\n", ecx->nodes_per_processor);
+	}
 }
 
 /* EAX = 4000 0000 */
