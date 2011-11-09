@@ -21,16 +21,23 @@ static uint32_t scan_to = 0;
 
 static void run_cpuid(struct cpuid_state_t *state, int dump)
 {
-	uint32_t i;
+	uint32_t i, j;
 	uint32_t r;
-	struct cpu_regs_t cr_tmp, ignore;
+	struct cpu_regs_t cr_tmp, ignore[2];
 	const struct cpuid_leaf_handler_index_t *h;
 
 
 	/* Arbitrary leaf that's probably never ever used. */
-	ZERO_REGS(&ignore);
-	ignore.eax = 0xBEEFBABE;
-	state->cpuid_call(&ignore, state);
+	ZERO_REGS(&ignore[0]);
+	ignore[0].eax = 0x5FFF0000;
+	state->cpuid_call(&ignore[0], state);
+
+	/* Another arbitrary leaf. On KVM, there are two invalid returns, and they're
+	 * split by the 0x80000000 boundary.
+	 */
+	ZERO_REGS(&ignore[1]);
+	ignore[1].eax = 0x8FFF0000;
+	state->cpuid_call(&ignore[1], state);
 
 	for (r = 0x00000000;; r += 0x00010000) {
 		state->curmax = r;
@@ -60,8 +67,10 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 * force threads to be affinitized to one core. This makes the
 			 * value of EDX a bit nondeterministic when CPUID is executed.
 			 */
-			if (i == r && 0 == memcmp(&ignore, &cr_tmp, sizeof(struct cpu_regs_t) - 1))
-				break;
+			for (j = 0; j < sizeof(ignore) / sizeof(struct cpu_regs_t); j++) {
+				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 1))
+					goto breakout;
+			}
 
 			for (h = dump ? dump_handlers : decode_handlers;
 			     h->handler;
@@ -76,6 +85,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			else if (dump)
 				state->cpuid_print(&cr_tmp, state, FALSE);
 		}
+breakout:
 
 		/* Terminating condition.
 		 * This is an awkward way to terminate the loop, but if we used
