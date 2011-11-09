@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 	const char *file = NULL;
 	struct cpuid_state_t state;
 	int c, ret = 0;
-	int cpu_start = 0, cpu_end = 0;
+	int cpu_start = -2, cpu_end = -2;
 
 	while (TRUE) {
 		static struct option long_options[] = {
@@ -171,10 +171,14 @@ int main(int argc, char **argv)
 				printf("Option --cpu= requires an integer parameter.\n");
 				exit(1);
 			}
+			if (cpu_start < -1) {
+				printf("Option --cpu= requires a value >= -1.\n");
+				exit(1);
+			}
 			break;
 		case 'd':
 			do_dump = 1;
-			if (cpu_start == 0 && cpu_end == 0)
+			if (cpu_start == -2 && cpu_end == -2)
 				cpu_start = -1;
 			break;
 		case 'f':
@@ -204,6 +208,9 @@ int main(int argc, char **argv)
 	}
 
 	INIT_CPUID_STATE(&state);
+
+	if (cpu_start == -2)
+		cpu_start = cpu_end = 0;
 
 	switch(dump_format) {
 	case DUMP_FORMAT_DEFAULT:
