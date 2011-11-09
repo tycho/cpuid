@@ -68,7 +68,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 * value of EDX a bit nondeterministic when CPUID is executed.
 			 */
 			for (j = 0; j < sizeof(ignore) / sizeof(struct cpu_regs_t); j++) {
-				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 1))
+				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4))
 					goto breakout;
 			}
 
