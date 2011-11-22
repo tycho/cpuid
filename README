@@ -5,3 +5,80 @@ cpuid is capable of dumping all CPUID leaves (except any unknown leaves which
 require special ECX values to dump all information). cpuid can only decode
 certain leaves, but this functionality will be expanded as the CPUID
 specifications provided by AMD and Intel change.
+
+
+BUILDING
+========
+
+The build process is simplified compared to a plethora of other open source
+projects out there. You don't need autoconf/automake or any of the headaches
+that go along with those tools.
+
+Required:
+- C compiler (GNU C Compiler, Microsoft Visual C++, and the Intel C++
+  Compiler are known to work)
+- Perl 5.8 or later
+
+And one of:
+- GNU Make 3.80 or later
+- SCons 2.0 or later
+
+Depending on whether you have GNU Make or SCons, do one of:
+
+$ scons
+
+or
+
+$ make
+
+And you should have a new executable called 'cpuid' in a few seconds.
+
+
+USING
+=====
+
+Since the usage will likely change over time, I recommend that you take a look
+at the output of:
+
+$ ./cpuid --help
+
+
+REPORTING BUGS
+==============
+
+If you find a bug in CPUID, please submit details about it to the bug tracker
+on GitHub:
+
+https://github.com/tycho/cpuid/issues
+
+If the bug is regarding the decoding or dumping of CPUID details, then you
+should include the dump.txt and decode.txt generated with these commands:
+
+$ ./cpuid -d -c -1 > dump.txt
+$ ./cpuid -c -1 > decode.txt
+
+You should also specify what revision of CPUID you are running. If you don't
+know, you can find out with:
+
+$ ./cpuid --version
+
+
+REFERENCE DOCUMENTATION
+=======================
+
+You can find current Intel and AMD CPUID specifications at these locations:
+
+http://www.intel.com/content/www/us/en/processors/processor-identification-cpuid-instruction-note.html
+http://support.amd.com/us/Embedded_TechDocs/25481.pdf
+
+I try to keep up with these as they change, but sometimes I'm slow on the
+uptake. Please notify me if you notice any inconsistencies or if features you
+find relevant are not being decoded.
+
+
+CONTACT
+=======
+
+I'm contactable via email and respond frequently.
+
+Steven Noonan <steven@uplinklabs.net>
