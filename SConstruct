@@ -103,7 +103,8 @@ def generate_license_header(**kwargs):
 
 env = Environment(
 	tools=['default'],
-	ENV=os.environ)
+	ENV=os.environ,
+	**ARGUMENTS)
 
 env.Decider('MD5-timestamp')
 
