@@ -518,86 +518,100 @@ void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 000B */
-static const char *x2apic_level_type(uint8_t type)
-{
-	const char *types[] = {
-		"Invalid",
-		"Thread",
-		"Core",
-		"Unknown"
-	};
-	if (type > 2) type = 3;
-	return types[type];
-}
-
-/* EAX = 0000 000B */
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	uint32_t i;
-	uint32_t threads, cores;
+	struct x2apic_prop_t {
+		uint32_t mask;
+		uint32_t shift;
+		uint8_t total;
+		unsigned reported:1;
+	};
+
+	struct x2apic_prop_t socket, core, thread;
+
+	uint32_t i, id = 0;
+	uint32_t total_logical = state->thread_count(state);
 
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 	if (!regs->eax && !regs->ebx)
 		return;
-	printf("Processor Topology:\n");
+
+	memset(&socket, 0, sizeof(struct x2apic_prop_t));
+	memset(&core, 0, sizeof(struct x2apic_prop_t));
+	memset(&thread, 0, sizeof(struct x2apic_prop_t));
+	socket.reported = 1;
+	socket.mask = -1;
+
+	printf("x2APIC Processor Topology:\n");
 
 	/* Inferrence */
-	i = 0;
-	threads = cores = 0;
-	while (1) {
+	for (i = 0;; i++) {
+		uint32_t level, shift;
 		ZERO_REGS(regs);
 		regs->eax = 0xb;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 		if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
 			break;
-		switch ((regs->ecx >> 8) & 0xff) {
+		level = (regs->ecx >> 8) & 0xff;
+		shift = regs->eax & 0x1f;
+		if (level > 0)
+			id = regs->edx;
+		switch (level) {
 		case 1: /* Thread level */
-			threads = regs->ebx & 0xffff;
+			thread.total = regs->ebx & 0xffff;
+			thread.shift = shift;
+			thread.mask = ~((-1) << shift);
+			thread.reported = 1;
 			break;
 		case 2: /* Core level */
-			cores = regs->ebx & 0xffff;
+			core.total = regs->ebx & 0xffff;
+			core.shift = shift;
+			core.mask = ~((-1) << shift);
+			core.reported = 1;
+			socket.shift = core.shift;
+			socket.mask = (-1) ^ core.mask;
 			break;
 		}
 		if (!(regs->eax || regs->ebx))
 			break;
-		i++;
 	}
-	if (threads && cores) {
-		uint32_t total = state->thread_count(state);
-		cores /= threads;
-		printf("  Inferred information:\n");
-		printf("    Logical total:       %u%s\n", total, (total >= cores * threads) ? "" : " (?)");
-		printf("    Logical per socket:  %u\n", cores * threads);
-		printf("    Cores per socket:    %u\n", cores);
-		printf("    Threads per core:    %u\n\n", threads);
+	if (thread.reported && core.reported) {
+		core.mask = core.mask ^ thread.mask;
+	} else if (!core.reported && thread.reported) {
+		core.mask = 0;
+		socket.shift = thread.shift;
+		socket.mask = (-1) ^ thread.mask;
+	} else {
+		assert(0);
 	}
 
-	/* Intel specification */
-	i = 0;
-	while (1) {
-		ZERO_REGS(regs);
-		regs->eax = 0xb;
-		regs->ecx = i;
-		state->cpuid_call(regs, state);
-		if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
-			break;
-		printf("  Bits to shift: %d\n"
-		       "  Logical at this level: %d\n"
-		       "  Level number: %d\n"
-		       "  Level type: %d (%s)\n"
-		       "  x2APIC ID: %d\n\n",
-		       regs->eax & 0x1f,
-		       regs->ebx & 0xffff,
-		       regs->ecx & 0xff,
-		       (regs->ecx >> 8) & 0xff,
-		       x2apic_level_type((regs->ecx >> 8) & 0xff),
-		       regs->edx);
-		if (!(regs->eax || regs->ebx))
-			break;
-		i++;
-	}
+	/* XXX: This is a totally non-standard way to determine the shift width,
+	 *      but the official method doesn't seem to work. Will troubleshoot
+	 *      more later on.
+	 */
+	socket.shift = count_trailing_zero_bits(socket.mask);
+	core.shift = count_trailing_zero_bits(core.mask);
+	thread.shift = count_trailing_zero_bits(thread.mask);
+
+	core.total /= thread.total;
+	printf("  Inferred information:\n");
+	printf("    Logical total:       %u%s\n", total_logical, (total_logical >= core.total * thread.total) ? "" : " (?)");
+	printf("    Logical per socket:  %u\n", core.total * thread.total);
+	printf("    Cores per socket:    %u\n", core.total);
+	printf("    Threads per core:    %u\n\n", thread.total);
+
+	/*
+	printf("  Socket mask: 0x%08x, shift: %d\n", socket.mask, socket.shift);
+	printf("  Core mask: 0x%08x, shift: %d\n", core.mask, core.shift);
+	printf("  Thread mask: 0x%08x, shift: %d\n", thread.mask, thread.shift);
+	*/
+	printf("  x2APIC ID %d (socket %d, core %d, thread %d)\n\n",
+		id,
+		(id & socket.mask) >> socket.shift,
+		(id & core.mask) >> core.shift,
+		(id & thread.mask) >> thread.shift);
 }
 
 /* EAX = 0000 000B */

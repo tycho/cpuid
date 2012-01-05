@@ -3,11 +3,27 @@
 #include "util.h"
 
 #include <ctype.h>
+#include <limits.h>
 #ifdef TARGET_OS_WINDOWS
 #include <windows.h>
 #else
 #include <sys/time.h>
 #endif
+
+uint32_t count_trailing_zero_bits(uint32_t v)
+{
+	uint32_t c;
+	if (v) {
+		v = (v ^ (v - 1)) >> 1;  // Set v's trailing 0s to 1s and zero rest
+		for (c = 0; v; c++)
+		{
+			v >>= 1;
+		}
+	} else {
+		c = CHAR_BIT * sizeof(v);
+	}
+	return c;
+}
 
 void squeeze(char *str)
 {
