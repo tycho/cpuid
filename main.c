@@ -69,7 +69,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 */
 			for (j = 0; j < sizeof(ignore) / sizeof(struct cpu_regs_t); j++) {
 				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4))
-					goto breakout;
+					goto invalid_leaf;
 			}
 
 			for (h = dump ? dump_handlers : decode_handlers;
@@ -85,7 +85,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			else if (dump)
 				state->cpuid_print(&cr_tmp, state, FALSE);
 		}
-breakout:
+invalid_leaf:
 
 		/* Terminating condition.
 		 * This is an awkward way to terminate the loop, but if we used
