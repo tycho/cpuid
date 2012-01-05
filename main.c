@@ -40,6 +40,20 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 	state->cpuid_call(&ignore[1], state);
 
 	for (r = 0x00000000;; r += 0x00010000) {
+		/* If we're not doing a dump, we don't need to scan ranges
+		 * which we don't actually have special handlers for.
+		 */
+		if (!dump) {
+			for (h = decode_handlers;
+				 h->handler;
+				 h++)
+			{
+				if ((h->leaf_id & 0xFFFF0000) == r)
+					break;
+			}
+			if (!h->handler)
+				goto invalid_leaf;
+		}
 		state->curmax = r;
 		for (i = r; i <= (scan_to ? r + scan_to : state->curmax); i++) {
 
