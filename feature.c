@@ -100,14 +100,14 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "BMI1"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "HLE"},      /* Hardware Lock Elision */
+	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "AVX2"},
 /*	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , "SMEP"},     /* Supervisor Mode Execution Protection */
 	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , "BMI2"},
 	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "ERMS"},     /* Enhanced REP MOVSB/STOSB */
 	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "RTM"},      /* Restricted Transactional Memory */
 /*	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
