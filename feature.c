@@ -91,7 +91,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x04000000, VENDOR_INTEL                                , "XSAVE"},
 	{ 0x00000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL                                , "OSXSAVE"},
 	{ 0x00000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX"},
-	{ 0x00000001, 0, REG_ECX, 0x20000000,                VENDOR_AMD                   , "F16C"},
+	{ 0x00000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "F16C"},
 	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "RDRAND"},
 	{ 0x00000001, 0, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ"},
 
