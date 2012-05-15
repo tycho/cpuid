@@ -32,9 +32,9 @@ def describe_revision():
 		# I considered using the Mercurial API directly, but the
 		# Mercurial wiki highly discourages it.
 		#
-		hash = subprocess_output("hg tip --template {node}")
-		tag = subprocess_output("hg tip --template {latesttag}")
-		n = int(subprocess_output("hg tip --template {latesttagdistance}"))
+		hash = subprocess_output("hg parent --template {node}")
+		tag = subprocess_output("hg parent --template {latesttag}")
+		n = int(subprocess_output("hg parent --template {latesttagdistance}"))
 		return ('hg', tag, n, hash)
 	else:
 		tag = read_whole_file('tools/release_ver')
