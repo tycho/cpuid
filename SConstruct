@@ -162,6 +162,8 @@ if not env.GetOption('clean'):
 		sources.append('getopt/getopt_long.c')
 
 	env = conf.Finish()
+else:
+	sources.append('getopt/getopt_long.c')
 
 env.Command('build.h', [Value(describe_revision())], env.Action(generate_build_header, 'Generating build.h'))
 env.Command('license.h', '#COPYING', env.Action(generate_license_header, 'Generating license.h'))
