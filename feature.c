@@ -321,7 +321,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		/* Only EBX, ECX and EDX are used for feature flags. */
 		switch (p->m_reg) {
 		case REG_EBX:
-			reg = &regs->ecx;
+			reg = &regs->ebx;
 			break;
 		case REG_ECX:
 			reg = &regs->ecx;
