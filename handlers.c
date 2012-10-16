@@ -21,6 +21,7 @@ void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -42,6 +43,7 @@ void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
@@ -51,6 +53,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000004, handle_dump_std_04},
 	{0x00000007, handle_dump_std_07},
 	{0x0000000B, handle_dump_std_0B},
+	{0x0000000D, handle_dump_std_0D},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_dump_base},
@@ -74,6 +77,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000006, handle_std_power},
 	{0x00000007, handle_std_extfeat},
 	{0x0000000B, handle_std_x2apic},
+	{0x0000000D, handle_std_ext_state},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
@@ -626,6 +630,119 @@ void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->cpuid_print(regs, state, TRUE);
 		if (!(regs->eax || regs->ebx))
 			break;
+		i++;
+	}
+}
+
+static const char *xsave_leaf_name(uint32_t bit)
+{
+	const char *bits[] = {
+		"Legacy x87",
+		"128-bit SSE",
+		"256-bit AVX"
+	};
+	if (bit <= 2)
+		return bits[bit];
+	return NULL;
+}
+
+static const char *xsave_feature_name(uint32_t bit)
+{
+	const char *bits[] = {
+		"XSAVEOPT",
+	};
+	if (bit < 1)
+		return bits[bit];
+	return NULL;
+}
+
+/* EAX = 0000 000D */
+void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	int i, j, max = 0;
+
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+	if (!regs->eax)
+		return;
+
+	printf("Extended State Enumeration\n");
+
+	for (i = 0; i <= max; i++) {
+
+		ZERO_REGS(regs);
+		regs->eax = 0xd;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+
+		if (i > 1) {
+			const char *name = xsave_leaf_name(i - 2);
+			/*if (!name || !regs->eax || !regs->ebx || !regs->ecx || !regs->edx)
+				continue;*/
+			printf("  Extended state for %s requires %d bytes, offset %d\n",
+				name, regs->eax, regs->ebx);
+		} else if (i == 1) {
+			if (!regs->eax)
+				continue;
+
+			printf("  Features available:\n");
+			for (j = 0; j < 32; j++) {
+				if (!(regs->eax & (1 << j)))
+					continue;
+				const char *name = xsave_feature_name(j);
+				if (!name)
+					continue;
+				printf("    %d - %s\n",j, name);
+			}
+			printf("\n");
+		} else if (i == 0) {
+			if (!regs->eax)
+				break;
+
+			printf("  Valid bit fields for lower 32 bits of XCR0:\n");
+			for (j = 0; j < 32; j++) {
+				if (!(regs->eax & (1 << j)))
+					continue;
+				const char *name = xsave_leaf_name(j);
+				if (!name)
+					continue;
+				printf("    %d - %s\n",j, name);
+			}
+			printf("\n");
+
+			printf("  Valid bit fields for upper 32-bits of XCR0:\n");
+			printf("    0x%08X\n", regs->edx);
+
+			printf("\n");
+
+			printf("  Maximum size required for all enabled features:   %3d bytes\n\n",
+				regs->ebx);
+
+			printf("  Maximum size required for all supported features: %3d bytes\n",
+				regs->ecx);
+
+			max = popcnt(regs->eax) + popcnt(regs->edx) - 1;
+			printf("\n");
+		}
+	}
+	if (max > 1)
+		printf("\n");
+}
+
+/* EAX = 0000 000D */
+void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 0;
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0xd;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		if (i > 1 && !(regs->eax || regs->ebx || regs->ecx || regs->edx))
+			break;
+		else if (i == 0 && !regs->eax)
+			break;
+		state->cpuid_print(regs, state, TRUE);
 		i++;
 	}
 }
