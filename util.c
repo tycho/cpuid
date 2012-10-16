@@ -10,6 +10,16 @@
 #include <sys/time.h>
 #endif
 
+uint32_t popcnt(uint32_t v)
+{
+	uint32_t n = 0;
+	while (v) {
+		n += (v & 1);
+		v >>= 1;
+	}
+	return n;
+}
+
 uint32_t count_trailing_zero_bits(uint32_t v)
 {
 	uint32_t c;
