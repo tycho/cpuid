@@ -6,6 +6,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef __linux__
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 #ifdef TARGET_COMPILER_MSVC
 #ifdef TARGET_CPU_X86_64
 #include <intrin.h>
@@ -135,6 +140,50 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 	return TRUE;
 }
 
+#endif
+
+#ifdef __linux__
+BOOL cpuid_kernel(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	off64_t offset = ((uint64_t)regs->ecx << sizeof(uint32_t)) | (uint64_t)regs->eax;
+	char path[32];
+	BOOL ret = FALSE;
+	static int fd = -1;
+	static unsigned int i;
+	int r;
+
+	if (fd == -1 || i != state->cpu_bound_index) {
+		i = state->cpu_bound_index;
+
+		if (fd != -1)
+			close(fd);
+
+		sprintf(path, "/dev/cpu/%u/cpuid", i);
+
+		fd = open(path, O_LARGEFILE, O_RDONLY);
+	}
+
+	if (fd == -1)
+		goto out;
+
+	memset(path, 0, sizeof(path));
+	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
+
+	if (offset != lseek(fd, offset, SEEK_SET))
+		goto cleanup;
+
+	r = read(fd, regs, 16);
+	if (r == -1)
+		goto cleanup;
+
+	ret = TRUE;
+cleanup:
+	close(fd);
+	i = -1;
+	fd = -1;
+out:
+	return ret;
+}
 #endif
 
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)

@@ -19,6 +19,9 @@ typedef void(*cpuid_print_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *
 
 /* Makes a lot of calls easier to do. */
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+#ifdef __linux__
+BOOL cpuid_kernel(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+#endif
 BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 /* Allows printing dumps in different formats. */

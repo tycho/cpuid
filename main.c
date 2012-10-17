@@ -152,6 +152,7 @@ struct {
 
 static int do_sanity = 0;
 static int do_dump = 0;
+static int do_kernel = 0;
 static int dump_format = DUMP_FORMAT_DEFAULT;
 
 int main(int argc, char **argv)
@@ -168,6 +169,7 @@ int main(int argc, char **argv)
 			{"sanity", no_argument, &do_sanity, 1},
 			{"dump", no_argument, &do_dump, 1},
 			{"cpu", required_argument, 0, 'c'},
+			{"kernel", no_argument, &do_kernel, 'k'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
 			{"parse", required_argument, 0, 'f'},
 			{"format", required_argument, 0, 'o'},
@@ -259,6 +261,10 @@ int main(int argc, char **argv)
 		state.cpuid_call = cpuid_stub;
 		state.thread_bind = thread_bind_stub;
 		state.thread_count = thread_count_stub;
+#ifdef __linux__
+	} else if (do_kernel) {
+		state.cpuid_call = cpuid_kernel;
+#endif
 	}
 
 	if (cpu_start == -1) {
