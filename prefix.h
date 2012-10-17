@@ -43,11 +43,11 @@
 #define inline
 #endif
 
-#ifndef __unused
+#ifndef __unused_variable
 #ifdef __GNUC__
-#define __unused __attribute__((unused))
+#define __unused_variable __attribute__((unused))
 #else
-#define __unused
+#define __unused_variable
 #endif
 #endif
 

@@ -789,7 +789,7 @@ static const char *amd_associativity(char *buffer, uint8_t assoc)
 }
 
 /* EAX = 8000 0005 */
-void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
+void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
 	char buffer[20];
 	struct amd_l1_tlb_t {
@@ -852,7 +852,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_st
 }
 
 /* EAX = 8000 0006 */
-void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused struct cpuid_state_t *state)
+void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_INTEL) {
 		/*

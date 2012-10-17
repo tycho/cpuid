@@ -344,7 +344,7 @@ BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	return TRUE;
 }
 
-void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
+void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)
 {
 	char buffer[sizeof(struct cpu_regs_t) + 1];
 	printf("CPUID %08x:%02x = %08x %08x %08x %08x | %s\n",
@@ -380,7 +380,7 @@ void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL i
 }
 
 
-void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
+void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)
 {
 	printf("   0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x\n",
 	       state->last_leaf.eax,
@@ -401,7 +401,7 @@ static const char *uint32_to_binary(char *buffer, uint32_t val)
 	return buffer;
 }
 
-void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused BOOL indexed)
+void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)
 {
 	char buffer[33];
 	/* Not sure what VMware's format is for that. */

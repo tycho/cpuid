@@ -148,7 +148,7 @@ uintptr_t thread_bind_mask(uintptr_t _mask)
 #endif
 }
 
-int thread_bind_native(__unused struct cpuid_state_t *state, uint32_t id)
+int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
 {
 #ifdef TARGET_OS_MACOSX
 #ifdef USE_CHUD
