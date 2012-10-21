@@ -687,9 +687,10 @@ void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 			printf("  Features available:\n");
 			for (j = 0; j < 32; j++) {
+				const char *name;
 				if (!(regs->eax & (1 << j)))
 					continue;
-				const char *name = xsave_feature_name(j);
+				name = xsave_feature_name(j);
 				if (!name)
 					continue;
 				printf("    %d - %s\n",j, name);
@@ -701,9 +702,10 @@ void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 			printf("  Valid bit fields for lower 32 bits of XCR0:\n");
 			for (j = 0; j < 32; j++) {
+				const char *name;
 				if (!(regs->eax & (1 << j)))
 					continue;
-				const char *name = xsave_leaf_name(j);
+				name = xsave_leaf_name(j);
 				if (!name)
 					continue;
 				printf("    %d - %s\n",j, name);
