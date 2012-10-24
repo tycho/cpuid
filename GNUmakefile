@@ -4,6 +4,9 @@ MAKEFLAGS += -Rr
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
 
+prefix := /usr/local
+bindir := $(prefix)/bin
+
 ifneq ($(findstring MINGW,$(uname_S)),)
 win32 = Yep
 endif
@@ -81,7 +84,10 @@ ifneq ($(DEPS),)
 endif
 endif
 
-.PHONY: all depend clean distclean
+.PHONY: all depend clean distclean install
+
+install: $(BINARY)
+	install -D -m0755 $(BINARY) $(DESTDIR)$(bindir)/$(BINARY)
 
 depend: $(DEPS)
 
@@ -122,7 +128,7 @@ version.o: license.h build.h
 
 ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 
-TRACK_CFLAGS = $(subst ','\'',$(CC) $(CFLAGS) $(uname_S) $(uname_O))
+TRACK_CFLAGS = $(subst ','\'',$(CC) $(CFLAGS) $(uname_S) $(uname_O) $(prefix))
 
 .cflags: .force-cflags
 	@FLAGS='$(TRACK_CFLAGS)'; \
