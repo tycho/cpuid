@@ -2,14 +2,19 @@
 
 #include <stdio.h>
 
+#define MAX_CPUS 1024
+
 #ifdef TARGET_OS_LINUX
 
 #include <pthread.h>
 #include <sched.h>
+#include <string.h>
 #define CPUSET_T cpu_set_t
+#define CPUSET_MASK_T __cpu_mask
 
 #elif defined(TARGET_OS_WINDOWS)
 
+#define _WIN32_WINNT 0x0601
 #include <windows.h>
 
 #elif defined(TARGET_OS_FREEBSD)
@@ -19,6 +24,9 @@
 #include <sys/param.h>
 #include <sys/cpuset.h>
 #define CPUSET_T cpuset_t
+#define CPUSET_MASK_T long
+#undef MAX_CPUS
+#define MAX_CPUS CPU_MAXSIZE
 
 #elif defined(TARGET_OS_MACOSX)
 
@@ -53,10 +61,7 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 		fprintf(stderr, "ERROR: thread_bind() doesn't appear to be working correctly.\n");
 		abort();
 	}
-	for (i = 0; i < 32; i++) {
-		if (thread_bind_native(state, i) != 0)
-			break;
-	}
+	while (thread_bind_native(state, ++i) == 0);
 	return i;
 #endif
 }
@@ -150,14 +155,75 @@ uintptr_t thread_bind_mask(uintptr_t _mask)
 
 int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
 {
-#ifdef TARGET_OS_MACOSX
+#ifdef TARGET_OS_WINDOWS
+
+	BOOL ret;
+	HANDLE hThread = GetCurrentThread();
+	GROUP_AFFINITY affinity;
+
+	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
+
+	affinity.Group = id / 64;
+	affinity.Mask = 1 << (id % 64);
+
+	ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+
+	return (ret != FALSE) ? 0 : 1;
+
+#elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
+
+	int ret;
+
+#ifdef CPU_SET_S
+	size_t setsize = CPU_ALLOC_SIZE(MAX_CPUS);
+	CPUSET_T *set = CPU_ALLOC(MAX_CPUS);
+	pthread_t pth;
+
+	pth = pthread_self();
+
+	CPU_ZERO_S(setsize, set);
+	CPU_SET_S(id, setsize, set);
+	ret = pthread_setaffinity_np(pth, setsize, set);
+	CPU_FREE(set);
+#else
+	size_t bits_per_set = sizeof(CPUSET_T) * 8;
+	size_t bits_per_subset = sizeof(CPUSET_MASK_T) * 8;
+	size_t setsize = sizeof(CPUSET_T) * (MAX_CPUS / bits_per_set);
+	size_t set_id, subset_id;
+	unsigned long long mask;
+	CPUSET_T *set = malloc(setsize);
+	pthread_t pth;
+
+	pth = pthread_self();
+
+	for (set_id = 0; set_id < (MAX_CPUS / bits_per_set); set_id++)
+		CPU_ZERO(&set[set_id]);
+
+	set_id = id / bits_per_set;
+	id %= bits_per_set;
+
+	subset_id = id / bits_per_subset;
+	id %= bits_per_subset;
+
+	mask = 1ULL << (unsigned long long)id;
+
+	((unsigned long *)set[set_id].__bits)[subset_id] |= mask;
+	ret = pthread_setaffinity_np(pth, setsize, set);
+	free(set);
+#endif
+
+	return (ret == 0) ? 0 : 1;
+
+#elif defined(TARGET_OS_MACOSX)
+
 #ifdef USE_CHUD
 	return (utilBindThreadToCPU(id) == 0) ? 0 : 1;
 #else
 	return 1;
 #endif
+
 #else
-	return thread_bind_mask(1 << id);
+#error "thread_bind_native() not defined for this platform"
 #endif
 }
 
