@@ -5,7 +5,6 @@
 #include "feature.h"
 #include "handlers.h"
 #include "state.h"
-#include "threads.h"
 #include "util.h"
 
 #include <stdio.h>

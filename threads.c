@@ -32,7 +32,7 @@
 
 #include <sys/sysctl.h>
 
-//#define USE_CHUD
+/*#define USE_CHUD*/
 #ifdef USE_CHUD
 extern int chudProcessorCount(void);
 extern int utilBindThreadToCPU(int n);
@@ -42,7 +42,6 @@ extern int utilUnbindThreadFromCPU(void);
 #endif
 
 #include "state.h"
-#include "threads.h"
 
 uint32_t thread_count_native(struct cpuid_state_t *state)
 {

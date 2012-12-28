@@ -12,10 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cpuid.h"
 #include "sanity.h"
 #include "state.h"
-#include "threads.h"
 #include "util.h"
 
 typedef int(*sanity_handler_t)(struct cpuid_state_t *state);

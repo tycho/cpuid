@@ -24,7 +24,7 @@ uint32_t count_trailing_zero_bits(uint32_t v)
 {
 	uint32_t c;
 	if (v) {
-		v = (v ^ (v - 1)) >> 1;  // Set v's trailing 0s to 1s and zero rest
+		v = (v ^ (v - 1)) >> 1; /* Set v's trailing 0s to 1s and zero rest */
 		for (c = 0; v; c++)
 		{
 			v >>= 1;

@@ -1,14 +1,9 @@
 #include "prefix.h"
 
-#include "cache.h"
 #include "cpuid.h"
-#include "feature.h"
 #include "handlers.h"
-#include "util.h"
 #include "sanity.h"
 #include "state.h"
-#include "threads.h"
-#include "vendor.h"
 #include "version.h"
 
 #include <stdio.h>

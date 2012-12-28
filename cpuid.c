@@ -1,9 +1,7 @@
 #include "prefix.h"
 
-#include "cpuid.h"
 #include "state.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #ifdef __linux__

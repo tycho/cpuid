@@ -1,7 +1,7 @@
-#include "prefix.h"
 
 #include "build.h"
 #include "license.h"
+
 #include "version.h"
 
 #include <stdio.h>

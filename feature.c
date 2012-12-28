@@ -1,9 +1,7 @@
 #include "prefix.h"
 
-#include "cpuid.h"
 #include "feature.h"
 #include "state.h"
-#include "vendor.h"
 
 #include <stdio.h>
 #include <string.h>
