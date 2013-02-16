@@ -153,6 +153,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 		}
 	}
 	free(apic_copy);
+	apic_copy = NULL;
 
 	/* Spawn a few busy threads to incur thread migrations,
 	   if they're going to happen at all. */
@@ -181,6 +182,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 #endif
 	}
 	free(apic_ids);
+	apic_ids = NULL;
 
 	/* Occasionally signal workers to run validation checks. */
 	start = time_sec();
@@ -243,8 +245,9 @@ cleanup:
 		free(apic_workers);
 	}
 	
-	if (apic_state)
-		free(apic_state);
+	free(apic_ids);
+	free(apic_copy);
+	free(apic_state);
 
 	/* Restore the affinity mask from before. */
 	thread_bind_mask(oldbinding);
