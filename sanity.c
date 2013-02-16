@@ -242,10 +242,9 @@ cleanup:
 #endif
 		free(apic_workers);
 	}
-
-	free(apic_ids);
-	free(apic_copy);
-	free(apic_state);
+	
+	if (apic_state)
+		free(apic_state);
 
 	/* Restore the affinity mask from before. */
 	thread_bind_mask(oldbinding);
