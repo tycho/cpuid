@@ -32,7 +32,7 @@ BINARY := cpuid$(EXT)
 
 all: $(BINARY)
 
-CC := gcc
+CC ?= gcc
 CP := cp -L
 CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
 	-std=gnu89 \

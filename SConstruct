@@ -110,7 +110,7 @@ env.Decider('MD5-timestamp')
 
 debug = ARGUMENTS.get('debug', 0)
 
-if env['CC'] == 'gcc':
+if env['CC'] == 'gcc' or env['CC'] == 'clang':
 	# Optimization levels
 	if int(debug):
 		env.Append(CFLAGS='-O0 -ggdb')
