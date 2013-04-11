@@ -34,7 +34,21 @@ all: $(BINARY)
 
 CC := gcc
 CP := cp -L
-CFLAGS := -Os -I../inc -I. -fno-strict-aliasing -std=gnu89 -Wall -Wextra -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wmissing-declarations -Wdeclaration-after-statement -Werror -Wno-overlength-strings -pedantic
+CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
+	-std=gnu89 \
+	-pedantic \
+	-Werror \
+	-Wall \
+	-Wextra \
+	-Wdeclaration-after-statement \
+	-Wimplicit-function-declaration \
+	-Wmissing-declarations \
+	-Wmissing-prototypes \
+	-Wno-long-long \
+	-Wno-overlength-strings \
+	-Wold-style-definition \
+	-Wstrict-prototypes
+
 LDFLAGS :=
 OBJECTS := cache.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
