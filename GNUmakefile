@@ -125,7 +125,7 @@ endif
 ifdef NO_INLINE_DEPGEN
 	$(QUIET_CC)$(CC) $(CFLAGS) -c -o $@ $<
 else
-	$(QUIET_CC)$(CC) $(CFLAGS) -Wp,-MD,$*.d,-MT,$@ -c -o $@ $<
+	$(QUIET_CC)$(CC) $(CFLAGS) -MD -c -o $@ $<
 endif
 
 build.h: .force-regen
