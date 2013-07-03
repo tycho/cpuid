@@ -290,7 +290,7 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	switch (desc->type) {
 	case TRACE:
 		strcat(buffer, "trace cache: ");
-		sprintf(temp, "%dK-uops, ", desc->size);
+		sprintf(temp, "%dK-uops", desc->size);
 		strcat(buffer, temp);
 		break;
 	case DATA_TLB:
