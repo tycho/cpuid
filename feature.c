@@ -116,7 +116,7 @@ static const struct cpu_feature_t features [] = {
 
 /*  Structured Extended Feature Flags (0000_0007h) */
 	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "FSGSBASE"}, /* {RD,WR}{FS,GS}BASE */
-/*	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "TSC_ADJUST"}, /* IA32_TSC_ADJUST MSR */
 /*	{ 0x00000007, 0, REG_EBX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "BMI1"},
 	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "HLE"},      /* Hardware Lock Elision */
