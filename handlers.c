@@ -587,7 +587,7 @@ void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	printf("  Number of fixed-function counters: %u\n", edx->count_ff);
 	printf("  Bit width of fixed-function counters: %u\n", edx->bit_width_ff);
 
-	printf("  Features:\n");
+	printf("  Supported performance counters:\n");
 	for (feat = features; feat->name; feat++)
 	{
 		if (feat->mask > (1u << eax->ebx_length))
