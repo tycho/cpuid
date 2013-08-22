@@ -40,6 +40,7 @@ void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -95,6 +96,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000005, handle_std_monitor},
 	{0x00000006, handle_std_power},
 	{0x00000007, handle_std_extfeat},
+	{0x0000000A, handle_std_perfmon},
 	{0x0000000B, handle_std_x2apic},
 	{0x0000000D, handle_std_ext_state},
 
@@ -538,6 +540,64 @@ void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->cpuid_print(regs, state, TRUE);
 		i++;
 	}
+}
+
+/* EAX = 0000 000A */
+void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct perfmon_eax_t {
+		unsigned version:8;
+		unsigned pmc_per_logical:8;
+		unsigned bit_width_pmc:8;
+		unsigned ebx_length:8;
+	};
+	struct perfmon_ebx_feat_t {
+		unsigned int mask;
+		const char *name;
+	} features[] = {
+		{0x00000001, "Core cycles"},
+		{0x00000002, "Instructions retired"},
+		{0x00000004, "Reference cycles"},
+		{0x00000008, "Last-level cache reference"},
+		{0x00000010, "Last-level cache miss"},
+		{0x00000020, "Branches retired"},
+		{0x00000040, "Branches mispredicted"},
+		{0x00000000, NULL}
+	};
+	struct perfmon_edx_t {
+		unsigned count_ff:5;
+		unsigned bit_width_ff:8;
+		unsigned reserved:19;
+	};
+
+	struct perfmon_eax_t *eax = (struct perfmon_eax_t *)&regs->eax;
+	struct perfmon_edx_t *edx = (struct perfmon_edx_t *)&regs->edx;
+	struct perfmon_ebx_feat_t *feat;
+
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+
+	if (!eax->version)
+		return;
+
+	printf("Architectural Performance Monitoring\n");
+	printf("  Version: %u\n", eax->version);
+	printf("  Counters per logical processor: %u\n", eax->pmc_per_logical);
+	printf("  Counter bit width: %u\n", eax->bit_width_pmc);
+	printf("  Number of fixed-function counters: %u\n", edx->count_ff);
+	printf("  Bit width of fixed-function counters: %u\n", edx->bit_width_ff);
+
+	printf("  Features:\n");
+	for (feat = features; feat->name; feat++)
+	{
+		if (feat->mask > (1u << eax->ebx_length))
+			break;
+
+		/* 1 == unavailable for some bizarre reason. */
+		if ((regs->ebx & feat->mask) == 0)
+			printf("    %s\n", feat->name);
+	}
+	printf("\n");
 }
 
 /* EAX = 0000 000B */
