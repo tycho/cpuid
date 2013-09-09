@@ -718,7 +718,12 @@ static const char *xsave_leaf_name(uint32_t bit)
 	const char *bits[] = {
 		"Legacy x87",
 		"128-bit SSE",
-		"256-bit AVX"
+		"256-bit AVX YMM_Hi128",
+		"MPX bound registers",
+		"MPX bound configuration",
+		"512-bit AVX OpMask",
+		"512-bit AVX ZMM_Hi256",
+		"512-bit AVX ZMM_Hi16"
 	};
 	if (bit <= 2)
 		return bits[bit];
