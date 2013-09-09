@@ -132,10 +132,10 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "MPX"},      /* Memory Protection Extensions */
 /*	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "RDSEED"},
-	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "ADX"},
-	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "SMAP"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED"},
+	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "ADX"},
+	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "SMAP"},
 /*	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
