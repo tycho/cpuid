@@ -33,11 +33,6 @@
 #define CPUSET_T cpu_set_t
 #define CPUSET_MASK_T __cpu_mask
 
-#elif defined(TARGET_OS_WINDOWS)
-
-#define _WIN32_WINNT 0x0601
-#include <windows.h>
-
 #elif defined(TARGET_OS_FREEBSD)
 
 #include <pthread.h>
@@ -179,6 +174,7 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 
 	BOOL ret;
 	HANDLE hThread = GetCurrentThread();
+#if _WIN32_WINNT >= 0x0601
 	GROUP_AFFINITY affinity;
 
 	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
@@ -187,6 +183,16 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	affinity.Mask = 1 << (id % 64);
 
 	ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+#else
+	DWORD mask;
+
+	if (id > 32)
+		return 1;
+
+	mask = (1 << id);
+
+	ret = SetThreadAffinityMask(hThread, mask);
+#endif
 
 	return (ret != FALSE) ? 0 : 1;
 
