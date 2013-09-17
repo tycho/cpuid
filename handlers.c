@@ -376,11 +376,13 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("        %d byte line size\n"
 		       "        %d partitions\n"
 		       "        %d sets\n"
-		       "        shared by max %d threads\n\n",
+		       "        shared by max %d threads\n"
+		       "        maximum %d APIC IDs for cores in package\n\n",
 		       ebx->line_size + 1,
 		       ebx->partitions + 1,
 		       regs->ecx + 1,
-		       eax->max_threads_sharing + 1);
+		       eax->max_threads_sharing + 1,
+		       eax->apics_reserved + 1);
 
 		/* This is the official termination condition for this leaf. */
 		if (!(regs->eax & 0xF))
