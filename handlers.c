@@ -641,6 +641,8 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		shift = regs->eax & 0x1f;
 		if (level > 0)
 			id = regs->edx;
+		else
+			break;
 		switch (level) {
 		case 1: /* Thread level */
 			thread.total = regs->ebx & 0xffff;
