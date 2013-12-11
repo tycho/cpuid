@@ -65,7 +65,7 @@ static uint8_t get_apicid_for_cpu(struct cpuid_state_t *state, uint32_t index)
 }
 
 #ifdef TARGET_OS_WINDOWS
-DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
+static DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
 {
 	uint8_t *flag = (uint8_t *)flagptr;
 	uint32_t hwthreads = thread_count_native(NULL);
@@ -99,7 +99,7 @@ struct apic_validate_t {
 };
 
 #ifdef TARGET_OS_WINDOWS
-DWORD WINAPI apic_validation_thread(LPVOID ptr)
+static DWORD WINAPI apic_validation_thread(LPVOID ptr)
 {
 	struct apic_validate_t *meta = (struct apic_validate_t *)ptr;
 	SetThreadAffinityMask(GetCurrentThread(), 1 << meta->index);
