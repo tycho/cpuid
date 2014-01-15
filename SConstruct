@@ -124,7 +124,7 @@ if env['CC'] == 'gcc' or env['CC'] == 'clang':
 	env.Append(CFLAGS='-I.')
 
 	# Warning flags
-	env.Append(CFLAGS='-Wall -Werror -Wextra -Wdeclaration-after-statement -Wimplicit-function-declaration -Wmissing-declarations -Wmissing-prototypes -Wno-long-long -Wno-overlength-strings -Wold-style-definition -Wstrict-prototypes')
+	env.Append(CFLAGS='-Wall -Wextra -Wdeclaration-after-statement -Wimplicit-function-declaration -Wmissing-declarations -Wmissing-prototypes -Wno-long-long -Wno-overlength-strings -Wold-style-definition -Wstrict-prototypes')
 
 	# pthreads
 	env.Append(CFLAGS='-pthread')

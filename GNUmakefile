@@ -36,7 +36,6 @@ CC := gcc
 CP := cp -L
 CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
 	-std=gnu89 \
-	-Werror \
 	-Wall \
 	-Wextra \
 	-Wdeclaration-after-statement \
