@@ -128,7 +128,11 @@ if env['CC'] == 'gcc' or env['CC'] == 'clang':
 
 	# pthreads
 	env.Append(CFLAGS='-pthread')
-	env.Append(LINKFLAGS='-pthread -lm')
+	env.Append(LINKFLAGS='-pthread')
+
+        # needed for sqrt etc
+	env.Append(LIBS='-lm')
+
 elif env['CC'] == 'cl':
 	# Optimization levels
 	if int(debug):
