@@ -3,7 +3,7 @@
  *
  * A simple and small tool to dump/decode CPUID information.
  *
- * Copyright (c) 2010-2013, Steven Noonan <steven@uplinklabs.net>
+ * Copyright (c) 2010-2014, Steven Noonan <steven@uplinklabs.net>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "clock.h"
 #include "sanity.h"
 #include "state.h"
 #include "util.h"
@@ -41,10 +42,12 @@ typedef int(*sanity_handler_t)(struct cpuid_state_t *state);
 
 static int sane_apicid(struct cpuid_state_t *state);
 static int sane_l3_sharing(struct cpuid_state_t *state);
+static int sane_performance(struct cpuid_state_t *state);
 
 sanity_handler_t handlers[] = {
 	sane_apicid,
 	sane_l3_sharing,
+	sane_performance,
 	NULL
 };
 
@@ -310,6 +313,47 @@ static int sane_l3_sharing(struct cpuid_state_t *state)
 		i++;
 	}
 	printf("ok\n");
+	return 0;
+}
+
+static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
+{
+	uint64_t s, e;
+	uint32_t i = 0, max = 500000;
+	struct cpu_regs_t regs;
+
+	printf("Measuring performance of leaf 0x%08x:%d... ", eax, ecx);
+	s = get_cpu_clock();
+	while (i < max) {
+		ZERO_REGS(&regs);
+		regs.eax = eax;
+		regs.ecx = ecx;
+		state->cpuid_call(&regs, state);
+
+		i++;
+	}
+	e = get_cpu_clock();
+
+	//printf("\ns: %" PRIu64 "\ne: %" PRIu64 "\n", s, e);
+	printf("total: %" PRIu64 " ns (%" PRIu64 " clocks), ", cpu_clock_to_wall(e - s), e - s);
+	printf("per call: %" PRIu64 " ns (%" PRIu64 " clocks)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
+	return 0;
+}
+
+static int sane_performance(struct cpuid_state_t *state)
+{
+	struct leaf {
+		uint32_t eax;
+		uint32_t ecx;
+	} leaves[] = {
+		{ 0x00000000, 0 },
+		{ 0x40000000, 0 },
+		{ 0x80000000, 0 }
+	};
+	size_t leaf_count = sizeof(leaves) / sizeof(leaves[0]);
+	size_t i;
+	for (i = 0; i < leaf_count; i++)
+		measure_leaf(state, leaves[i].eax, leaves[i].ecx);
 	return 0;
 }
 

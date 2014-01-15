@@ -128,7 +128,7 @@ if env['CC'] == 'gcc' or env['CC'] == 'clang':
 
 	# pthreads
 	env.Append(CFLAGS='-pthread')
-	env.Append(LINKFLAGS='-pthread')
+	env.Append(LINKFLAGS='-pthread -lm')
 elif env['CC'] == 'cl':
 	# Optimization levels
 	if int(debug):
@@ -144,6 +144,7 @@ elif env['CC'] == 'cl':
 
 sources = [
 	'cache.c',
+	'clock.c',
 	'cpuid.c',
 	'feature.c',
 	'handlers.c',
