@@ -56,7 +56,7 @@ endif
 
 ifeq ($(uname_S),Linux)
 CFLAGS += -pthread
-LDFLAGS += -pthread
+LDFLAGS += -pthread -lrt
 endif
 
 ifeq ($(uname_S),FreeBSD)
