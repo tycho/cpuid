@@ -138,7 +138,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "SMAP"},
 /*	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "CLFSHOPT"},
 /*	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "PTRACE"},   /* Intel Processor Trace */
 	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX512PF"},
