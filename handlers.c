@@ -1422,6 +1422,8 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	} else if (strcmp(buf, "KVMKVMKVM") == 0) {
 		state->vendor |= VENDOR_HV_KVM;
 		printf("KVM hypervisor detected\n\n");
+	} else if (strcmp(buf, "Microsoft Hv") == 0) {
+		state->vendor |= VENDOR_HV_HYPERV;
 	}
 }
 

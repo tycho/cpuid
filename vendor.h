@@ -32,6 +32,7 @@ typedef enum
 	VENDOR_HV_XEN     = 0x10,
 	VENDOR_HV_VMWARE  = 0x20,
 	VENDOR_HV_KVM     = 0x40,
+	VENDOR_HV_HYPERV  = 0x80,
 	VENDOR_ANY        = (int)-1
 } cpu_vendor_t;
 
