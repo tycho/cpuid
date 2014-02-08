@@ -57,7 +57,6 @@ struct cpuid_state_t
 	struct cpu_regs_t last_leaf;
 	struct cpu_signature_t sig;
 	cpu_vendor_t vendor;
-	hypervisor_t hypervisor;
 	uint32_t curmax;
 	char procname[48];
 };

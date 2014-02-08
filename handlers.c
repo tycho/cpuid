@@ -1414,25 +1414,21 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	*(uint32_t *)(&buf[8]) = regs->edx;
 	buf[12] = 0;
 	if (strcmp(buf, "XenVMMXenVMM") == 0) {
-		state->hypervisor = HYPERVISOR_XEN;
-		printf("Xen hypervisor detected\n");
+		state->vendor |= VENDOR_HV_XEN;
+		printf("Xen hypervisor detected\n\n");
 	} else if (strcmp(buf, "VMwareVMware") == 0) {
-		state->hypervisor = HYPERVISOR_VMWARE;
-		printf("VMware hypervisor detected\n");
+		state->vendor |= VENDOR_HV_VMWARE;
+		printf("VMware hypervisor detected\n\n");
 	} else if (strcmp(buf, "KVMKVMKVM") == 0) {
-		state->hypervisor = HYPERVISOR_KVM;
-		printf("KVM hypervisor detected\n");
-	} else {
-		state->hypervisor = HYPERVISOR_UNKNOWN;
+		state->vendor |= VENDOR_HV_KVM;
+		printf("KVM hypervisor detected\n\n");
 	}
-	if (state->hypervisor != HYPERVISOR_UNKNOWN)
-		printf("\n");
 }
 
 /* EAX = 4000 0001 */
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->hypervisor != HYPERVISOR_XEN)
+	if (!(state->vendor & VENDOR_HV_XEN))
 		return;
 	printf("Xen version: %d.%d\n\n", regs->eax >> 16, regs->eax & 0xFFFF);
 }
@@ -1440,7 +1436,7 @@ void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 /* EAX = 4000 0002 */
 void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->hypervisor != HYPERVISOR_XEN)
+	if (!(state->vendor & VENDOR_HV_XEN))
 		return;
 	printf("Xen features:\n"
 	       "  Hypercall transfer pages: %d\n"
@@ -1452,7 +1448,7 @@ void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 /* EAX = 4000 0003 */
 void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->hypervisor != HYPERVISOR_XEN)
+	if (!(state->vendor & VENDOR_HV_XEN))
 		return;
 	printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
 }
@@ -1460,7 +1456,7 @@ void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 /* EAX = 4000 0010 */
 void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->hypervisor != HYPERVISOR_VMWARE)
+	if (!(state->vendor & VENDOR_HV_VMWARE))
 		return;
 	printf("TSC frequency: %4.2fMHz\n"
 	       "Bus (local APIC timer) frequency: %4.2fMHz\n\n",
