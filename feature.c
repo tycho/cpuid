@@ -214,6 +214,40 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
+/*  Hypervisor (4000_0003h) */
+	{ 0x40000003, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV                            , "VP_RUNTIME"},
+	{ 0x40000003, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV                            , "TIME_REF_COUNT"},
+	{ 0x40000003, 0, REG_EAX, 0x00000004, VENDOR_HV_HYPERV                            , "Basic SynIC MSRs"},
+	{ 0x40000003, 0, REG_EAX, 0x00000008, VENDOR_HV_HYPERV                            , "Synthetic Timer"},
+	{ 0x40000003, 0, REG_EAX, 0x00000010, VENDOR_HV_HYPERV                            , "APIC access"},
+	{ 0x40000003, 0, REG_EAX, 0x00000020, VENDOR_HV_HYPERV                            , "Hypercall MSRs"},
+	{ 0x40000003, 0, REG_EAX, 0x00000040, VENDOR_HV_HYPERV                            , "VP Index MSR"},
+	{ 0x40000003, 0, REG_EAX, 0x00000080, VENDOR_HV_HYPERV                            , "System Reset MSR"},
+	{ 0x40000003, 0, REG_EAX, 0x00000100, VENDOR_HV_HYPERV                            , "Access stats MSRs"},
+	{ 0x40000003, 0, REG_EAX, 0x00000200, VENDOR_HV_HYPERV                            , "Reference TSC"},
+	{ 0x40000003, 0, REG_EAX, 0x00000400, VENDOR_HV_HYPERV                            , "Guest Idle MSR"},
+	{ 0x40000003, 0, REG_EAX, 0x00000800, VENDOR_HV_HYPERV                            , "Timer Frequency MSRs"},
+	{ 0x40000003, 0, REG_EAX, 0x00001000, VENDOR_HV_HYPERV                            , "Debug MSRs"},
+/*	{ 0x40000003, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
+
 /*  Extended (8000_0001h) */
 /*	{ 0x80000001, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -321,6 +355,9 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	case 0x00000001:
 		printf("Base features:\n");
 		break;
+	case 0x40000003:
+		printf("Hyper-V features:\n");
+		break;
 	case 0x80000001:
 		printf("Extended features:\n");
 		break;
@@ -337,8 +374,10 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			continue;
 		}
 
-		/* Only EBX, ECX and EDX are used for feature flags. */
 		switch (p->m_reg) {
+		case REG_EAX:
+			reg = &regs->eax;
+			break;
 		case REG_EBX:
 			reg = &regs->ebx;
 			break;
@@ -350,7 +389,6 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			break;
 		default:
 			abort();
-			break;
 		}
 
 		if (ignore_vendor) {
