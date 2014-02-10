@@ -56,7 +56,7 @@ void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -104,7 +104,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x40000000, handle_vmm_base},
 	{0x40000001, handle_xen_version},
 	{0x40000002, handle_xen_leaf02},
-	{0x40000003, handle_xen_leaf03},
+	{0x40000003, handle_vmm_leaf03},
 	{0x40000003, handle_vmware_leaf10},
 
 	/* Extended levels */
@@ -1408,6 +1408,7 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	char buf[13];
 
 	state->curmax = regs->eax;
+	printf("Maximum hypervisor CPUID leaf: 0x%08x\n\n", state->curmax);
 
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->ecx;
@@ -1424,6 +1425,7 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("KVM hypervisor detected\n\n");
 	} else if (strcmp(buf, "Microsoft Hv") == 0) {
 		state->vendor |= VENDOR_HV_HYPERV;
+		printf("Hyper-V detected\n\n");
 	}
 }
 
@@ -1448,11 +1450,14 @@ void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0003 */
-void handle_xen_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (!(state->vendor & VENDOR_HV_XEN))
-		return;
-	printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
+	if (state->vendor & VENDOR_HV_XEN) {
+		printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
+	} else if (state->vendor & VENDOR_HV_HYPERV) {
+		print_features(regs, state);
+		printf("\n");
+	}
 }
 
 /* EAX = 4000 0010 */
