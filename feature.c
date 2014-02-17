@@ -350,10 +350,14 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	const struct cpu_feature_t *p = features;
 	uint8_t count = 0;
-	uint8_t unaccounted = 0;
 	switch(state->last_leaf.eax) {
 	case 0x00000001:
 		printf("Base features:\n");
+
+		/* We account for EAX/EBX separately with leaf 0x1, as these contain
+		 * metadata other than feature flags.
+		 */
+		regs->eax = regs->ebx = 0;
 		break;
 	case 0x40000003:
 		printf("Hyper-V features:\n");
@@ -423,16 +427,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (count != 0)
 		printf("\n");
 
-	if (regs->ebx && state->last_leaf.eax == 0x00000007)
-		unaccounted = 1;
-
-	if (regs->eax && (state->last_leaf.eax & 0x40000000 == 0x40000000))
-		unaccounted = 1;
-
-	if (regs->ecx || regs->edx)
-		unaccounted = 1;
-
-	if (unaccounted)
+	if (regs->eax || regs->ebx || regs->ecx || regs->edx)
 		printf("Unaccounted for: eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
 		       regs->eax, regs->ebx, regs->ecx, regs->edx);
 }
