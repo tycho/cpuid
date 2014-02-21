@@ -682,7 +682,8 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	core.shift = count_trailing_zero_bits(core.mask);
 	thread.shift = count_trailing_zero_bits(thread.mask);
 
-	core.total /= thread.total;
+	if (core.total > thread.total)
+		core.total /= thread.total;
 	printf("  Inferred information:\n");
 	printf("    Logical total:       %u%s\n", total_logical, (total_logical >= core.total * thread.total) ? "" : " (?)");
 	printf("    Logical per socket:  %u\n", core.total * thread.total);
