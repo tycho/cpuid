@@ -412,6 +412,16 @@ BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	return TRUE;
 }
 
+static const char *uint32_to_binary(char *buffer, uint32_t val)
+{
+	int i;
+	buffer[32] = 0;
+	for (i = 0; i < 32; i++) {
+		buffer[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
+	}
+	return buffer;
+}
+
 void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)
 {
 	char buffer[sizeof(struct cpu_regs_t) + 1];
@@ -447,6 +457,39 @@ void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL i
 		       regs->edx);
 }
 
+void cpuid_dump_xen_sxp(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
+{
+	char eax[33],
+		 ebx[33],
+		 ecx[33],
+		 edx[33];
+
+	/* Skip the hypervisor leaf. */
+	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
+		return;
+
+	uint32_to_binary(eax, regs->eax);
+	uint32_to_binary(ebx, regs->ebx);
+	uint32_to_binary(ecx, regs->ecx);
+	uint32_to_binary(edx, regs->edx);
+
+	if (!indexed)
+		printf("(0x%08x   ((eax %s)\n"
+			   "               (ebx %s)\n"
+			   "               (ecx %s)\n"
+			   "               (edx %s)))\n",
+		       state->last_leaf.eax,
+		       eax, ebx, ecx, edx);
+	else
+		printf("(0x%08x,%d ((eax %s)\n"
+			   "               (ebx %s)\n"
+			   "               (ecx %s)\n"
+			   "               (edx %s)))\n",
+		       state->last_leaf.eax,
+		       state->last_leaf.ecx,
+		       eax, ebx, ecx, edx);
+}
+
 
 void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)
 {
@@ -457,16 +500,6 @@ void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, __
 	       regs->ebx,
 	       regs->ecx,
 	       regs->edx);
-}
-
-static const char *uint32_to_binary(char *buffer, uint32_t val)
-{
-	int i;
-	buffer[32] = 0;
-	for (i = 0; i < 32; i++) {
-		buffer[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
-	}
-	return buffer;
 }
 
 void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __unused_variable BOOL indexed)

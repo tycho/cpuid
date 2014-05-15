@@ -149,9 +149,11 @@ static void version(void)
 }
 
 enum {
-	DUMP_FORMAT_DEFAULT = 1,
+	DUMP_FORMAT_NONE,
+	DUMP_FORMAT_DEFAULT,
 	DUMP_FORMAT_VMWARE,
 	DUMP_FORMAT_XEN,
+	DUMP_FORMAT_XEN_SXP,
 	DUMP_FORMAT_ETALLEN
 };
 
@@ -162,8 +164,9 @@ struct {
 	{ "default",  DUMP_FORMAT_DEFAULT },
 	{ "vmware",   DUMP_FORMAT_VMWARE },
 	{ "xen",      DUMP_FORMAT_XEN },
+	{ "sxp",      DUMP_FORMAT_XEN_SXP },
 	{ "etallen",  DUMP_FORMAT_ETALLEN },
-	{ NULL, 0 }
+	{ NULL,       DUMP_FORMAT_NONE }
 };
 
 static int do_sanity = 0;
@@ -267,6 +270,11 @@ int main(int argc, char **argv)
 		state.cpuid_print = cpuid_dump_xen;
 		printf("cpuid = [\n");
 		break;
+	case DUMP_FORMAT_XEN_SXP:
+		cpu_start = 0;
+		state.cpuid_print = cpuid_dump_xen_sxp;
+		printf("(\n");
+		break;
 	case DUMP_FORMAT_ETALLEN:
 		state.cpuid_print = cpuid_dump_etallen;
 		break;
@@ -315,11 +323,13 @@ int main(int argc, char **argv)
 		run_cpuid(&state, do_dump);
 	}
 
-	if (do_dump && dump_format == DUMP_FORMAT_XEN) {
-		/* This isn't a pretty way to do this. I suspect we might
-		 * want pre and post print hooks.
-		 */
+	switch (dump_format) {
+	case DUMP_FORMAT_XEN:
 		printf("]\n");
+		break;
+	case DUMP_FORMAT_XEN_SXP:
+		printf(")\n");
+		break;
 	}
 
 	if (do_sanity && !file) {
