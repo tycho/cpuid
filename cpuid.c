@@ -437,24 +437,29 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __u
 
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
+	char eax[33],
+		 ebx[33],
+		 ecx[33],
+		 edx[33];
+
 	/* Skip the hypervisor leaf. */
 	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
 		return;
+
+	uint32_to_binary(eax, regs->eax);
+	uint32_to_binary(ebx, regs->ebx);
+	uint32_to_binary(ecx, regs->ecx);
+	uint32_to_binary(edx, regs->edx);
+
 	if (!indexed)
-		printf("'0x%08x:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
+		printf("    '0x%08x:eax=%s,ebx=%s,ecx=%s,edx=%s',\n",
 		       state->last_leaf.eax,
-		       regs->eax,
-		       regs->ebx,
-		       regs->ecx,
-		       regs->edx);
+		       eax, ebx, ecx, edx);
 	else
-		printf("'0x%08x,%d:eax=0x%08x,ebx=0x%08x,ecx=0x%08x,edx=0x%08x',\n",
+		printf("    '0x%08x,%d:eax=%s,ebx=%s,ecx=%s,edx=%s',\n",
 		       state->last_leaf.eax,
 		       state->last_leaf.ecx,
-		       regs->eax,
-		       regs->ebx,
-		       regs->ecx,
-		       regs->edx);
+		       eax, ebx, ecx, edx);
 }
 
 void cpuid_dump_xen_sxp(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
