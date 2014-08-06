@@ -438,9 +438,9 @@ void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, __u
 void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
 	char eax[33],
-		 ebx[33],
-		 ecx[33],
-		 edx[33];
+	     ebx[33],
+	     ecx[33],
+	     edx[33];
 
 	/* Skip the hypervisor leaf. */
 	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
@@ -465,9 +465,9 @@ void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL i
 void cpuid_dump_xen_sxp(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed)
 {
 	char eax[33],
-		 ebx[33],
-		 ecx[33],
-		 edx[33];
+	     ebx[33],
+	     ecx[33],
+	     edx[33];
 
 	/* Skip the hypervisor leaf. */
 	if ((0xF0000000 & state->last_leaf.eax) == 0x40000000)
