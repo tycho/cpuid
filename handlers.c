@@ -377,10 +377,10 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		       cache04_type(eax->type));
 
 		if (eax->self_initializing)
-			printf("        self-initializing\n");
+			printf("        Self-initializing\n");
 
 		if (eax->fully_associative) {
-			printf("        fully associative\n");
+			printf("        Fully associative\n");
 		} else {
 			printf("        %d-way set associative\n",
 			       ebx->assoc + 1);
