@@ -127,10 +127,10 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "ERMS"},     /* Enhanced REP MOVSB/STOSB */
 	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID"},
 	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "RTM"},      /* Restricted Transactional Memory */
-	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , "QM"},       /* Quality of Service Monitoring (QM) */
+	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , "PQM"},      /* Platform Quality of Service Monitoring (PQM) */
 	{ 0x00000007, 0, REG_EBX, 0x00002000, VENDOR_INTEL                                , "CSDS_DEP"}, /* FPU CS and FPU DS values deprecated */
 	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "MPX"},      /* Memory Protection Extensions */
-/*	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "PQE"},      /* Platform Quality of Service Enforcement (PQE) */
 	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512F"},
 /*	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED"},
