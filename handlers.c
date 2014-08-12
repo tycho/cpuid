@@ -323,6 +323,15 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned partitions:10; /* +1 encoded */
 		unsigned assoc:10; /* +1 encoded */
 	};
+	struct edx_cache04_feat_t {
+		unsigned int mask;
+		const char *name;
+	} features[] = {
+		{0x00000001, "Write-back invalidate acts upon lower levels"},
+		{0x00000002, "Inclusive of lower cache levels"},
+		{0x00000004, "Complex indexing"},
+		{0x00000000, NULL}
+	};
 	uint32_t i = 0;
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
@@ -335,6 +344,7 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	while (1) {
 		struct eax_cache04_t *eax;
 		struct ebx_cache04_t *ebx;
+		struct edx_cache04_feat_t *feat;
 		uint32_t cacheSize;
 		ZERO_REGS(regs);
 		regs->eax = 4;
@@ -366,6 +376,9 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		       eax->level,
 		       cache04_type(eax->type));
 
+		if (eax->self_initializing)
+			printf("        self-initializing\n");
+
 		if (eax->fully_associative) {
 			printf("        fully associative\n");
 		} else {
@@ -373,16 +386,24 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			       ebx->assoc + 1);
 		}
 
+		for (feat = features; feat->name; feat++)
+		{
+			if ((regs->edx & feat->mask))
+				printf("        %s\n", feat->name);
+		}
+
 		printf("        %d byte line size\n"
 		       "        %d partitions\n"
 		       "        %d sets\n"
 		       "        shared by max %d threads\n"
-		       "        maximum %d APIC IDs for cores in package\n\n",
+		       "        maximum %d APIC IDs for cores in package\n",
 		       ebx->line_size + 1,
 		       ebx->partitions + 1,
 		       regs->ecx + 1,
 		       eax->max_threads_sharing + 1,
 		       eax->apics_reserved + 1);
+
+		printf("\n");
 
 		/* This is the official termination condition for this leaf. */
 		if (!(regs->eax & 0xF))
