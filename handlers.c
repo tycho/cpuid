@@ -762,8 +762,11 @@ static const char *xsave_feature_name(uint32_t bit)
 {
 	const char *bits[] = {
 		"XSAVEOPT",
+		"XSAVEC and compacted XRSTOR",
+		"XGETBV with ECX=1",
+		"XSAVES/XRSTORS and IA32_XSS"
 	};
-	if (bit < 1)
+	if (bit < 4)
 		return bits[bit];
 	return NULL;
 }
