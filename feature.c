@@ -428,6 +428,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("\n");
 
 	if (regs->eax || regs->ebx || regs->ecx || regs->edx)
-		printf("Unaccounted for: eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
-		       regs->eax, regs->ebx, regs->ecx, regs->edx);
+		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
+			state->last_leaf.eax, state->last_leaf.ecx,
+		    regs->eax, regs->ebx, regs->ecx, regs->edx);
 }
