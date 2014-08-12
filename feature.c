@@ -92,7 +92,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "TM2"},
 	{ 0x00000001, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "SSSE3"},
 	{ 0x00000001, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "CNXT-ID"},
-/*	{ 0x00000001, 0, REG_ECX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000001, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , "SDBG"}, /* supports IA32_DEBUG_INTERFACE MSR for silicon debug */
 	{ 0x00000001, 0, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "FMA"},
 	{ 0x00000001, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , "CX16"},
 	{ 0x00000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , "xTPR"},
