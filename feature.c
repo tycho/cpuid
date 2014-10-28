@@ -248,7 +248,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
-/*	{ 0x40000003, 0, REG_EDX, 0x00000001,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT"},
 /*	{ 0x40000003, 0, REG_EDX, 0x00000002,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00000004,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00000008,                                             , ""}, */   /* Reserved */
