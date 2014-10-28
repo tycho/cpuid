@@ -248,6 +248,39 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
+/*	{ 0x40000003, 0, REG_EDX, 0x00000001,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000002,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000004,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000008,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000010,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EDX, 0x80000000,                                             , ""}, */   /* Reserved */
+
 /*  Extended (8000_0001h) */
 /*	{ 0x80000001, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
