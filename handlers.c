@@ -488,7 +488,8 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned pln:1;
 		unsigned ecmd:1;
 		unsigned ptm:1;
-		unsigned reserved_2:25;
+		unsigned hwp:1;
+		unsigned reserved_2:24;
 	};
 	struct ebx_power_t {
 		unsigned dts_thresholds:4;
@@ -524,6 +525,8 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("  Clock modulation duty cycle extension\n");
 	if (eax->ptm)
 		printf("  Package thermal management\n");
+	if (eax->hwp)
+		printf("  Hardware Managed Performance States\n");
 	if (ebx->dts_thresholds)
 		printf("  Interrupt thresholds in DTS: %d\n", ebx->dts_thresholds);
 	if (ecx->hcf)
