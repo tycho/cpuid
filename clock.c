@@ -29,9 +29,20 @@ static uint32_t cycles_per_usec;
 
 static uint64_t wallclock_ns(void)
 {
+#if defined(TARGET_OS_WINDOWS)
+	static LARGE_INTEGER frequency;
+	LARGE_INTEGER ts;
+	QueryPerformanceCounter(&ts);
+	if (!frequency.QuadPart) {
+		QueryPerformanceFrequency(&frequency);
+	}
+	QueryPerformanceCounter(&ts);
+	return ts.QuadPart / (frequency.QuadPart * 1e-9);
+#else
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (ts.tv_sec * 1000000000ULL) + ts.tv_nsec;
+#endif
 }
 
 static uint32_t get_cycles_per_usec(void)
