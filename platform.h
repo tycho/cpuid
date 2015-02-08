@@ -119,6 +119,8 @@
 #endif
 #if defined (__MINGW32__)
 #define TARGET_COMPILER_MINGW
+#define TARGET_OS_WINDOWS
+#define OS_DETECTED
 #endif
 #endif
 
