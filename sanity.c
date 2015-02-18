@@ -171,7 +171,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 	qsort(apic_copy, hwthreads, sizeof(unsigned char), apic_compare);
 	for (i = 1; i < hwthreads; i++) {
 		if (apic_ids[i - 1] == apic_ids[i]) {
-			printf("fail (duplicate APIC IDs)\n");
+			printf(". fail (duplicate APIC IDs)\n");
 			ret = 1;
 			goto cleanup;
 		}
