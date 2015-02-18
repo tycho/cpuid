@@ -194,6 +194,9 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	ret = SetThreadAffinityMask(hThread, mask);
 #endif
 
+	if (ret != FALSE)
+		state->cpu_bound_index = id;
+
 	return (ret != FALSE) ? 0 : 1;
 
 #elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
@@ -238,16 +241,22 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	free(set);
 #endif
 
+	if (ret == 0)
+		state->cpu_bound_index = id;
+
 	return (ret == 0) ? 0 : 1;
 
 #elif defined(TARGET_OS_MACOSX)
+	int ret = 1;
 
 #ifdef USE_CHUD
-	return (utilBindThreadToCPU(id) == 0) ? 0 : 1;
-#else
-	return 1;
+	ret = (utilBindThreadToCPU(id) == 0) ? 0 : 1;
 #endif
 
+	if (ret == 0)
+		state->cpu_bound_index = id;
+
+	return ret == 0 ? 0 : 1;
 #else
 #error "thread_bind_native() not defined for this platform"
 #endif
