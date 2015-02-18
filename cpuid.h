@@ -23,10 +23,15 @@
 #define __cpuid_h
 
 struct cpu_regs_t {
-	uint32_t eax;
-	uint32_t ebx;
-	uint32_t ecx;
-	uint32_t edx;
+	union {
+		struct {
+			uint32_t eax;
+			uint32_t ebx;
+			uint32_t ecx;
+			uint32_t edx;
+		};
+		uint32_t regs[4];
+	};
 };
 
 #define ZERO_REGS(x) {memset((x), 0, sizeof(struct cpu_regs_t));}
