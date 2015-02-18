@@ -226,7 +226,7 @@ void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (m < 1)
 		return;
 
-	rvec = malloc(sizeof(struct cpu_regs_t) * m);
+	rvec = (struct cpu_regs_t *)malloc(sizeof(struct cpu_regs_t) * m);
 	if (!rvec)
 		return;
 

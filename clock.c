@@ -97,12 +97,12 @@ static void calibrate_cpu_clock(void)
 
 	samples = avg = 0;
 	for (i = 0; i < NR_TIME_ITERS; i++) {
-		double this = cycles[i];
+		double elem = cycles[i];
 
-		if ((fmax(this, mean) - fmin(this, mean)) > S)
+		if ((fmax(elem, mean) - fmin(elem, mean)) > S)
 			continue;
 		samples++;
-		avg += this;
+		avg += elem;
 	}
 
 	S /= (double)NR_TIME_ITERS;

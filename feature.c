@@ -52,7 +52,7 @@ struct cpu_feature_t
 {
 	uint32_t m_level;
 	uint32_t m_index;
-	uint8_t  m_reg;
+	cpu_register_t m_reg;
 	uint32_t m_bitmask;
 	uint32_t m_vendor;
 	const char *m_name;
@@ -393,7 +393,7 @@ static const char *vendors(char *buffer, uint32_t mask)
 void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	const struct cpu_feature_t *p = features;
-	uint8_t last_reg = REG_NULL;
+	cpu_register_t last_reg = REG_NULL;
 	while (p && p->m_reg != REG_NULL) {
 		uint32_t *reg;
 

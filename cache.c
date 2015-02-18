@@ -29,21 +29,23 @@
 #include <string.h>
 
 typedef enum {
-	DATA_TLB,
+	DATA_TLB = 0x0,
 	CODE_TLB,
 	SHARED_TLB,
 	DATA,
 	CODE,
 	TRACE,
-	UNIFIED
+	UNIFIED,
+	INVALID_TYPE = 0xff,
 } cache_type_t;
 
 typedef enum {
-	NO,
+	NO = 0x0,
 	L0,
 	L1,
 	L2,
-	L3
+	L3,
+	INVALID_LEVEL = 0xff,
 } cache_level_t;
 
 typedef enum {
@@ -180,13 +182,13 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0xea, {L3, UNIFIED,  12 MB, NONE, 0x18, 64}},
 	{ 0xeb, {L3, UNIFIED,  18 MB, NONE, 0x18, 64}},
 	{ 0xec, {L3, UNIFIED,  24 MB, NONE, 0x18, 64}},
-	
-	/* Special cases, not described in this table. */
-	{ 0x40, {0, 0, 0, 0, 0, 0}},
-	{ 0xf0, {0, 0, 0, 0, 0, 0}},
-	{ 0xf1, {0, 0, 0, 0, 0, 0}},
 
-	{ 0x00, {0, 0, 0, 0, 0, 0}}
+	/* Special cases, not described in this table. */
+	{ 0x40, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	{ 0xf0, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	{ 0xf1, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+
+	{ 0x00, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}}
 };
 static const struct cache_desc_index_t descriptor_49[] = {
 	{ 0x49, {L2, UNIFIED,  4 MB, NONE, 0x10, 64}},

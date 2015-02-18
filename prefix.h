@@ -25,7 +25,9 @@
 #include "platform.h"
 
 #ifdef TARGET_OS_LINUX
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #endif
 
 #include <assert.h>

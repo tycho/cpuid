@@ -160,13 +160,13 @@ static int sane_apicid(struct cpuid_state_t *state)
 	printf("Verifying APIC ID sanity");
 
 	/* Populate initial APIC ID array. */
-	apic_ids = malloc(hwthreads * sizeof(unsigned char));
+	apic_ids = (uint8_t *)malloc(hwthreads * sizeof(unsigned char));
 	for (i = 0; i < hwthreads; i++) {
 		apic_ids[i] = get_apicid_for_cpu(state, i);
 	}
 
 	/* First verify that no CPUs reported identical APIC IDs. */
-	apic_copy = malloc(hwthreads * sizeof(unsigned char));
+	apic_copy = (uint8_t *)malloc(hwthreads * sizeof(unsigned char));
 	memcpy(apic_copy, apic_ids, hwthreads * sizeof(unsigned char));
 	qsort(apic_copy, hwthreads, sizeof(unsigned char), apic_compare);
 	for (i = 1; i < hwthreads; i++) {
@@ -182,7 +182,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 	/* Spawn a few busy threads to incur thread migrations,
 	   if they're going to happen at all. */
 	worker_flag = 1;
-	busy_workers = malloc(worker_count * sizeof(thread_handle_t));
+	busy_workers = (thread_handle_t *)malloc(worker_count * sizeof(thread_handle_t));
 	for (i = 0; i < worker_count; i++)
 #ifdef TARGET_OS_WINDOWS
 		busy_workers[i] = CreateThread(NULL, 0, apic_nonsensical_worker_thread, &worker_flag, 0, NULL);
@@ -191,8 +191,8 @@ static int sane_apicid(struct cpuid_state_t *state)
 #endif
 
 	/* Now verify that the APIC IDs don't change over time. */
-	apic_state = malloc(hwthreads * sizeof(struct apic_validate_t));
-	apic_workers = malloc(hwthreads * sizeof(thread_handle_t));
+	apic_state = (struct apic_validate_t *)malloc(hwthreads * sizeof(struct apic_validate_t));
+	apic_workers = (thread_handle_t *)malloc(hwthreads * sizeof(thread_handle_t));
 	memset(apic_state, 0, hwthreads * sizeof(struct apic_validate_t));
 	for (i = 0; i < hwthreads; i++) {
 		apic_state[i].state = state;

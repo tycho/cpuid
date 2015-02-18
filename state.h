@@ -56,7 +56,7 @@ struct cpuid_state_t
 	struct cpuid_leaf_t **cpuid_leaves;
 	struct cpu_regs_t last_leaf;
 	struct cpu_signature_t sig;
-	cpu_vendor_t vendor;
+	uint16_t vendor;
 	uint32_t curmax;
 	char procname[48];
 };
