@@ -132,24 +132,24 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "MPX"},      /* Memory Protection Extensions */
 	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "PQE"},      /* Platform Quality of Service Enforcement (PQE) */
 	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512F"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "AVX512DQ"},
 	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED"},
 	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "ADX"},
 	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "SMAP"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , "AVX512IFMA"},
+	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "PCOMMIT"},
 	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "CLFSHOPT"},
-/*	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "CLWB"},
 	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "PTRACE"},   /* Intel Processor Trace */
 	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512PF"},
 	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512ER"},
 	{ 0x00000007, 0, REG_EBX, 0x10000000, VENDOR_INTEL                                , "AVX512CD"},
 	{ 0x00000007, 0, REG_EBX, 0x20000000, VENDOR_INTEL                                , "SHA"},
-/*	{ 0x00000007, 0, REG_EBX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EBX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x40000000, VENDOR_INTEL                                , "AVX512BW"},
+	{ 0x00000007, 0, REG_EBX, 0x80000000, VENDOR_INTEL                                , "AVX512VL"},
 
-/*	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1"},
+	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512VBMI"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
