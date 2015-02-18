@@ -29,11 +29,12 @@
 
 typedef enum
 {
-	REG_NULL = 0,
-	REG_EAX,
+	REG_EAX = 0,
 	REG_EBX,
 	REG_ECX,
-	REG_EDX
+	REG_EDX,
+	REG_LAST = REG_EDX,
+	REG_NULL = 255
 } cpu_register_t;
 
 struct cpu_feature_t
@@ -412,21 +413,10 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			continue;
 		}
 
-		switch (p->m_reg) {
-		case REG_EAX:
-			reg = &regs->eax;
-			break;
-		case REG_EBX:
-			reg = &regs->ebx;
-			break;
-		case REG_ECX:
-			reg = &regs->ecx;
-			break;
-		case REG_EDX:
-			reg = &regs->edx;
-			break;
-		default:
-			abort();
+		reg = &regs->regs[p->m_reg];
+		if (!*reg) {
+			p++;
+			continue;
 		}
 
 		if (ignore_vendor) {
