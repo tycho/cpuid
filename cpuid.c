@@ -164,7 +164,7 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 #ifdef __linux__
 BOOL cpuid_kernel(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	off64_t offset = ((uint64_t)regs->ecx << sizeof(uint32_t)) | (uint64_t)regs->eax;
+	off64_t offset = ((off64_t)regs->ecx << 32) + regs->eax;
 	char path[32];
 	BOOL ret = FALSE;
 	static int fd = -1;
