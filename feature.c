@@ -326,6 +326,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "LZCNT"},
 	{ 0x80000001, 0, REG_ECX, 0x00000040,                VENDOR_AMD                   , "SSE4A"},
 	{ 0x80000001, 0, REG_ECX, 0x00000080,                VENDOR_AMD                   , "MAS"},
+	{ 0x80000001, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "PREFETCHW"},
 	{ 0x80000001, 0, REG_ECX, 0x00000100,                VENDOR_AMD                   , "3DNP"},
 	{ 0x80000001, 0, REG_ECX, 0x00000200,                VENDOR_AMD                   , "OSVW"},
 	{ 0x80000001, 0, REG_ECX, 0x00000400,                VENDOR_AMD                   , "IBS"},
