@@ -351,11 +351,7 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 
-		/* This is a non-official check. With other leafs (i.e. 0x0B),
-		   some extra information comes through, past the termination
-		   condition. I want to show all the information the CPU provides,
-		   even if it's not specified by the Intel docs. */
-		if (!regs->eax && !regs->ebx && !regs->ecx && !regs->edx)
+		if ((regs->eax & 0x1f) == 0)
 			break;
 
 		eax = (struct eax_cache04_t *)&regs->eax;
