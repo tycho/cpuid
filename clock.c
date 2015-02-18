@@ -25,6 +25,10 @@
 #include <math.h>
 #include <time.h>
 
+#ifdef TARGET_OS_MACOSX
+#include <mach/mach_time.h>
+#endif
+
 static uint32_t cycles_per_usec;
 
 static uint64_t wallclock_ns(void)
@@ -38,6 +42,11 @@ static uint64_t wallclock_ns(void)
 	}
 	QueryPerformanceCounter(&ts);
 	return ts.QuadPart / (frequency.QuadPart * 1e-9);
+#elif defined(TARGET_OS_MACOSX)
+	static mach_timebase_info_data_t timebase;
+	if (!timebase.denom)
+		mach_timebase_info(&timebase);
+	return mach_absolute_time() * timebase.numer / timebase.denom;
 #else
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
