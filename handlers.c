@@ -544,7 +544,6 @@ void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		return;
 	if (!(regs->eax || regs->ebx || regs->ecx || regs->edx))
 		return;
-	printf("Structured Extended Feature Flags:\n");
 	while (i <= m) {
 		ZERO_REGS(regs);
 		regs->eax = 0x7;
@@ -552,8 +551,8 @@ void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		state->cpuid_call(regs, state);
 		print_features(regs, state);
 		i++;
+		printf("\n");
 	}
-	printf("\n");
 }
 
 /* EAX = 0000 0007 */

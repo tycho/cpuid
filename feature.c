@@ -37,6 +37,17 @@ typedef enum
 	REG_NULL = 255
 } cpu_register_t;
 
+static const char *reg_name(cpu_register_t reg)
+{
+	static const char *reg_names[] = {
+		"eax",
+		"ebx",
+		"ecx",
+		"edx"
+	};
+	return reg_names[reg];
+}
+
 struct cpu_feature_t
 {
 	uint32_t m_level;
@@ -49,108 +60,108 @@ struct cpu_feature_t
 
 static const struct cpu_feature_t features [] = {
 /*  Standard (0000_0001h) */
-	{ 0x00000001, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "FPU"},
-	{ 0x00000001, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "VME"},
-	{ 0x00000001, 0, REG_EDX, 0x00000004, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "DE"},
-	{ 0x00000001, 0, REG_EDX, 0x00000008, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "PSE"},
-	{ 0x00000001, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "TSC"},
-	{ 0x00000001, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "MSR"},
-	{ 0x00000001, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , "PAE"},
-	{ 0x00000001, 0, REG_EDX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , "MCE"},
-	{ 0x00000001, 0, REG_EDX, 0x00000100, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "CX8"},
-	{ 0x00000001, 0, REG_EDX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "APIC"},
+	{ 0x00000001, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "x87 FPU on chip"},
+	{ 0x00000001, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "virtual-8086 mode enhancement"},
+	{ 0x00000001, 0, REG_EDX, 0x00000004, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "debugging extensions"},
+	{ 0x00000001, 0, REG_EDX, 0x00000008, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "page size extensions"},
+	{ 0x00000001, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "time stamp counter"},
+	{ 0x00000001, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "RDMSR and WRMSR support"},
+	{ 0x00000001, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , "physical address extensions"},
+	{ 0x00000001, 0, REG_EDX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , "machine check exception"},
+	{ 0x00000001, 0, REG_EDX, 0x00000100, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "CMPXCHG8B instruction"},
+	{ 0x00000001, 0, REG_EDX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "APIC on chip"},
 /*	{ 0x00000001, 0, REG_EDX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000001, 0, REG_EDX, 0x00000800, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "SEP"},
-	{ 0x00000001, 0, REG_EDX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "MTRR"},
-	{ 0x00000001, 0, REG_EDX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , "PGE"},
-	{ 0x00000001, 0, REG_EDX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , "MCA"},
-	{ 0x00000001, 0, REG_EDX, 0x00008000, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "CMOV"},
-	{ 0x00000001, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , "PAT"},
-	{ 0x00000001, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , "PSE-36"},
-	{ 0x00000001, 0, REG_EDX, 0x00040000, VENDOR_INTEL              | VENDOR_TRANSMETA, "PSN"},
-	{ 0x00000001, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "CLFSH"},
+	{ 0x00000001, 0, REG_EDX, 0x00000800, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "SYSENTER and SYSEXIT instructions"},
+	{ 0x00000001, 0, REG_EDX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "memory type range registers"},
+	{ 0x00000001, 0, REG_EDX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , "PTE global bit"},
+	{ 0x00000001, 0, REG_EDX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , "machine check architecture"},
+	{ 0x00000001, 0, REG_EDX, 0x00008000, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "conditional move instruction"},
+	{ 0x00000001, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , "page attribute table"},
+	{ 0x00000001, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , "36-bit page size extension"},
+	{ 0x00000001, 0, REG_EDX, 0x00040000, VENDOR_INTEL              | VENDOR_TRANSMETA, "processor serial number"},
+	{ 0x00000001, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "CLFLUSH instruction"},
 /*	{ 0x00000001, 0, REG_EDX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000001, 0, REG_EDX, 0x00200000, VENDOR_INTEL                                , "DS"},
+	{ 0x00000001, 0, REG_EDX, 0x00200000, VENDOR_INTEL                                , "debug store"},
 	{ 0x00000001, 0, REG_EDX, 0x00400000, VENDOR_INTEL                                , "ACPI"},
-	{ 0x00000001, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "MMX"},
-	{ 0x00000001, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "FXSR"},
-	{ 0x00000001, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE"},
-	{ 0x00000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE2"},
-	{ 0x00000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "SS"},
-	{ 0x00000001, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "HTT"},
-	{ 0x00000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "TM"},
+	{ 0x00000001, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "MMX instruction set"},
+	{ 0x00000001, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "FXSAVE/FXRSTOR instructions"},
+	{ 0x00000001, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE instructions"},
+	{ 0x00000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE2 instructions"},
+	{ 0x00000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "self snoop"},
+	{ 0x00000001, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "max APIC IDs reserved field is valid"},
+	{ 0x00000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "thermal monitor"},
 /*	{ 0x00000001, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000001, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "PBE"},
+	{ 0x00000001, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "pending break enable"},
 
-	{ 0x00000001, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "SSE3"},
-	{ 0x00000001, 0, REG_ECX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , "PCLMULQDQ"},
-	{ 0x00000001, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "DTES64"},
-	{ 0x00000001, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "MONITOR"},
-	{ 0x00000001, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "DS-CPL"},
-	{ 0x00000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "VMX"},
-	{ 0x00000001, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "SMX"},
-	{ 0x00000001, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "EST"},
-	{ 0x00000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "TM2"},
-	{ 0x00000001, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "SSSE3"},
-	{ 0x00000001, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "CNXT-ID"},
-	{ 0x00000001, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , "SDBG"}, /* supports IA32_DEBUG_INTERFACE MSR for silicon debug */
-	{ 0x00000001, 0, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "FMA"},
-	{ 0x00000001, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , "CX16"},
-	{ 0x00000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , "xTPR"},
-	{ 0x00000001, 0, REG_ECX, 0x00008000, VENDOR_INTEL                                , "PDCM"},
+	{ 0x00000001, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "SSE3 instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , "PCLMULQDQ instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "64-bit DS area"},
+	{ 0x00000001, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "MONITOR/MWAIT instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "CPL qualified debug store"},
+	{ 0x00000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "virtual machine extensions"},
+	{ 0x00000001, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "safer mode extensions"},
+	{ 0x00000001, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "Enhanced Intel SpeedStep"},
+	{ 0x00000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "thermal monitor 2"},
+	{ 0x00000001, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "SSSE3 instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "L1 context ID"},
+	{ 0x00000001, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , "silicon debug"}, /* supports IA32_DEBUG_INTERFACE MSR for silicon debug */
+	{ 0x00000001, 0, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "fused multiply-add AVX instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , "CMPXCHG16B instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , "xTPR update control"},
+	{ 0x00000001, 0, REG_ECX, 0x00008000, VENDOR_INTEL                                , "perfmon and debug capability"},
 /*	{ 0x00000001, 0, REG_ECX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000001, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , "PCID"},
-	{ 0x00000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL                                , "DCA"},
-	{ 0x00000001, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.1"},
-	{ 0x00000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.2"},
+	{ 0x00000001, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , "process-context identifiers"},
+	{ 0x00000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL                                , "direct cache access"},
+	{ 0x00000001, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.1 instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.2 instructions"},
 	{ 0x00000001, 0, REG_ECX, 0x00200000, VENDOR_INTEL                                , "x2APIC"},
-	{ 0x00000001, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "MOVBE"},
-	{ 0x00000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "POPCNT"},
-	{ 0x00000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "TSC-Deadline"},
-	{ 0x00000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "AES"},
-	{ 0x00000001, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "XSAVE"},
-	{ 0x00000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "OSXSAVE"},
-	{ 0x00000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX"},
-	{ 0x00000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "F16C"},
-	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "RDRAND"},
-	{ 0x00000001, 0, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ"},
+	{ 0x00000001, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "MOVBE instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "POPCNT instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "TSC deadline"},
+	{ 0x00000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "AES instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "XSAVE/XRSTOR instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "OS-enabled XSAVE/XRSTOR"},
+	{ 0x00000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "16-bit FP conversion instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "RDRAND instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ (hypervisor)"},
 
 /*  Structured Extended Feature Flags (0000_0007h) */
-	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "FSGSBASE"}, /* {RD,WR}{FS,GS}BASE */
-	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "TSC_ADJUST"}, /* IA32_TSC_ADJUST MSR */
-	{ 0x00000007, 0, REG_EBX, 0x00000004, VENDOR_INTEL                                , "SGX"},      /* Software Guard Extensions */
-	{ 0x00000007, 0, REG_EBX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "BMI1"},
-	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "HLE"},      /* Hardware Lock Elision */
-	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "AVX2"},
+	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "FSGSBASE instructions"},
+	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "IA32_TSC_ADJUST MSR supported"},
+	{ 0x00000007, 0, REG_EBX, 0x00000004, VENDOR_INTEL                                , "Software Guard Extensions (SGX)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "Bit Manipulation Instructions (BMI1)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "Hardware Lock Elision (HLE)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "Advanced Vector Extensions 2.0 (AVX2)"},
 /*	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , "SMEP"},     /* Supervisor Mode Execution Protection */
-	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , "BMI2"},
-	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "ERMS"},     /* Enhanced REP MOVSB/STOSB */
-	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID"},
-	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "RTM"},      /* Restricted Transactional Memory */
-	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , "PQM"},      /* Platform Quality of Service Monitoring (PQM) */
-	{ 0x00000007, 0, REG_EBX, 0x00002000, VENDOR_INTEL                                , "CSDS_DEP"}, /* FPU CS and FPU DS values deprecated */
-	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "MPX"},      /* Memory Protection Extensions */
-	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "PQE"},      /* Platform Quality of Service Enforcement (PQE) */
-	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512F"},
-	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "AVX512DQ"},
-	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED"},
-	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "ADX"},
-	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "SMAP"},
-	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , "AVX512IFMA"},
-	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "PCOMMIT"},
-	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL                                , "CLFSHOPT"},
-	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "CLWB"},
-	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "PTRACE"},   /* Intel Processor Trace */
-	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512PF"},
-	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512ER"},
-	{ 0x00000007, 0, REG_EBX, 0x10000000, VENDOR_INTEL                                , "AVX512CD"},
-	{ 0x00000007, 0, REG_EBX, 0x20000000, VENDOR_INTEL                                , "SHA"},
-	{ 0x00000007, 0, REG_EBX, 0x40000000, VENDOR_INTEL                                , "AVX512BW"},
-	{ 0x00000007, 0, REG_EBX, 0x80000000, VENDOR_INTEL                                , "AVX512VL"},
+	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , "Supervisor Mode Execution Protection (SMEP)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , "Bit Manipulation Instructions 2 (BMI2)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "Enhanced REP MOVSB/STOSB"},
+	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "Restricted Transactional Memory (RTM)"},
+	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , "Platform QoS Monitoring (PQM)"},
+	{ 0x00000007, 0, REG_EBX, 0x00002000, VENDOR_INTEL                                , "x87 FPU CS and DS deprecated"},
+	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "Memory Protection Extensions (MPX)"},
+	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "Platform QoS Enforcement (PQE)"},
+	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512 foundation (AVX512F)"},
+	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "AVX512 double/quadword instructions (AVX512DQ)"},
+	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "Multi-Precision Add-Carry Instruction Extensions (ADX)"},
+	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "Supervisor Mode Access Prevention (SMAP)"},
+	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , "AVX512 integer FMA instructions (AVX512IFMA)"},
+	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "Persistent commit instruction (PCOMMIT)"},
+	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL                                , "CLFLUSHOPT instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "cache line write-back instruction (CLWB)"},
+	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "Intel Processor Trace"},
+	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512 prefetch instructions (AVX512PF)"},
+	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512 exponent/reciprocal instructions (AVX512ER)"},
+	{ 0x00000007, 0, REG_EBX, 0x10000000, VENDOR_INTEL                                , "AVX512 conflict detection instructions (AVX512CD)"},
+	{ 0x00000007, 0, REG_EBX, 0x20000000, VENDOR_INTEL                                , "SHA-1/SHA-256 instructions"},
+	{ 0x00000007, 0, REG_EBX, 0x40000000, VENDOR_INTEL                                , "AVX512 byte/word instructions (AVX512BW)"},
+	{ 0x00000007, 0, REG_EBX, 0x80000000, VENDOR_INTEL                                , "AVX512 vector length extensions (AVX512VL)"},
 
-	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1"},
-	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512VBMI"},
+	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1 instruction"},
+	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512 vector byte manipulation instructions (AVX512VBMI)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -249,7 +260,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
-	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT"},
+	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT instruction support"},
 /*	{ 0x40000003, 0, REG_EDX, 0x00000002,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00000004,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00000008,                                             , ""}, */   /* Reserved */
@@ -303,45 +314,44 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000001, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_EDX, 0x00100000, VENDOR_INTEL                                , "XD"},
-	{ 0x80000001, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , "NX"},
+	{ 0x80000001, 0, REG_EDX, 0x00100000, VENDOR_INTEL                                , "XD bit"},
+	{ 0x80000001, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , "NX bit"},
 /*	{ 0x80000001, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_EDX, 0x00400000,                VENDOR_AMD                   , "MMXEXT"},
+	{ 0x80000001, 0, REG_EDX, 0x00400000,                VENDOR_AMD                   , "MMX extended"},
 /*	{ 0x80000001, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_EDX, 0x02000000,                VENDOR_AMD                   , "FFXSR"},
-	{ 0x80000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "P1GB"},
-	{ 0x80000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "RDTSCP"},
+	{ 0x80000001, 0, REG_EDX, 0x02000000,                VENDOR_AMD                   , "fast FXSAVE/FXRSTOR"},
+	{ 0x80000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "1GB page support"},
+	{ 0x80000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "RDTSCP instruction"},
 /*	{ 0x80000001, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "EM64T"},
-	{ 0x80000001, 0, REG_EDX, 0x20000000,                VENDOR_AMD                   , "LM"},
-	{ 0x80000001, 0, REG_EDX, 0x40000000,                VENDOR_AMD                   , "3DNOWEXT"},
-	{ 0x80000001, 0, REG_EDX, 0x80000000,                VENDOR_AMD                   , "3DNOW"},
+	{ 0x80000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "long mode (EM64T)"},
+	{ 0x80000001, 0, REG_EDX, 0x40000000,                VENDOR_AMD                   , "3DNow! extended"},
+	{ 0x80000001, 0, REG_EDX, 0x80000000,                VENDOR_AMD                   , "3DNow! instructions"},
 
-	{ 0x80000001, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "LAHF"},
-	{ 0x80000001, 0, REG_ECX, 0x00000002,                VENDOR_AMD                   , "CL"},
-	{ 0x80000001, 0, REG_ECX, 0x00000004,                VENDOR_AMD                   , "SVM"},
-	{ 0x80000001, 0, REG_ECX, 0x00000008,                VENDOR_AMD                   , "EAS"},
-	{ 0x80000001, 0, REG_ECX, 0x00000010,                VENDOR_AMD                   , "AMC8"},
-	{ 0x80000001, 0, REG_ECX, 0x00000020,                VENDOR_AMD                   , "ABM"},
-	{ 0x80000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "LZCNT"},
-	{ 0x80000001, 0, REG_ECX, 0x00000040,                VENDOR_AMD                   , "SSE4A"},
-	{ 0x80000001, 0, REG_ECX, 0x00000080,                VENDOR_AMD                   , "MAS"},
-	{ 0x80000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "3DNP"},
-	{ 0x80000001, 0, REG_ECX, 0x00000200,                VENDOR_AMD                   , "OSVW"},
-	{ 0x80000001, 0, REG_ECX, 0x00000400,                VENDOR_AMD                   , "IBS"},
-	{ 0x80000001, 0, REG_ECX, 0x00000800,                VENDOR_AMD                   , "XOP"},
-	{ 0x80000001, 0, REG_ECX, 0x00001000,                VENDOR_AMD                   , "SKINIT"},
-	{ 0x80000001, 0, REG_ECX, 0x00002000,                VENDOR_AMD                   , "WDT"},
+	{ 0x80000001, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "LAHF/SAHF supported in 64-bit mode"},
+	{ 0x80000001, 0, REG_ECX, 0x00000002,                VENDOR_AMD                   , "core multi-processing legacy mode"},
+	{ 0x80000001, 0, REG_ECX, 0x00000004,                VENDOR_AMD                   , "secure virtual machine (SVM)"},
+	{ 0x80000001, 0, REG_ECX, 0x00000008,                VENDOR_AMD                   , "extended APIC space"},
+	{ 0x80000001, 0, REG_ECX, 0x00000010,                VENDOR_AMD                   , "AltMovCr8"},
+	{ 0x80000001, 0, REG_ECX, 0x00000020,                VENDOR_AMD                   , "advanced bit manipulation"},
+	{ 0x80000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "LZCNT instruction"},
+	{ 0x80000001, 0, REG_ECX, 0x00000040,                VENDOR_AMD                   , "SSE4A instructions"},
+	{ 0x80000001, 0, REG_ECX, 0x00000080,                VENDOR_AMD                   , "mis-aligned SSE support"},
+	{ 0x80000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "3DNow! prefetch instructions"},
+	{ 0x80000001, 0, REG_ECX, 0x00000200,                VENDOR_AMD                   , "os-visible workaround"},
+	{ 0x80000001, 0, REG_ECX, 0x00000400,                VENDOR_AMD                   , "instruction-based sampling"},
+	{ 0x80000001, 0, REG_ECX, 0x00000800,                VENDOR_AMD                   , "extended operations"},
+	{ 0x80000001, 0, REG_ECX, 0x00001000,                VENDOR_AMD                   , "SKINIT/STGI instructions"},
+	{ 0x80000001, 0, REG_ECX, 0x00002000,                VENDOR_AMD                   , "watchdog timer"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_ECX, 0x00008000,                VENDOR_AMD                   , "LWP"},
-	{ 0x80000001, 0, REG_ECX, 0x00010000,                VENDOR_AMD                   , "FMA4"},
+	{ 0x80000001, 0, REG_ECX, 0x00008000,                VENDOR_AMD                   , "lightweight profiling"},
+	{ 0x80000001, 0, REG_ECX, 0x00010000,                VENDOR_AMD                   , "4-operand FMA instructions"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_ECX, 0x00080000,                VENDOR_AMD                   , "NID"},
+	{ 0x80000001, 0, REG_ECX, 0x00080000,                VENDOR_AMD                   , "node ID support"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_ECX, 0x00200000,                VENDOR_AMD                   , "TBM"},
-	{ 0x80000001, 0, REG_ECX, 0x00400000,                VENDOR_AMD                   , "TOPO"},
+	{ 0x80000001, 0, REG_ECX, 0x00200000,                VENDOR_AMD                   , "trailing bit manipulation instructions"},
+	{ 0x80000001, 0, REG_ECX, 0x00400000,                VENDOR_AMD                   , "topology extensions"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -383,25 +393,9 @@ static const char *vendors(char *buffer, uint32_t mask)
 void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	const struct cpu_feature_t *p = features;
-	uint8_t count = 0;
-	switch(state->last_leaf.eax) {
-	case 0x00000001:
-		printf("Base features:\n");
-
-		/* We account for EAX/EBX separately with leaf 0x1, as these contain
-		 * metadata other than feature flags.
-		 */
-		regs->eax = regs->ebx = 0;
-		break;
-	case 0x40000003:
-		printf("Hyper-V features:\n");
-		break;
-	case 0x80000001:
-		printf("Extended features:\n");
-		break;
-	}
+	uint8_t last_reg = REG_NULL;
 	while (p && p->m_reg != REG_NULL) {
-		uint32_t *reg = NULL;
+		uint32_t *reg;
 
 		if (state->last_leaf.eax != p->m_level) {
 			p++;
@@ -418,37 +412,52 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			continue;
 		}
 
+		if (last_reg != p->m_reg) {
+			last_reg = p->m_reg;
+
+			switch(state->last_leaf.eax) {
+			case 0x00000001:
+				printf("Base features, %s:\n",
+				       reg_name(last_reg));
+
+				/* EAX and EBX don't contain feature bits. We should zero these
+				 * out so they don't appear to be unaccounted for.
+				 */
+				regs->eax = regs->ebx = 0;
+				break;
+			case 0x00000007:
+				printf("Structured extended feature flags (ecx=%d), %s:\n",
+				       state->last_leaf.ecx, reg_name(last_reg));
+				break;
+			case 0x40000003:
+				printf("Hyper-V features, %s:\n",
+				       reg_name(last_reg));
+				break;
+			case 0x80000001:
+				printf("Extended features, %s:\n",
+				       reg_name(last_reg));
+				break;
+			}
+		}
+
 		if (ignore_vendor) {
 			if ((*reg & p->m_bitmask) != 0)
 			{
 				char feat[32], buffer[32];
 				sprintf(feat, "%s (%s)", p->m_name, vendors(buffer, p->m_vendor));
-				printf("  %-38s", feat);
-				count++;
-				if (count == 2) {
-					count = 0;
-					printf("\n");
-				}
+				printf("  %s\n", feat);
 				*reg &= (~p->m_bitmask);
 			}
 		} else {
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
 				&& (*reg & p->m_bitmask) != 0)
 			{
-				printf("  %-14s", p->m_name);
-				count++;
-				if (count == 4) {
-					count = 0;
-					printf("\n");
-				}
+				printf("  %s\n", p->m_name);
 				*reg &= (~p->m_bitmask);
 			}
 		}
 		p++;
 	}
-
-	if (count != 0)
-		printf("\n");
 
 	if (regs->eax || regs->ebx || regs->ecx || regs->edx)
 		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
