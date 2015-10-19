@@ -70,8 +70,13 @@ struct cpuid_state_t
 	}
 
 #define FREE_CPUID_STATE(x) { \
-	if ((x)->cpuid_leaves) \
-		free((x)->cpuid_leaves); \
+		if ((x)->cpuid_leaves) { \
+			uint32_t i; \
+			for (i = 0; i < (x)->cpu_logical_count; i++) { \
+				free((x)->cpuid_leaves[i]); \
+			} \
+			free((x)->cpuid_leaves); \
+		} \
 	}
 
 #endif
