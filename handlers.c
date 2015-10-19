@@ -749,7 +749,9 @@ static const char *xsave_leaf_name(uint32_t bit)
 		"MPX bound configuration",
 		"512-bit AVX OpMask",
 		"512-bit AVX ZMM_Hi256",
-		"512-bit AVX ZMM_Hi16"
+		"512-bit AVX ZMM_Hi16",
+		"IA32_XSS",
+		"Protected keys"
 	};
 	if (bit < NELEM(bits))
 		return bits[bit];
