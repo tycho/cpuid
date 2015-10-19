@@ -751,7 +751,7 @@ static const char *xsave_leaf_name(uint32_t bit)
 		"512-bit AVX ZMM_Hi256",
 		"512-bit AVX ZMM_Hi16"
 	};
-	if (bit <= 2)
+	if (bit < NELEM(bits))
 		return bits[bit];
 	return NULL;
 }
@@ -764,7 +764,7 @@ static const char *xsave_feature_name(uint32_t bit)
 		"XGETBV with ECX=1",
 		"XSAVES/XRSTORS and IA32_XSS"
 	};
-	if (bit < 4)
+	if (bit < NELEM(bits))
 		return bits[bit];
 	return NULL;
 }

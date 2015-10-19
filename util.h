@@ -27,4 +27,6 @@ uint32_t count_trailing_zero_bits(uint32_t v);
 void squeeze(char *str);
 double time_sec(void);
 
+#define NELEM(x) (sizeof(x) / sizeof((x)[0]))
+
 #endif
