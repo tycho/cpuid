@@ -194,7 +194,7 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	ret = SetThreadAffinityMask(hThread, mask);
 #endif
 
-	if (ret != FALSE)
+	if (state && ret != FALSE)
 		state->cpu_bound_index = id;
 
 	return (ret != FALSE) ? 0 : 1;
@@ -241,7 +241,7 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	free(set);
 #endif
 
-	if (ret == 0)
+	if (state && ret == 0)
 		state->cpu_bound_index = id;
 
 	return (ret == 0) ? 0 : 1;
@@ -253,7 +253,7 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	ret = (utilBindThreadToCPU(id) == 0) ? 0 : 1;
 #endif
 
-	if (ret == 0)
+	if (state && ret == 0)
 		state->cpu_bound_index = id;
 
 	return ret == 0 ? 0 : 1;
