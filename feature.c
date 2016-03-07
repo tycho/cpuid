@@ -261,19 +261,19 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
 	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT instruction support"},
-/*	{ 0x40000003, 0, REG_EDX, 0x00000002,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000004,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000008,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000010,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000020,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000040,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000080,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000100,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000200,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000400,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00000800,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00001000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00002000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EDX, 0x00000002, VENDOR_HV_HYPERV                            , "Guest debugging support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000004, VENDOR_HV_HYPERV                            , "Performance Monitor support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000008, VENDOR_HV_HYPERV                            , "Physical CPU dynamic partitioning event support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000010, VENDOR_HV_HYPERV                            , "Hypercall via XMM registers"},
+	{ 0x40000003, 0, REG_EDX, 0x00000020, VENDOR_HV_HYPERV                            , "Virtual guest idle state support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000040, VENDOR_HV_HYPERV                            , "Hypervisor sleep state support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000080, VENDOR_HV_HYPERV                            , "NUMA distance query support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000100, VENDOR_HV_HYPERV                            , "Timer frequency details available"},
+	{ 0x40000003, 0, REG_EDX, 0x00000200, VENDOR_HV_HYPERV                            , "Synthetic machine check injection support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000400, VENDOR_HV_HYPERV                            , "Guest crash MSR support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000800, VENDOR_HV_HYPERV                            , "Debug MSR support"},
+	{ 0x40000003, 0, REG_EDX, 0x00001000, VENDOR_HV_HYPERV                            , "NPIEP support"},
+	{ 0x40000003, 0, REG_EDX, 0x00002000, VENDOR_HV_HYPERV                            , "Hypervisor disable support"},
 /*	{ 0x40000003, 0, REG_EDX, 0x00004000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00008000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00010000,                                             , ""}, */   /* Reserved */
