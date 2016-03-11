@@ -135,24 +135,30 @@ void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
+	size_t i;
+
 	state->curmax = regs->eax;
+
 	printf("Maximum basic CPUID leaf: 0x%08x\n\n", state->curmax);
+
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->edx;
 	*(uint32_t *)(&buf[8]) = regs->ecx;
 	buf[12] = 0;
 
-	/*
-	 * Ideally, we want to do this sometime in the future, but
-	 * our printout format is currently designed to be handling
-	 * only one vendor.
-	 */
-#if 0
-	if (ignore_vendor) {
-		state->vendor = VENDOR_ANY;
-		return;
+	for (i = 0; i < sizeof(buf); i++) {
+		/* End of vendor string */
+		if (buf[i] == 0)
+			break;
+
+		/* Character outside printable range */
+		if (buf[i] < 0x20 || buf[i] > 0x7E)
+			buf[i] = '.';
 	}
-#endif
+
+	buf[12] = 0;
+
+	printf("CPU vendor string: '%s'\n\n", buf);
 
 	if (strcmp(buf, "GenuineIntel") == 0)
 		state->vendor = VENDOR_INTEL;
@@ -1433,6 +1439,7 @@ void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
+	size_t i;
 
 	state->curmax = regs->eax;
 	printf("Maximum hypervisor CPUID leaf: 0x%08x\n\n", state->curmax);
@@ -1440,7 +1447,21 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	*(uint32_t *)(&buf[0]) = regs->ebx;
 	*(uint32_t *)(&buf[4]) = regs->ecx;
 	*(uint32_t *)(&buf[8]) = regs->edx;
+
+	for (i = 0; i < sizeof(buf); i++) {
+		/* End of vendor string */
+		if (buf[i] == 0)
+			break;
+
+		/* Character outside printable range */
+		if (buf[i] < 0x20 || buf[i] > 0x7E)
+			buf[i] = '.';
+	}
+
 	buf[12] = 0;
+
+	printf("Hypervisor vendor string: '%s'\n\n", buf);
+
 	if (strcmp(buf, "XenVMMXenVMM") == 0) {
 		state->vendor |= VENDOR_HV_XEN;
 		printf("Xen hypervisor detected\n\n");
