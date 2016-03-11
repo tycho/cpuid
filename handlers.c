@@ -54,7 +54,7 @@ void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -102,7 +102,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
-	{0x40000001, handle_xen_version},
+	{0x40000001, handle_vmm_leaf01},
 	{0x40000002, handle_xen_leaf02},
 	{0x40000003, handle_vmm_leaf03},
 	{0x40000003, handle_vmware_leaf10},
@@ -1481,11 +1481,15 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0001 */
-void handle_xen_version(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (!(state->vendor & VENDOR_HV_XEN))
-		return;
-	printf("Xen version: %d.%d\n\n", regs->eax >> 16, regs->eax & 0xFFFF);
+	if (state->vendor & VENDOR_HV_XEN) {
+		printf("Xen version: %d.%d\n\n", regs->eax >> 16, regs->eax & 0xFFFF);
+	}
+	if (state->vendor & VENDOR_HV_KVM) {
+		print_features(regs, state);
+		printf("\n");
+	}
 }
 
 /* EAX = 4000 0002 */
