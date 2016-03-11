@@ -1474,6 +1474,9 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	} else if (strcmp(buf, "Microsoft Hv") == 0) {
 		state->vendor |= VENDOR_HV_HYPERV;
 		printf("Hyper-V detected\n\n");
+	} else if (strcmp(buf, " lrpepyh  vr") == 0) {
+		state->vendor |= VENDOR_HV_PARALLELS;
+		printf("Parallels Desktop detected\n\n");
 	}
 }
 
