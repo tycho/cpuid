@@ -1134,6 +1134,7 @@ void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			{0x00000100, "Invariant TSC"},
 			{0x00000200, "Core performance boost"},
 			{0x00000400, "Read-only effective frequency interface"},
+			{0x00000800, "Processor feedback interface"},
 			{0x00000000, NULL}
 		};
 		struct edx_apm_amd_feature_t *feat;
