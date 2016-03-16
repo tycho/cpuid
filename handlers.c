@@ -1178,15 +1178,25 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			unsigned nc:8;
 			unsigned reserved_1:4;
 			unsigned apicidcoreidsize:4;
-			unsigned reserved_2:16;
+			unsigned perftscsize:2;
+			unsigned reserved_2:14;
 		};
 
 		struct ecx_apiccore *ecx = (struct ecx_apiccore *)&regs->ecx;
 
 		uint32_t nc = ecx->nc + 1;
+		uint32_t tscsize = ecx->perftscsize;
 		uint32_t mnc = (ecx->apicidcoreidsize > 0) ? (1u << ecx->apicidcoreidsize) : nc;
 
+		switch(tscsize) {
+		case 0: tscsize = 40; break;
+		case 1: tscsize = 48; break;
+		case 2: tscsize = 56; break;
+		case 3: tscsize = 64; break;
+		}
+
 		printf("Core count: %u\n", nc);
+		printf("Performance time-stamp counter size: %u bits\n", tscsize);
 		printf("Maximum core count: %u\n", mnc);
 		printf("\n");
 	}
