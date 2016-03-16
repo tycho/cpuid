@@ -1218,6 +1218,7 @@ void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		{0x00000080, "Decode assists"},
 		{0x00000400, "Pause intercept filter"},
 		{0x00001000, "PAUSE filter threshold"},
+		{0x00002000, "AVIC supported"},
 		{0x00000000, NULL}
 	};
 
