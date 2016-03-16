@@ -47,7 +47,6 @@ void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -115,7 +114,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000004, handle_ext_pname},
 	{0x80000005, handle_ext_amdl1cachefeat},
 	{0x80000006, handle_ext_l2cachefeat},
-	{0x80000007, handle_ext_0007},
+	{0x80000007, handle_features},
 	{0x80000008, handle_ext_0008},
 	{0x8000000A, handle_ext_svm},
 	{0x8000001D, handle_ext_cacheprop},
@@ -1103,53 +1102,6 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cp
 			       assoc[l3_cache->assoc] ? assoc[l3_cache->assoc] : "unknown associativity",
 			       l3_cache->linespertag,
 			       l3_cache->linesize);
-		}
-		printf("\n");
-	}
-}
-
-/* EAX = 8000 0007 */
-void handle_ext_0007(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	if (state->vendor & VENDOR_INTEL) {
-		/* TSC information */
-
-		/* Bit 8 of EDX indicates whether the Invariant TSC is available */
-		printf("Invariant TSC available: %s\n\n", (regs->edx & 0x100) ? "Yes" : "No");
-	}
-	if (state->vendor & VENDOR_AMD) {
-		/* Advanced Power Management information */
-
-		struct edx_apm_amd_feature_t {
-			unsigned int mask;
-			const char *name;
-		} features[] = {
-			{0x00000001, "Temperature Sensor"},
-			{0x00000002, "Frequency ID Control"},
-			{0x00000004, "Voltage ID Control"},
-			{0x00000008, "THERMTRIP"},
-			{0x00000010, "Hardware thermal control"},
-			{0x00000040, "100 MHz multiplier control"},
-			{0x00000080, "Hardware P-state control"},
-			{0x00000100, "Invariant TSC"},
-			{0x00000200, "Core performance boost"},
-			{0x00000400, "Read-only effective frequency interface"},
-			{0x00000800, "Processor feedback interface"},
-			{0x00000000, NULL}
-		};
-		struct edx_apm_amd_feature_t *feat;
-		unsigned int unaccounted;
-		printf("AMD Advanced Power Management features:\n");
-		unaccounted = 0;
-		for (feat = features; feat->mask; feat++) {
-			unaccounted |= feat->mask;
-			if (regs->edx & feat->mask) {
-				printf("  %s\n", feat->name);
-			}
-		}
-		unaccounted = (regs->edx & ~unaccounted);
-		if (unaccounted) {
-			printf("  Undocumented feature bits: 0x%08x\n", unaccounted);
 		}
 		printf("\n");
 	}

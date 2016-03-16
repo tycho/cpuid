@@ -397,6 +397,20 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
+/*  Advanced Power Management information (8000_0007h) */
+	{ 0x80000007, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "Temperature Sensor"},
+	{ 0x80000007, 0, REG_EDX, 0x00000002,                VENDOR_AMD                   , "Frequency ID Control"},
+	{ 0x80000007, 0, REG_EDX, 0x00000004,                VENDOR_AMD                   , "Voltage ID Control"},
+	{ 0x80000007, 0, REG_EDX, 0x00000008,                VENDOR_AMD                   , "THERMTRIP"},
+	{ 0x80000007, 0, REG_EDX, 0x00000010,                VENDOR_AMD                   , "Hardware thermal control"},
+/*	{ 0x80000007, 0, REG_EDX, 0x00000020,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000007, 0, REG_EDX, 0x00000040,                VENDOR_AMD                   , "100 MHz multiplier control"},
+	{ 0x80000007, 0, REG_EDX, 0x00000080,                VENDOR_AMD                   , "Hardware P-state control"},
+	{ 0x80000007, 0, REG_EDX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "Invariant TSC"},
+	{ 0x80000007, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , "Core performance boost"},
+	{ 0x80000007, 0, REG_EDX, 0x00000400,                VENDOR_AMD                   , "Read-only effective frequency interface"},
+	{ 0x80000007, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , "Processor feedback interface"},
+
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
 
@@ -474,6 +488,10 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				break;
 			case 0x80000001:
 				printf("Extended features, %s:\n",
+				       reg_name(last_reg));
+				break;
+			case 0x80000007:
+				printf("Advanced Power Management features, %s:\n",
 				       reg_name(last_reg));
 				break;
 			}
