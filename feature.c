@@ -387,11 +387,11 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_ECX, 0x00200000,                VENDOR_AMD                   , "trailing bit manipulation instructions"},
 	{ 0x80000001, 0, REG_ECX, 0x00400000,                VENDOR_AMD                   , "topology extensions"},
-/*	{ 0x80000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_ECX, 0x00800000,                VENDOR_AMD                   , "processor performance counter extensions"},
+	{ 0x80000001, 0, REG_ECX, 0x01000000,                VENDOR_AMD                   , "NB performance counter extensions"},
+	{ 0x80000001, 0, REG_ECX, 0x02000000,                VENDOR_AMD                   , "streaming performance monitor architecture"},
+	{ 0x80000001, 0, REG_ECX, 0x04000000,                VENDOR_AMD                   , "data access breakpoint extension"},
+	{ 0x80000001, 0, REG_ECX, 0x08000000,                VENDOR_AMD                   , "performance timestamp counter"},
 /*	{ 0x80000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -489,6 +489,11 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			case 0x80000001:
 				printf("Extended features, %s:\n",
 				       reg_name(last_reg));
+
+				/* EAX and EBX don't contain feature bits. We should zero these
+				 * out so they don't appear to be unaccounted for.
+				 */
+				regs->eax = regs->ebx = 0;
 				break;
 			case 0x80000007:
 				printf("Advanced Power Management features, %s:\n",
