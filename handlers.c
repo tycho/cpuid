@@ -1161,7 +1161,8 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	struct eax_addrsize {
 		unsigned physical:8;
 		unsigned linear:8;
-		unsigned reserved:16;
+		unsigned guestphysical:8;
+		unsigned reserved:8;
 	};
 
 	struct eax_addrsize *eax = (struct eax_addrsize *)&regs->eax;
@@ -1169,6 +1170,8 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 
+	if (eax->guestphysical)
+		printf("Guest physical address size: %d bits\n", eax->guestphysical);
 	printf("Physical address size: %d bits\n", eax->physical);
 	printf("Linear address size: %d bits\n", eax->linear);
 	printf("\n");
