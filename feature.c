@@ -118,7 +118,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "MOVBE instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "POPCNT instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "TSC deadline"},
-	{ 0x00000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "AES instructions"},
+	{ 0x00000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , "AES instructions"},
 	{ 0x00000001, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "XSAVE/XRSTOR instructions"},
 	{ 0x00000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "OS-enabled XSAVE/XRSTOR"},
 	{ 0x00000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX instructions"},
