@@ -329,32 +329,33 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EDX, 0x80000000,                                             , ""}, */   /* Reserved */
 
 /*  Extended (8000_0001h) */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "x87 FPU on chip"},
+	{ 0x80000001, 0, REG_EDX, 0x00000002,                VENDOR_AMD                   , "virtual-8086 mode enhancement"},
+	{ 0x80000001, 0, REG_EDX, 0x00000004,                VENDOR_AMD                   , "debugging extensions"},
+	{ 0x80000001, 0, REG_EDX, 0x00000008,                VENDOR_AMD                   , "page size extensions"},
+	{ 0x80000001, 0, REG_EDX, 0x00000010,                VENDOR_AMD                   , "time stamp counter"},
+	{ 0x80000001, 0, REG_EDX, 0x00000020,                VENDOR_AMD                   , "AMD model-specific registers"},
+	{ 0x80000001, 0, REG_EDX, 0x00000040,                VENDOR_AMD                   , "physical address extensions"},
+	{ 0x80000001, 0, REG_EDX, 0x00000080,                VENDOR_AMD                   , "machine check exception"},
+	{ 0x80000001, 0, REG_EDX, 0x00000100,                VENDOR_AMD                   , "CMPXCHG8B instruction"},
+	{ 0x80000001, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , "APIC on chip"},
 /*	{ 0x80000001, 0, REG_EDX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_EDX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , "SYSCALL"},
-/*	{ 0x80000001, 0, REG_EDX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_EDX, 0x00000800, VENDOR_INTEL                                , "SYSENTER and SYSEXIT instructions"},
+	{ 0x80000001, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , "SYSCALL and SYSRET instructions"},
+	{ 0x80000001, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "memory type range registers"},
+	{ 0x80000001, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "PTE global bit"},
+	{ 0x80000001, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , "machine check architecture"},
+	{ 0x80000001, 0, REG_EDX, 0x00008000,                VENDOR_AMD                   , "conditional move instruction"},
+	{ 0x80000001, 0, REG_EDX, 0x00010000,                VENDOR_AMD                   , "page attribute table"},
+	{ 0x80000001, 0, REG_EDX, 0x00020000,                VENDOR_AMD                   , "36-bit page size extension"},
 /*	{ 0x80000001, 0, REG_EDX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_EDX, 0x00100000, VENDOR_INTEL                                , "XD bit"},
 	{ 0x80000001, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , "NX bit"},
 /*	{ 0x80000001, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_EDX, 0x00400000,                VENDOR_AMD                   , "MMX extended"},
-/*	{ 0x80000001, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_EDX, 0x00800000,                VENDOR_AMD                   , "MMX instructions"},
+	{ 0x80000001, 0, REG_EDX, 0x01000000,                VENDOR_AMD                   , "FXSAVE/FXRSTOR instructions"},
 	{ 0x80000001, 0, REG_EDX, 0x02000000,                VENDOR_AMD                   , "fast FXSAVE/FXRSTOR"},
 	{ 0x80000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "1GB page support"},
 	{ 0x80000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "RDTSCP instruction"},
