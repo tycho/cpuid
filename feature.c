@@ -361,6 +361,41 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EDX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x80000000,                                             , ""}, */   /* Reserved */
 
+/*  Hypervisor implementation recommendations (4000_0004h) */
+	{ 0x40000004, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV                            , "Hypercall for address space switches"},
+	{ 0x40000004, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV                            , "Hypercall for local TLB flushes"},
+	{ 0x40000004, 0, REG_EAX, 0x00000004, VENDOR_HV_HYPERV                            , "Hypercall for remote TLB flushes"},
+	{ 0x40000004, 0, REG_EAX, 0x00000008, VENDOR_HV_HYPERV                            , "MSRs for accessing APIC registers"},
+	{ 0x40000004, 0, REG_EAX, 0x00000010, VENDOR_HV_HYPERV                            , "Hypervisor MSR for system RESET"},
+	{ 0x40000004, 0, REG_EAX, 0x00000020, VENDOR_HV_HYPERV                            , "Relaxed timing"},
+	{ 0x40000004, 0, REG_EAX, 0x00000040, VENDOR_HV_HYPERV                            , "DMA remapping"},
+	{ 0x40000004, 0, REG_EAX, 0x00000080, VENDOR_HV_HYPERV                            , "Interrupt remapping"},
+	{ 0x40000004, 0, REG_EAX, 0x00000100, VENDOR_HV_HYPERV                            , "x2APIC MSRs"},
+	{ 0x40000004, 0, REG_EAX, 0x00000200, VENDOR_HV_HYPERV                            , "Deprecating AutoEOI"},
+/*	{ 0x40000004, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000004, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+
 /*  Extended (8000_0001h) */
 	{ 0x80000001, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "x87 FPU on chip"},
 	{ 0x80000001, 0, REG_EDX, 0x00000002,                VENDOR_AMD                   , "virtual-8086 mode enhancement"},
@@ -520,6 +555,15 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				printf("Hyper-V %sfeatures, %s:\n",
 				       last_reg == REG_EBX ? "partition " : "",
 					   reg_name(last_reg));
+				break;
+			case 0x40000004:
+				printf("Hyper-V implementation recommendations, %s:\n",
+					   reg_name(last_reg));
+
+				/* EBX doesn't contain feature bits. We should zero these
+				 * out so they don't appear to be unaccounted for.
+				 */
+				regs->ebx = 0;
 				break;
 			case 0x80000001:
 				printf("Extended features, %s:\n",
