@@ -54,7 +54,7 @@ static void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *st
 
 static void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
@@ -102,7 +102,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
 	{0x40000001, handle_vmm_leaf01},
-	{0x40000002, handle_xen_leaf02},
+	{0x40000002, handle_vmm_leaf02},
 	{0x40000003, handle_vmm_leaf03},
 	{0x40000003, handle_vmware_leaf10},
 
@@ -1499,15 +1499,34 @@ static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 }
 
 /* EAX = 4000 0002 */
-static void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (!(state->vendor & VENDOR_HV_XEN))
-		return;
-	printf("Xen features:\n"
-	       "  Hypercall transfer pages: %d\n"
-	       "  MSR base address: 0x%08x\n\n",
-	       regs->eax,
-	       regs->ebx);
+	if (state->vendor & VENDOR_HV_XEN) {
+		printf("Xen features:\n"
+			   "  Hypercall transfer pages: %d\n"
+			   "  MSR base address: 0x%08x\n\n",
+			   regs->eax,
+			   regs->ebx);
+	}
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		struct ebx_version {
+			unsigned minor:16;
+			unsigned major:16;
+		};
+		//struct edx_service {
+		//	unsigned service_number:24;
+		//	unsigned service_branch:8;
+		//};
+
+		struct ebx_version *ebx = (struct ebx_version *)(&regs->ebx);
+		//struct edx_service *edx = (struct edx_service *)(&regs->edx);
+
+		printf("Version: %d.%d (build %d)", ebx->major, ebx->minor, regs->eax);
+		if (regs->ecx)
+			printf(" Service Pack %d", regs->ecx);
+
+		printf("\n\n");
+	}
 }
 
 /* EAX = 4000 0003 */
