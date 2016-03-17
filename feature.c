@@ -506,8 +506,8 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		if (ignore_vendor) {
 			if ((*reg & p->m_bitmask) != 0)
 			{
-				char feat[32], buffer[32];
-				sprintf(feat, "%s (%s)", p->m_name, vendors(buffer, p->m_vendor));
+				char feat[64], vendorlist[32];
+				snprintf(feat, sizeof(feat), "%s (%s)", p->m_name, vendors(vendorlist, p->m_vendor));
 				printf("  %s\n", feat);
 				*reg &= (~p->m_bitmask);
 			}
