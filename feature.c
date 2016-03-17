@@ -295,6 +295,39 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
+	{ 0x40000003, 0, REG_EBX, 0x00000001, VENDOR_HV_HYPERV                            , "CreatePartitions"},
+	{ 0x40000003, 0, REG_EBX, 0x00000002, VENDOR_HV_HYPERV                            , "AccessPartitionId"},
+	{ 0x40000003, 0, REG_EBX, 0x00000004, VENDOR_HV_HYPERV                            , "AccessMemoryPool"},
+	{ 0x40000003, 0, REG_EBX, 0x00000008, VENDOR_HV_HYPERV                            , "AdjustMemoryBuffers"},
+	{ 0x40000003, 0, REG_EBX, 0x00000010, VENDOR_HV_HYPERV                            , "PostMessages"},
+	{ 0x40000003, 0, REG_EBX, 0x00000020, VENDOR_HV_HYPERV                            , "SignalEvents"},
+	{ 0x40000003, 0, REG_EBX, 0x00000040, VENDOR_HV_HYPERV                            , "CreatePort"},
+	{ 0x40000003, 0, REG_EBX, 0x00000080, VENDOR_HV_HYPERV                            , "ConnectPort"},
+	{ 0x40000003, 0, REG_EBX, 0x00000100, VENDOR_HV_HYPERV                            , "AccessStats"},
+/*	{ 0x40000003, 0, REG_EBX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00000400,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EBX, 0x00000800, VENDOR_HV_HYPERV                            , "Debugging"},
+	{ 0x40000003, 0, REG_EBX, 0x00001000, VENDOR_HV_HYPERV                            , "CpuManagement"},
+	{ 0x40000003, 0, REG_EBX, 0x00002000, VENDOR_HV_HYPERV                            , "ConfigureProfiler"},
+	{ 0x40000003, 0, REG_EBX, 0x00004000, VENDOR_HV_HYPERV                            , "EnableExpandedStackwalking"},
+/*	{ 0x40000003, 0, REG_EBX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000003, 0, REG_EBX, 0x80000000,                                             , ""}, */   /* Reserved */
+
 	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT instruction support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000002, VENDOR_HV_HYPERV                            , "Guest debugging support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000004, VENDOR_HV_HYPERV                            , "Performance Monitor support"},
@@ -484,8 +517,9 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				       reg_name(last_reg));
 				break;
 			case 0x40000003:
-				printf("Hyper-V features, %s:\n",
-				       reg_name(last_reg));
+				printf("Hyper-V %sfeatures, %s:\n",
+				       last_reg == REG_EBX ? "partition " : "",
+					   reg_name(last_reg));
 				break;
 			case 0x80000001:
 				printf("Extended features, %s:\n",
