@@ -1490,6 +1490,12 @@ static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 		print_features(regs, state);
 		printf("\n");
 	}
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		char buf[5];
+		buf[4] = 0;
+		*(uint32_t *)(&buf[0]) = regs->eax;
+		printf("Hypervisor interface identification: '%s'\n\n", buf);
+	}
 }
 
 /* EAX = 4000 0002 */
