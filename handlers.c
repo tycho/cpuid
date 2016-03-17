@@ -104,7 +104,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x40000001, handle_vmm_leaf01},
 	{0x40000002, handle_vmm_leaf02},
 	{0x40000003, handle_vmm_leaf03},
-	{0x40000003, handle_vmware_leaf10},
+	{0x40000010, handle_vmware_leaf10},
 
 	/* Extended levels */
 	{0x80000000, handle_ext_base},
