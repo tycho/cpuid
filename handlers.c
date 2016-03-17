@@ -58,6 +58,7 @@ static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -108,6 +109,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x40000003, handle_vmm_leaf03},
 	{0x40000004, handle_vmm_leaf04},
 	{0x40000005, handle_vmm_leaf05},
+	{0x40000006, handle_vmm_leaf06},
 	{0x40000010, handle_vmware_leaf10},
 
 	/* Extended levels */
@@ -1566,6 +1568,15 @@ static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 			printf("Maximum logical processors: %d\n", regs->ebx);
 		if (regs->ecx)
 			printf("Maximum interrupt vectors for intremap: %d\n", regs->ecx);
+		printf("\n");
+	}
+}
+
+/* EAX = 4000 0006 */
+static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		print_features(regs, state);
 		printf("\n");
 	}
 }
