@@ -395,7 +395,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000004, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000004, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
-/*  Hypervisor implementation recommendations (4000_0006h) */
+/*  Hypervisor hardware features enabled (4000_0006h) */
 	{ 0x40000006, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV                            , "APIC overlay assist"},
 	{ 0x40000006, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV                            , "MSR bitmaps"},
 	{ 0x40000006, 0, REG_EAX, 0x00000004, VENDOR_HV_HYPERV                            , "Architectural performance counters"},
