@@ -30,40 +30,40 @@
 #include <stdio.h>
 #include <string.h>
 
-void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
-void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
 {
@@ -124,7 +124,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 };
 
 /* EAX = 0000 0000 | EAX = 4000 0000 | EAX = 8000 0000 */
-void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	state->curmax = regs->eax;
 	state->cpuid_print(regs, state, FALSE);
@@ -169,7 +169,7 @@ const char *vendor_name(int vendor_id)
 }
 
 /* EAX = 0000 0000 */
-void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 	size_t i;
@@ -205,7 +205,7 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 0001 | EAX = 0000 0001 */
-void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->last_leaf.eax == 0x00000001) {
 		struct std1_ebx_t
@@ -252,7 +252,7 @@ void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0002 */
-void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	struct cpu_regs_t *rvec = NULL;
@@ -300,7 +300,7 @@ err:
 }
 
 /* EAX = 0000 0003 */
-void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_TRANSMETA)) == 0)
 		return;
@@ -345,7 +345,7 @@ static const char *cache04_type(uint8_t type)
 }
 
 /* EAX = 0000 0004 */
-void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_cache04_t {
 		unsigned type:5;
@@ -448,7 +448,7 @@ void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0004 */
-void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	while (1) {
@@ -464,7 +464,7 @@ void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0005 */
-void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	/* MONITOR/MWAIT leaf */
 	struct eax_monitor_t {
@@ -512,7 +512,7 @@ no_enumeration:
 }
 
 /* EAX = 0000 0006 */
-void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_power_t {
 		unsigned temp_sensor:1;
@@ -571,7 +571,7 @@ void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0007 */
-void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0, m = regs->eax;
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
@@ -590,7 +590,7 @@ void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0007 */
-void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0, m = regs->eax;
 	while (i <= m) {
@@ -604,7 +604,7 @@ void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 000A */
-void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct perfmon_eax_t {
 		unsigned version:8;
@@ -662,7 +662,7 @@ void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 000B */
-void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct x2apic_prop_t {
 		uint32_t mask;
@@ -762,7 +762,7 @@ void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 000B */
-void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	while (1) {
@@ -810,7 +810,7 @@ static const char *xsave_feature_name(uint32_t bit)
 }
 
 /* EAX = 0000 000D */
-void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	int i, j, max = 0;
 
@@ -885,7 +885,7 @@ void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 000D */
-void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
 	while (1) {
@@ -903,14 +903,14 @@ void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 0000 */
-void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	state->curmax = regs->eax;
 	printf("Maximum extended CPUID leaf: 0x%08x\n\n", state->curmax);
 }
 
 /* EAX = 8000 0002 */
-void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t base = (state->last_leaf.eax - 0x80000002) * 16;
 	if (base == 0)
@@ -944,7 +944,7 @@ static const char *amd_associativity(char *buffer, uint8_t assoc)
 }
 
 /* EAX = 8000 0005 */
-void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
+static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
 	char buffer[20];
 	struct amd_l1_tlb_t {
@@ -1007,7 +1007,7 @@ void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable struct
 }
 
 /* EAX = 8000 0006 */
-void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
+static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_INTEL) {
 		/*
@@ -1141,7 +1141,7 @@ void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cp
 }
 
 /* EAX = 8000 0008 */
-void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	/* Long mode address size information */
 	struct eax_addrsize {
@@ -1192,7 +1192,7 @@ void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 000A */
-void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_svm {
 		unsigned svmrev:8;
@@ -1256,7 +1256,7 @@ void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 001D */
-void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct cpu_regs_t feat_check;
 	uint32_t i = 0, has_extended_topology = 0;
@@ -1282,7 +1282,7 @@ void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 001D */
-void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_cache {
 		unsigned type:5;
@@ -1390,7 +1390,7 @@ void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 8000 001E */
-void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_extapic {
 		unsigned extapicid:32;
@@ -1436,7 +1436,7 @@ void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0000 */
-void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	char buf[13];
 	size_t i;
@@ -1481,7 +1481,7 @@ void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0001 */
-void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_HV_XEN) {
 		printf("Xen version: %d.%d\n\n", regs->eax >> 16, regs->eax & 0xFFFF);
@@ -1493,7 +1493,7 @@ void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0002 */
-void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (!(state->vendor & VENDOR_HV_XEN))
 		return;
@@ -1505,7 +1505,7 @@ void handle_xen_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0003 */
-void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_HV_XEN) {
 		printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
@@ -1516,7 +1516,7 @@ void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 4000 0010 */
-void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (!(state->vendor & VENDOR_HV_VMWARE))
 		return;
