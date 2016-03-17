@@ -34,7 +34,7 @@ all: $(BINARY)
 
 CC := gcc
 CP := cp -L
-CFLAGS := -O0 -ggdb -I../inc -I. -fno-strict-aliasing \
+CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
 	-std=gnu89 \
 	-Wall \
 	-Wextra \
