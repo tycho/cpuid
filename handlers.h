@@ -32,4 +32,7 @@ struct cpuid_leaf_handler_index_t {
 extern const struct cpuid_leaf_handler_index_t dump_handlers[];
 extern const struct cpuid_leaf_handler_index_t decode_handlers[];
 
+int vendor_id(const char *vendor);
+const char *vendor_name(int vendor_id);
+
 #endif

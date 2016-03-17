@@ -130,11 +130,12 @@ invalid_leaf:
 
 static void usage(const char *argv0)
 {
-	printf("usage: %s [--help] [--dump] [--ignore-vendor] [--parse <filename>]\n\n", argv0);
+	printf("usage: %s [--help] [--dump] [--vendor <name>] [--ignore-vendor] [--parse <filename>]\n\n", argv0);
 	printf("  %-18s %s\n", "-h, --help", "Print this list of options");
 	printf("  %-18s %s\n", "-c, --cpu", "Index (starting at 0) of CPU to get info from");
 	printf("  %-18s %s\n", "-d, --dump", "Dump a raw CPUID table");
 	printf("  %-18s %s\n", "--ignore-vendor", "Show feature flags from all vendors");
+	printf("  %-18s %s\n", "--vendor", "Override the processor vendor string");
 	printf("  %-18s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified");
 	printf("  %-18s %s\n", "--sanity", "Do a sanity check of the CPUID data");
 	printf("\n");
@@ -181,6 +182,8 @@ int main(int argc, char **argv)
 	int c, ret = 0;
 	int cpu_start = -2, cpu_end = -2;
 
+	INIT_CPUID_STATE(&state);
+
 	while (TRUE) {
 		static struct option long_options[] = {
 			{"version", no_argument, 0, 'v'},
@@ -190,6 +193,7 @@ int main(int argc, char **argv)
 			{"cpu", required_argument, 0, 'c'},
 			{"kernel", no_argument, &do_kernel, 'k'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
+			{"vendor", required_argument, 0, 'V'},
 			{"parse", required_argument, 0, 'f'},
 			{"format", required_argument, 0, 'o'},
 			{"scan-to", required_argument, 0, 2},
@@ -197,7 +201,7 @@ int main(int argc, char **argv)
 		};
 		int option_index = 0;
 
-		c = getopt_long(argc, argv, "c:hdvo:f:", long_options, &option_index);
+		c = getopt_long(argc, argv, "c:hdvV:o:f:", long_options, &option_index);
 		if (c == -1)
 			break;
 		switch (c) {
@@ -243,6 +247,10 @@ int main(int argc, char **argv)
 				exit(1);
 			}
 			break;
+		case 'V':
+			assert(optarg);
+			state.vendor = vendor_id(optarg);
+			break;
 		case 'v':
 			version();
 		case 'h':
@@ -251,8 +259,6 @@ int main(int argc, char **argv)
 			usage(argv[0]);
 		}
 	}
-
-	INIT_CPUID_STATE(&state);
 
 	if (cpu_start == -2)
 		cpu_start = cpu_end = 0;

@@ -130,6 +130,44 @@ void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	state->cpuid_print(regs, state, FALSE);
 }
 
+typedef struct _vendor_map_t {
+	const char *name;
+	int id;
+} vendor_map_t, *pvendor_map_t;
+
+vendor_map_t vendors[] = {
+	{ "GenuineIntel", VENDOR_INTEL },
+	{ "AuthenticAMD", VENDOR_AMD },
+	{ "GenuineTMx86", VENDOR_TRANSMETA },
+	{ "CyrixInstead", VENDOR_CYRIX },
+	{ NULL, VENDOR_UNKNOWN },
+};
+
+
+int vendor_id(const char *name)
+{
+	pvendor_map_t pvendor = vendors;
+
+	while (pvendor->name) {
+		if (strcmp(name, pvendor->name) == 0)
+			break;
+		pvendor++;
+	}
+
+	return pvendor->id;
+}
+
+const char *vendor_name(int vendor_id)
+{
+	pvendor_map_t pvendor = vendors;
+	while (pvendor->name) {
+		if (pvendor->id == vendor_id)
+			break;
+		pvendor++;
+	}
+	return pvendor->name;
+}
+
 /* EAX = 0000 0000 */
 void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
@@ -157,18 +195,13 @@ void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 	buf[12] = 0;
 
-	printf("CPU vendor string: '%s'\n\n", buf);
-
-	if (strcmp(buf, "GenuineIntel") == 0)
-		state->vendor = VENDOR_INTEL;
-	else if (strcmp(buf, "AuthenticAMD") == 0)
-		state->vendor = VENDOR_AMD;
-	else if (strcmp(buf, "GenuineTMx86") == 0)
-		state->vendor = VENDOR_TRANSMETA;
-	else if (strcmp(buf, "CyrixInstead") == 0)
-		state->vendor = VENDOR_CYRIX;
-	else
-		state->vendor = VENDOR_UNKNOWN;
+	printf("CPU vendor string: '%s'", buf);
+	if (state->vendor == VENDOR_UNKNOWN ) {
+		state->vendor = vendor_id(buf);
+	} else {
+		printf(" (overridden as '%s')", vendor_name(state->vendor));
+	}
+	printf("\n\n");
 }
 
 /* EAX = 8000 0001 | EAX = 0000 0001 */
