@@ -57,6 +57,7 @@ static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -106,6 +107,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x40000002, handle_vmm_leaf02},
 	{0x40000003, handle_vmm_leaf03},
 	{0x40000004, handle_vmm_leaf04},
+	{0x40000005, handle_vmm_leaf05},
 	{0x40000010, handle_vmware_leaf10},
 
 	/* Extended levels */
@@ -1548,6 +1550,22 @@ static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	if (state->vendor & VENDOR_HV_HYPERV) {
 		printf("Recommended attempts to retry spinlocks: %d\n\n", regs->ebx);
 		print_features(regs, state);
+		printf("\n");
+	}
+}
+
+/* EAX = 4000 0005 */
+static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		if (!(regs->eax || regs->ebx || regs->ecx))
+			return;
+		if (regs->eax)
+			printf("Maximum virtual processors: %d\n", regs->eax);
+		if (regs->ebx)
+			printf("Maximum logical processors: %d\n", regs->ebx);
+		if (regs->ecx)
+			printf("Maximum interrupt vectors for intremap: %d\n", regs->ecx);
 		printf("\n");
 	}
 }
