@@ -2,4 +2,9 @@ language: c
 compiler:
   - gcc
   - clang
-script: scons CC=$CC && scons -c && make
+script:
+  - scons CC=$CC
+  - scons -c
+  - make
+  - ./cpuid -c 0
+  - ./cpuid -c 0 -d
