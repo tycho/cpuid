@@ -1,10 +1,19 @@
 language: c
+
 compiler:
   - gcc
   - clang
+
 script:
   - scons CC=$CC
   - scons -c
   - make
   - ./cpuid -c 0
   - ./cpuid -c 0 -d
+
+notifications:
+  pushover:
+    api_key:
+      secure: RAHLS+gadlUEWnCtB3TmymYQ3r7v7vPG8lzF631vA223TwwC235JcqzmRc12M+fq6JOkc4cyrfhpQ8XsYeEv3VdfeToQnIW9/XAbbKcqDF+WWoZoQ7xXWxtjBu46r2GFFSMWD7yEd9o6aZ8IBO08N+SSfFPCwfBlYumN5KIz4DA=
+    users:
+      secure: jmqcQuPhVhWlnOgmTPRTc7d5kwIOop8sD2tEp+L6Ojt4FdbJLwzpFbEX87a8uOL690Q2xTXpPBBZZWKfxv9WNgzozBZlR5gPr2skf4URi0Kx57XeCx4E1Kjsp+fGzW16w+B9SLxxfyFwO6V7ozixQ5ozwRvrdEgPI1uXltnunbM=
