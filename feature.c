@@ -133,7 +133,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "Bit Manipulation Instructions (BMI1)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "Hardware Lock Elision (HLE)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "Advanced Vector Extensions 2.0 (AVX2)"},
-/*	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , "x87 FPU data pointer updated only on x87 exceptions"},
 	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , "Supervisor Mode Execution Protection (SMEP)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , "Bit Manipulation Instructions 2 (BMI2)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "Enhanced REP MOVSB/STOSB"},
@@ -162,9 +162,9 @@ static const struct cpu_feature_t features [] = {
 
 	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1 instruction"},
 	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512 vector byte manipulation instructions (AVX512VBMI)"},
-/*	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "UMIP (User Mode Instruction Prevention)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "PKU (Protection Keys for User-mode pages)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OSPKE (OS has enabled protection keys)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -182,7 +182,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "RDPID (Read Processor ID)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -190,7 +190,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "SGX_LC (SGX Launch Configuration)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
 /*	{ 0x00000007, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
