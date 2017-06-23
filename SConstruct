@@ -1,4 +1,5 @@
 import os
+import platform
 import re
 import subprocess
 
@@ -130,8 +131,12 @@ if env['CC'] == 'gcc' or env['CC'] == 'clang':
 	env.Append(CFLAGS='-pthread')
 	env.Append(LINKFLAGS='-pthread')
 
-        # needed for sqrt, clock_gettime etc
-	env.Append(LIBS=['-lm', '-lrt'])
+        # needed for sqrt
+	env.Append(LIBS=['-lm'])
+
+        if platform.system() == 'Linux':
+            # needed on older glibc for clock_gettime
+            env.Append(LIBS=['-lrt'])
 
 elif env['CC'] == 'cl':
 	# Optimization levels
