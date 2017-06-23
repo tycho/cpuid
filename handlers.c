@@ -835,7 +835,7 @@ static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *
 		state->cpuid_call(regs, state);
 
 		if (i > 1) {
-			const char *name = xsave_leaf_name(i - 2);
+			const char *name = xsave_leaf_name(i);
 			/*if (!name || !regs->eax || !regs->ebx || !regs->ecx || !regs->edx)
 				continue;*/
 			printf("  Extended state for %s requires %d bytes, offset %d\n",
