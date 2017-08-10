@@ -53,7 +53,7 @@ int cpuid_version_minor(void)
 	return CPUID_VERSION_MINOR;
 }
 
-int cpuid_version_revison(void)
+int cpuid_version_revision(void)
 {
 	return CPUID_VERSION_REVISION;
 }
