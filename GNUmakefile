@@ -1,5 +1,5 @@
 
-MAKEFLAGS += -Rr
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
@@ -24,11 +24,32 @@ ifndef V
         QUIET_GEN       = @echo '   ' GEN $@;
         QUIET_LINK      = @echo '   ' LD $@;
         QUIET           = @
+        MAKEFLAGS      += --no-print-directory
         export V
 endif
 endif
 
+ifeq ($(strip $(MAKE_JOBS)),)
+    ifeq ($(uname_S),Darwin)
+        CPUS := $(shell /usr/sbin/sysctl -n hw.ncpu)
+    endif
+    ifeq ($(uname_S),Linux)
+        CPUS := $(shell grep ^processor /proc/cpuinfo | wc -l)
+    endif
+    ifneq (,$(findstring MINGW,$(uname_S))$(findstring CYGWIN,$(uname_S)))
+        CPUS := $(shell getconf _NPROCESSORS_ONLN)
+    endif
+    MAKE_JOBS := $(CPUS)
+endif
+
+ifeq ($(strip $(MAKE_JOBS)),)
+    MAKE_JOBS := 8
+endif
+
 BINARY := cpuid$(EXT)
+
+top-level-make:
+	@$(MAKE) -f GNUmakefile -j$(MAKE_JOBS) all
 
 all: $(BINARY)
 
