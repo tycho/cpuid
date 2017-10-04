@@ -253,6 +253,7 @@ int main(int argc, char **argv)
 			break;
 		case 'v':
 			version();
+			/* falls through */
 		case 'h':
 		case '?':
 		default:
