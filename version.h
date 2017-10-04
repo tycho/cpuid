@@ -3,7 +3,7 @@
  *
  * A simple and small tool to dump/decode CPUID information.
  *
- * Copyright (c) 2010-2015, Steven Noonan <steven@uplinklabs.net>
+ * Copyright (c) 2010-2017, Steven Noonan <steven@uplinklabs.net>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,7 +28,7 @@ const char *cpuid_version_short(void);
 const char *cpuid_version_long(void);
 int cpuid_version_major(void);
 int cpuid_version_minor(void);
-int cpuid_version_revison(void);
+int cpuid_version_revision(void);
 int cpuid_version_build(void);
 
 #endif
