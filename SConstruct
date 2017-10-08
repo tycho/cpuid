@@ -6,6 +6,7 @@ import subprocess
 def subprocess_output(cmdline):
 	p = subprocess.Popen(cmdline.split(" "), stdout=subprocess.PIPE)
 	stdout, stderr = p.communicate()
+	stdout = stdout.decode('utf-8')
 	return stdout.rstrip()
 
 def read_whole_file(path):
@@ -23,7 +24,7 @@ def describe_revision():
 		#
 		hash = subprocess_output("git rev-list HEAD~1..HEAD")
 		tag = subprocess_output("git describe --abbrev=0")
-		revs = subprocess_output("git rev-list %s..HEAD" % (tag)).split('\n')
+		revs = subprocess_output("git rev-list %s..HEAD" % (tag,)).split('\n')
 		if len(revs) and revs[0] == '':
 			revs = []
 		n = len(revs)
@@ -49,7 +50,7 @@ def generate_build_header(**kwargs):
 	source = kwargs['source']
 	scm, tag, n, hash = describe_revision()
 	extra = tag.split('-')
-	version = map(int, extra[0].split('.'))
+	version = list(map(int, extra[0].split('.')))
 	while len(version) < 3:
 		version.append(0)
 	if n < 1:
@@ -73,7 +74,7 @@ def generate_build_header(**kwargs):
 		"#endif\n"
 	]
 	for target in targets:
-		f = open(str(target), "wb")
+		f = open(str(target), "wt")
 		f.writelines(lines)
 		f.close()
 	return 0
@@ -84,7 +85,7 @@ def generate_license_header(**kwargs):
 	source = kwargs['source']
 	source = str(source[0])
 	source = open(source, 'rb')
-	license = source.read()
+	license = source.read().decode('utf-8')
 	source.close()
 	license = re.sub('\t', r'\\t', license)
 	license = re.sub('\n', r'\\n', license)
@@ -98,7 +99,7 @@ def generate_license_header(**kwargs):
 		"#endif\n"
 	]
 	for target in targets:
-		f = open(str(target), 'wb')
+		f = open(str(target), 'wt')
 		f.writelines(lines)
 		f.close()
 
@@ -131,12 +132,12 @@ if env['CC'] == 'gcc' or env['CC'] == 'clang':
 	env.Append(CFLAGS='-pthread')
 	env.Append(LINKFLAGS='-pthread')
 
-        # needed for sqrt
+	# needed for sqrt
 	env.Append(LIBS=['-lm'])
 
-        if platform.system() == 'Linux':
-            # needed on older glibc for clock_gettime
-            env.Append(LIBS=['-lrt'])
+	if platform.system() == 'Linux':
+		# needed on older glibc for clock_gettime
+		env.Append(LIBS=['-lrt'])
 
 elif env['CC'] == 'cl':
 	# Optimization levels
@@ -179,3 +180,5 @@ env.Command('build.h', [Value(describe_revision())], env.Action(generate_build_h
 env.Command('license.h', '#COPYING', env.Action(generate_license_header, 'Generating license.h'))
 
 env.Program(target='cpuid', source=sources)
+
+# vim: set ts=4 sts=4 sw=4 noet:
