@@ -545,7 +545,7 @@ static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 	struct ebx_power_t *ebx = (struct ebx_power_t *)&regs->ebx;
 	struct ecx_power_t *ecx = (struct ecx_power_t *)&regs->ecx;
 
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 
 	/* If we don't have anything to print, skip. */
@@ -682,7 +682,7 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	uint32_t i, id = 0;
 	uint32_t total_logical = state->thread_count(state);
 
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 	if (!regs->eax && !regs->ebx)
 		return;
@@ -820,7 +820,7 @@ static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *
 {
 	int i, j, max = 0;
 
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 	if (!regs->eax)
 		return;
@@ -1232,6 +1232,8 @@ static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		{0x00000400, "Pause intercept filter"},
 		{0x00001000, "PAUSE filter threshold"},
 		{0x00002000, "AVIC supported"},
+		{0x00008000, "virtualized VMLOAD/VMSAVE"},
+		{0x00010000, "virtualized GIF"},
 		{0x00000000, NULL}
 	};
 

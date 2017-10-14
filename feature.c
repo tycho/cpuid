@@ -114,8 +114,8 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL                                , "direct cache access"},
 	{ 0x00000001, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.1 instructions"},
 	{ 0x00000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "SSE4.2 instructions"},
-	{ 0x00000001, 0, REG_ECX, 0x00200000, VENDOR_INTEL                                , "x2APIC"},
-	{ 0x00000001, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "MOVBE instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , "x2APIC"},
+	{ 0x00000001, 0, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , "MOVBE instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "POPCNT instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "TSC deadline"},
 	{ 0x00000001, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , "AES instructions"},
@@ -123,19 +123,19 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "OS-enabled XSAVE/XRSTOR"},
 	{ 0x00000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "AVX instructions"},
 	{ 0x00000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "16-bit FP conversion instructions"},
-	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "RDRAND instruction"},
+	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , "RDRAND instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ (hypervisor)"},
 
 /*  Structured Extended Feature Flags (0000_0007h) */
-	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "FSGSBASE instructions"},
+	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "FSGSBASE instructions"},
 	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "IA32_TSC_ADJUST MSR supported"},
 	{ 0x00000007, 0, REG_EBX, 0x00000004, VENDOR_INTEL                                , "Software Guard Extensions (SGX)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "Bit Manipulation Instructions (BMI1)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "Hardware Lock Elision (HLE)"},
-	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "Advanced Vector Extensions 2.0 (AVX2)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , "Advanced Vector Extensions 2.0 (AVX2)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , "x87 FPU data pointer updated only on x87 exceptions"},
-	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , "Supervisor Mode Execution Protection (SMEP)"},
-	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , "Bit Manipulation Instructions 2 (BMI2)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , "Supervisor Mode Execution Protection (SMEP)"},
+	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "Bit Manipulation Instructions 2 (BMI2)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "Enhanced REP MOVSB/STOSB"},
 	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID instruction"},
 	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "Restricted Transactional Memory (RTM)"},
@@ -145,18 +145,18 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "Platform QoS Enforcement (PQE)"},
 	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512 foundation (AVX512F)"},
 	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "AVX512 double/quadword instructions (AVX512DQ)"},
-	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , "RDSEED instruction"},
-	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , "Multi-Precision Add-Carry Instruction Extensions (ADX)"},
-	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , "Supervisor Mode Access Prevention (SMAP)"},
+	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , "RDSEED instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "Multi-Precision Add-Carry Instruction Extensions (ADX)"},
+	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "Supervisor Mode Access Prevention (SMAP)"},
 	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , "AVX512 integer FMA instructions (AVX512IFMA)"},
-	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "Persistent commit instruction (PCOMMIT)"},
-	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL                                , "CLFLUSHOPT instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , "Persistent commit instruction (PCOMMIT)"},
+	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "CLFLUSHOPT instruction"},
 	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "cache line write-back instruction (CLWB)"},
 	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "Intel Processor Trace"},
 	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512 prefetch instructions (AVX512PF)"},
 	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512 exponent/reciprocal instructions (AVX512ER)"},
 	{ 0x00000007, 0, REG_EBX, 0x10000000, VENDOR_INTEL                                , "AVX512 conflict detection instructions (AVX512CD)"},
-	{ 0x00000007, 0, REG_EBX, 0x20000000, VENDOR_INTEL                                , "SHA-1/SHA-256 instructions"},
+	{ 0x00000007, 0, REG_EBX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , "SHA-1/SHA-256 instructions"},
 	{ 0x00000007, 0, REG_EBX, 0x40000000, VENDOR_INTEL                                , "AVX512 byte/word instructions (AVX512BW)"},
 	{ 0x00000007, 0, REG_EBX, 0x80000000, VENDOR_INTEL                                , "AVX512 vector length extensions (AVX512VL)"},
 
@@ -484,7 +484,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_ECX, 0x00008000,                VENDOR_AMD                   , "lightweight profiling"},
 	{ 0x80000001, 0, REG_ECX, 0x00010000,                VENDOR_AMD                   , "4-operand FMA instructions"},
-/*	{ 0x80000001, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_ECX, 0x00020000,                VENDOR_AMD                   , "Translation cache extension"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_ECX, 0x00080000,                VENDOR_AMD                   , "node ID support"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -495,10 +495,17 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000001, 0, REG_ECX, 0x02000000,                VENDOR_AMD                   , "streaming performance monitor architecture"},
 	{ 0x80000001, 0, REG_ECX, 0x04000000,                VENDOR_AMD                   , "data access breakpoint extension"},
 	{ 0x80000001, 0, REG_ECX, 0x08000000,                VENDOR_AMD                   , "performance timestamp counter"},
-/*	{ 0x80000001, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000001, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_ECX, 0x10000000,                VENDOR_AMD                   , "performance counter extensions"},
+	{ 0x80000001, 0, REG_ECX, 0x20000000,                VENDOR_AMD                   , "MONITORX/MWAITX instructions"},
 /*	{ 0x80000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000001, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+
+/*  RAS Capabilities (8000_0007h) */
+	{ 0x80000007, 0, REG_EBX, 0x00000001,                VENDOR_AMD                   , "MCA overflow recovery"},
+	{ 0x80000007, 0, REG_EBX, 0x00000002,                VENDOR_AMD                   , "Software uncorrectable error containment and recovery"},
+	{ 0x80000007, 0, REG_EBX, 0x00000004,                VENDOR_AMD                   , "Hardware assert (HWA)"},
+	{ 0x80000007, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "Scalable MCA"},
+/*	{ 0x80000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
 /*  Advanced Power Management information (8000_0007h) */
 	{ 0x80000007, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "Temperature Sensor"},
@@ -513,6 +520,9 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000007, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , "Core performance boost"},
 	{ 0x80000007, 0, REG_EDX, 0x00000400,                VENDOR_AMD                   , "Read-only effective frequency interface"},
 	{ 0x80000007, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , "Processor feedback interface"},
+	{ 0x80000007, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "APM power reporting"},
+	{ 0x80000007, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "Connected standby"},
+	{ 0x80000007, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , "Running average power limit (RAPL)"},
 
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
@@ -613,8 +623,12 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				regs->eax = regs->ebx = 0;
 				break;
 			case 0x80000007:
-				printf("Advanced Power Management features, %s:\n",
-				       reg_name(last_reg));
+				if (p->m_reg == REG_EBX)
+					printf("RAS capabilities, %s:\n",
+						   reg_name(last_reg));
+				else if (p->m_reg == REG_EDX)
+					printf("Advanced Power Management features, %s:\n",
+						   reg_name(last_reg));
 				break;
 			}
 		}
