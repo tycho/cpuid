@@ -68,8 +68,8 @@ REFERENCE DOCUMENTATION
 
 You can find current Intel and AMD CPUID specifications at these locations:
 
-http://www.intel.com/content/www/us/en/processors/processor-identification-cpuid-instruction-note.html
-http://support.amd.com/us/Embedded_TechDocs/25481.pdf
+https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html
+http://developer.amd.com/resources/developer-guides-manuals/
 
 I try to keep up with these as they change, but sometimes I'm slow on the
 uptake. Please notify me if you notice any inconsistencies or if features you
