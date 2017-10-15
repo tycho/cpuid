@@ -7,8 +7,8 @@ certain leaves, but this functionality will be expanded as the CPUID
 specifications provided by AMD and Intel change.
 
 
-BUILDING
-========
+Building
+--------
 
 The build process is simplified compared to a plethora of other open source
 projects out there. You don't need autoconf/automake or any of the headaches
@@ -25,26 +25,32 @@ And one of:
 
 Depending on whether you have GNU Make or SCons, do one of:
 
+```
 $ scons
+```
 
 or
 
+```
 $ make
+```
 
 And you should have a new executable called 'cpuid' in a few seconds.
 
 
-USING
-=====
+Usage
+-----
 
 Since the usage will likely change over time, I recommend that you take a look
 at the output of:
 
+```
 $ ./cpuid --help
+```
 
 
-REPORTING BUGS
-==============
+Reporting Bugs
+--------------
 
 If you find a bug in CPUID, please submit details about it to the bug tracker
 on GitHub:
@@ -54,30 +60,35 @@ https://github.com/tycho/cpuid/issues
 If the bug is regarding the decoding or dumping of CPUID details, then you
 should include the dump.txt and decode.txt generated with these commands:
 
+```
 $ ./cpuid -d -c -1 > dump.txt
 $ ./cpuid -c -1 > decode.txt
+```
 
 You should also specify what revision of CPUID you are running. If you don't
 know, you can find out with:
 
+```
 $ ./cpuid --version
+```
 
 
-REFERENCE DOCUMENTATION
-=======================
+Reference Documentation
+-----------------------
 
 You can find current Intel and AMD CPUID specifications at these locations:
 
-https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html
-http://developer.amd.com/resources/developer-guides-manuals/
+[Intel Software Developer Manual volume 2A](https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html)
+
+[AMD Processor Programming Reference](http://developer.amd.com/resources/developer-guides-manuals/)
 
 I try to keep up with these as they change, but sometimes I'm slow on the
 uptake. Please notify me if you notice any inconsistencies or if features you
 find relevant are not being decoded.
 
 
-CONTACT
-=======
+Contact
+-------
 
 I'm contactable via email and respond frequently.
 
