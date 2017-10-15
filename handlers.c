@@ -1379,7 +1379,7 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 			size /= 1024;
 		}
 
-		printf("  %2d%s L%d%s cache, %s%s, %d cores sharing",
+		printf("  %3d%s L%d%s cache, %s%s, %d cores sharing",
 			size, *size_str, eax->level, type, assoc, eax->selfinit ? "" : ", needs soft-init", eax->sharing + 1);
 
 		/* Cache feature bits */
