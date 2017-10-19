@@ -245,7 +245,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		       state->sig.stepping,
 		       state->sig.stepping);
 		printf("Local APIC: %d\n"
-		       "Logical processor count: %d\n"
+		       "Maximum number of APIC IDs per package: %d\n"
 		       "CLFLUSH size: %d\n"
 		       "Brand ID: %d\n\n",
 		       ebx->localapicid,
