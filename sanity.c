@@ -45,8 +45,8 @@ static int sane_l3_sharing(struct cpuid_state_t *state);
 static int sane_performance(struct cpuid_state_t *state);
 
 sanity_handler_t handlers[] = {
-	sane_apicid,
-	sane_l3_sharing,
+	//sane_apicid,
+	//sane_l3_sharing,
 	sane_performance,
 	NULL
 };
