@@ -215,7 +215,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 	fflush(stdout);
 	while(worker_flag) {
 		now = time_sec();
-		if (now - start > 30.0)
+		if (now - start > 3.0)
 			break;
 		if (c % 100 == 0) {
 			c = 1;
