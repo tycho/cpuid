@@ -53,7 +53,7 @@ static const char *reg_to_str(char *buffer, struct cpu_regs_t *regs)
 #ifdef TARGET_CPU_X86_64
 
 /* I hate this. */
-BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
+static inline BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
 	uint32_t regs[4];
 	__cpuidex(regs, *_eax, *_ecx);
@@ -67,7 +67,7 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 #else
 
 /* MSVC, x86-only. Stupid compiler doesn't allow __asm on x86_64. */
-BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
+static inline BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
 #ifdef TARGET_CPU_X86
 	static BOOL cpuid_support = FALSE;
@@ -124,7 +124,7 @@ BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 #endif
 
 #ifdef TARGET_COMPILER_GCC
-BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
+static inline BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx)
 {
 #ifdef TARGET_CPU_X86
 	static BOOL cpuid_support = FALSE;

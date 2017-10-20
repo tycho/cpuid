@@ -36,8 +36,6 @@ struct cpu_regs_t {
 
 #define ZERO_REGS(x) {memset((x), 0, sizeof(struct cpu_regs_t));}
 
-BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_t *_edx);
-
 struct cpuid_state_t;
 
 typedef BOOL(*cpuid_call_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
