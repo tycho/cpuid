@@ -334,7 +334,7 @@ static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
 	}
 	e = get_cpu_clock();
 
-	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " clocks)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
+	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " cycles)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
 	return 0;
 }
 
