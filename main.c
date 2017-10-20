@@ -340,6 +340,7 @@ int main(int argc, char **argv)
 	}
 
 	if (do_sanity && !file) {
+		state.thread_bind(&state, 0);
 		ret = sanity_run(&state);
 	}
 
