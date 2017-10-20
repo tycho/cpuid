@@ -264,6 +264,12 @@ int main(int argc, char **argv)
 	if (cpu_start == -2)
 		cpu_start = cpu_end = 0;
 
+	if (do_sanity && !file) {
+		state.thread_bind(&state, 0);
+		ret = sanity_run(&state);
+		goto leave;
+	}
+
 	switch(dump_format) {
 	case DUMP_FORMAT_DEFAULT:
 		state.cpuid_print = cpuid_dump_normal;
@@ -339,11 +345,7 @@ int main(int argc, char **argv)
 		break;
 	}
 
-	if (do_sanity && !file) {
-		state.thread_bind(&state, 0);
-		ret = sanity_run(&state);
-	}
-
+leave:
 	FREE_CPUID_STATE(&state);
 
 	return ret;
