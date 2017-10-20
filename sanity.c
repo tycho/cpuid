@@ -319,10 +319,10 @@ static int sane_l3_sharing(struct cpuid_state_t *state)
 static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
 {
 	uint64_t s, e;
-	uint32_t i = 0, max = 500000;
+	uint32_t i = 0, max = 50000;
 	struct cpu_regs_t regs;
 
-	printf("Measuring performance of leaf 0x%08x:%d... ", eax, ecx);
+	printf("Leaf 0x%08x:%02x  ", eax, ecx);
 	s = get_cpu_clock();
 	while (i < max) {
 		ZERO_REGS(&regs);
@@ -334,9 +334,7 @@ static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
 	}
 	e = get_cpu_clock();
 
-	//printf("\ns: %" PRIu64 "\ne: %" PRIu64 "\n", s, e);
-	printf("total: %" PRIu64 " ns (%" PRIu64 " clocks), ", cpu_clock_to_wall(e - s), e - s);
-	printf("per call: %" PRIu64 " ns (%" PRIu64 " clocks)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
+	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " clocks)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
 	return 0;
 }
 
@@ -344,16 +342,22 @@ static int sane_performance(struct cpuid_state_t *state)
 {
 	struct leaf {
 		uint32_t eax;
-		uint32_t ecx;
+		uint32_t max;
 	} leaves[] = {
-		{ 0x00000000, 0 },
-		{ 0x40000000, 0 },
-		{ 0x80000000, 0 }
+		{ 0x00000000, 0x1a },
+		{ 0x40000000, 0x1a },
+		{ 0x80000000, 0x1a }
 	};
 	size_t leaf_count = sizeof(leaves) / sizeof(leaves[0]);
-	size_t i;
+	size_t i, j;
 	for (i = 0; i < leaf_count; i++)
-		measure_leaf(state, leaves[i].eax, leaves[i].ecx);
+	{
+		for (j = 0; j <= leaves[i].max; j++)
+		{
+			measure_leaf(state, leaves[i].eax + j, 0);
+		}
+		printf("\n");
+	}
 	return 0;
 }
 
