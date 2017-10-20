@@ -44,6 +44,10 @@ static int sane_apicid(struct cpuid_state_t *state);
 static int sane_l3_sharing(struct cpuid_state_t *state);
 static int sane_performance(struct cpuid_state_t *state);
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
+
 sanity_handler_t handlers[] = {
 	//sane_apicid,
 	//sane_l3_sharing,
