@@ -57,7 +57,7 @@ cc_supports_flag = $(if $(shell $(CC) -xc -c /dev/null -o /dev/null $(1) 2>/dev/
 
 CC := gcc
 CP := cp -L
-CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
+CFLAGS := -Os -I. -fno-strict-aliasing \
 	-std=gnu89 \
 	-Wall \
 	-Wextra \
