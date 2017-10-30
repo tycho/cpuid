@@ -53,6 +53,8 @@ top-level-make:
 
 all: $(BINARY)
 
+cc_supports_flag = $(if $(shell $(CC) -xc -c /dev/null -o /dev/null $(1) 2>/dev/null && echo yes),$(1),)
+
 CC := gcc
 CP := cp -L
 CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
@@ -64,7 +66,7 @@ CFLAGS := -Os -I../inc -I. -fno-strict-aliasing \
 	-Wmissing-declarations \
 	-Wmissing-prototypes \
 	-Wno-long-long \
-	-Wno-overlength-strings \
+	$(call cc_supports_flag,-Wno-overlength-strings) \
 	-Wold-style-definition \
 	-Wstrict-prototypes
 
