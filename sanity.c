@@ -322,23 +322,29 @@ static int sane_l3_sharing(struct cpuid_state_t *state)
 
 static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
 {
-	uint64_t s, e;
-	uint32_t i = 0, max = 50000;
+	uint64_t s, e, d, best;
+	uint32_t i, iters = 25;
+	uint32_t t, trials = 1000;
 	struct cpu_regs_t regs;
 
 	printf("Leaf 0x%08x:%02x  ", eax, ecx);
-	s = get_cpu_clock();
-	while (i < max) {
-		ZERO_REGS(&regs);
-		regs.eax = eax;
-		regs.ecx = ecx;
-		state->cpuid_call(&regs, state);
-
-		i++;
+	best = UINT32_MAX;
+	for (t = 0; t < trials; t++) {
+		s = get_cpu_clock();
+		for (i = 0; i < iters; i++) {
+			ZERO_REGS(&regs);
+			regs.eax = eax;
+			regs.ecx = ecx;
+			state->cpuid_call(&regs, state);
+		}
+		e = get_cpu_clock();
+		d = e - s;
+		if (d < best)
+			best = d;
 	}
-	e = get_cpu_clock();
 
-	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " cycles)\n", cpu_clock_to_wall(e - s) / max, (e - s) / max);
+	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " cycles)\n",
+	       cpu_clock_to_wall(e - s) / iters, (e - s) / iters);
 	return 0;
 }
 
