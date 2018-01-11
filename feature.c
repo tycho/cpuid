@@ -219,8 +219,8 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "Speculation Control (IBRS and IBPB)"},
+	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "Single Thread Indirect Branch Predictors (STIBP)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
