@@ -74,7 +74,8 @@ LDFLAGS := -lm
 OBJECTS := cache.o clock.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
 ifneq ($(CC),clang)
-CFLAGS += -fno-PIC
+CFLAGS += -fPIC
+LDFLAGS += -fPIC
 endif
 
 ifeq ($(uname_S),Linux)
