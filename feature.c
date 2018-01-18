@@ -166,17 +166,17 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "PKU (Protection Keys for User-mode pages)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OSPKE (OS has enabled protection keys)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "AVX512_VBMI2"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "Galois Field NI / Galois Field Affine Transformation (GFNI)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000200, VENDOR_INTEL                                , "VEX-encoded AES-NI (VAES)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "VEX-encoded PCLMUL (VPCL)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , "AVX512 Vector Neural Network Instructions (AVX512VNNI)"},
+	{ 0x00000007, 0, REG_ECX, 0x00001000, VENDOR_INTEL                                , "AVX512 Bitwise Algorithms (AVX515BITALG)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , "AVX512 VPOPCNTDQ"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_ECX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00010000, VENDOR_INTEL                                , "5-level paging (VA57)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
