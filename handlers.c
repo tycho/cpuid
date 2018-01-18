@@ -45,7 +45,7 @@ DECLARE_HANDLER(std_extfeat);
 DECLARE_HANDLER(std_x2apic);
 DECLARE_HANDLER(std_perfmon);
 DECLARE_HANDLER(std_ext_state);
-//DECLARE_HANDLER(std_qos_monitor);
+DECLARE_HANDLER(std_qos_monitor);
 //DECLARE_HANDLER(std_qos_enforce);
 //DECLARE_HANDLER(std_sgx);
 DECLARE_HANDLER(std_trace);
@@ -121,7 +121,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x0000000A, handle_std_perfmon},
 	{0x0000000B, handle_std_x2apic},
 	{0x0000000D, handle_std_ext_state},
-	//{0x0000000F, handle_std_qos_monitor},
+	{0x0000000F, handle_std_qos_monitor},
 	//{0x00000010, handle_std_qos_enforce},
 	//{0x00000012, handle_std_sgx},
 	{0x00000014, handle_std_trace},
@@ -972,6 +972,83 @@ static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		state->cpuid_print(regs, state, TRUE);
 		i++;
 	}
+}
+
+/* EAX = 0000 000F */
+static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	struct edx_qos_feature {
+		unsigned int mask;
+		const char *name;
+	} features[] = {
+		{0x00000002, "L3 cache QoS monitoring"},
+		{0x00000000, NULL}
+	};
+	struct edx_qos_feature *feat;
+	uint32_t unaccounted;
+
+	if ((state->vendor & (VENDOR_INTEL)) == 0)
+		return;
+
+	if (!regs->edx)
+		return;
+
+	printf("Platform Quality-of-Service Monitoring\n");
+
+	printf("  Features supported:\n");
+
+	unaccounted = 0;
+	for (feat = features; feat->mask; feat++) {
+		unaccounted |= feat->mask;
+		if (regs->edx & feat->mask) {
+			printf("    %s\n", feat->name);
+		}
+	}
+	unaccounted = (regs->edx & ~unaccounted);
+	if (unaccounted) {
+		printf("  Unaccounted feature bits: 0x%08x\n", unaccounted);
+	}
+	printf("\n");
+
+	printf("  Maximum range of RMID within this physical processor: %u\n\n", regs->ebx + 1);
+
+	/* Subleaf index 1 = L3 QoS */
+	if (regs->edx & 0x2) {
+		struct edx_l3qos_feature {
+			unsigned int mask;
+			const char *name;
+		} l3qos_features[] = {
+			{0x00000001, "L3 occupancy"},
+			{0x00000002, "L3 total external bandwidth"},
+			{0x00000004, "L3 local external bandwidth"},
+			{0x00000000, NULL}
+		};
+		struct edx_l3qos_feature *l3qos_feat;
+		ZERO_REGS(regs);
+		regs->eax = 0x0F;
+		regs->ecx = 1;
+		state->cpuid_call(regs, state);
+
+		printf("  L3 Cache QoS Monitoring Capabilities\n");
+
+		printf("    Monitoring Features:\n");
+		unaccounted = 0;
+		for (l3qos_feat = l3qos_features; l3qos_feat->mask; l3qos_feat++) {
+			unaccounted |= l3qos_feat->mask;
+			if (regs->edx & l3qos_feat->mask) {
+				printf("      %s\n", l3qos_feat->name);
+			}
+		}
+		unaccounted = (regs->edx & ~unaccounted);
+		if (unaccounted) {
+			printf("    Unaccounted feature bits: 0x%08x\n", unaccounted);
+		}
+		printf("    Conversion factor from QM_CTR to occupancy metric (bytes): %u\n", regs->ebx);
+		printf("    Maximum range of RMID within this resource type: %u\n", regs->ecx + 1);
+
+	}
+
+	printf("\n");
 }
 
 /* EAX = 0000 0014 */
