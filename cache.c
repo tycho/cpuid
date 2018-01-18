@@ -56,7 +56,8 @@ typedef enum {
 	SECTORED = 0x8,
 	PAGES_4K = 0x10,
 	PAGES_2M = 0x20,
-	PAGES_4M = 0x40
+	PAGES_4M = 0x40,
+	PAGES_1G = 0x80,
 } extra_attrs_t;
 
 struct cache_desc_t {
@@ -94,6 +95,7 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0x21, {L2, UNIFIED,    256, NONE, 0x08, 64}},
 	{ 0x22, {L3, UNIFIED,    512, SECTORED, 0x04, 64}},
 	{ 0x23, {L3, UNIFIED,   1 MB, SECTORED, 0x08, 64}},
+	{ 0x24, {L2, UNIFIED,   1 MB, UNDOCUMENTED, 0x10, 64}},
 	{ 0x25, {L3, UNIFIED,   2 MB, SECTORED, 0x08, 64}},
 	{ 0x29, {L3, UNIFIED,   4 MB, SECTORED, 0x08, 64}},
 	{ 0x2c, {L1, DATA,        32, NONE, 0x08, 64}},
@@ -104,6 +106,7 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0x3c, {L2, UNIFIED,    256, SECTORED, 0x04, 64}},
 	{ 0x3d, {L2, UNIFIED,    384, SECTORED, 0x06, 64}},
 	{ 0x3e, {L2, UNIFIED,    512, SECTORED, 0x04, 64}},
+	{ 0x40, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}}, /* Special case, see create_description() */
 	{ 0x41, {L2, UNIFIED,    128, NONE, 0x04, 32}},
 	{ 0x42, {L2, UNIFIED,    256, NONE, 0x04, 32}},
 	{ 0x43, {L2, UNIFIED,    512, NONE, 0x04, 32}},
@@ -130,9 +133,17 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0x5c, {NO, DATA_TLB,   128, PAGES_4K | PAGES_4M, 0xFF, 0}},
 	{ 0x5d, {NO, DATA_TLB,   256, PAGES_4K | PAGES_4M, 0xFF, 0}},
 	{ 0x60, {L1, DATA,        16, SECTORED, 0x08, 64}},
+	{ 0x61, {NO, CODE_TLB,    48, UNDOCUMENTED, 0xFF, 0}},
+	{ 0x63, {NO, DATA_TLB, 32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
+	{ 0x63, {NO, DATA_TLB, 4, PAGES_1G | UNDOCUMENTED, 0x04, 0}},
+	{ 0x64, {NO, DATA_TLB,   512, PAGES_4K | UNDOCUMENTED, 0x04, 0}},
 	{ 0x66, {L1, DATA,         8, SECTORED, 0x04, 64}},
 	{ 0x67, {L1, DATA,        16, SECTORED, 0x04, 64}},
 	{ 0x68, {L1, DATA,        32, SECTORED, 0x04, 64}},
+	{ 0x6a, {L0, DATA_TLB,    64, PAGES_4K | UNDOCUMENTED, 0x08, 0}},
+	{ 0x6b, {NO, DATA_TLB,   256, PAGES_4K | UNDOCUMENTED, 0x08, 0}},
+	{ 0x6c, {NO, DATA_TLB,   128, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x08, 0}},
+	{ 0x6d, {NO, DATA_TLB,    16, PAGES_1G | UNDOCUMENTED, 0xFF, 0}},
 	{ 0x70, {L1, TRACE,       12, NONE, 0x08, 0}},
 	{ 0x71, {L1, TRACE,       16, NONE, 0x08, 0}},
 	{ 0x72, {L1, TRACE,       32, NONE, 0x08, 0}},
@@ -159,13 +170,22 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0x89, {L3, UNIFIED,   4 MB, IA64, 0x04, 64}},
 	{ 0x8a, {L3, UNIFIED,   8 MB, IA64, 0x04, 64}},
 	{ 0x8d, {L3, UNIFIED,   3 MB, IA64, 0x0C, 128}},
+	{ 0xa0, {NO, DATA_TLB,    32, PAGES_4K | UNDOCUMENTED, 0xFF, 0}},
 	{ 0xb0, {NO, CODE_TLB,   128, PAGES_4K, 0x04, 0}},
-	{ 0xb1, {NO, CODE_TLB,     8, PAGES_2M, 0x04, 0}},
+	{ 0xb1, {NO, CODE_TLB,     4, PAGES_4M | UNDOCUMENTED, 0x04, 0}},
+	{ 0xb1, {NO, CODE_TLB,     8, PAGES_2M | UNDOCUMENTED, 0x04, 0}},
 	{ 0xb2, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
 	{ 0xb3, {NO, DATA_TLB,   128, PAGES_4K, 0x04, 0}},
 	{ 0xb4, {L1, DATA_TLB,   256, PAGES_4K, 0x04, 0}},
+	{ 0xb5, {NO, CODE_TLB,    64, PAGES_4K, 0x08, 0}},
+	{ 0xb6, {NO, CODE_TLB,   128, PAGES_4K, 0x08, 0}},
 	{ 0xba, {L1, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
 	{ 0xc0, {NO, DATA_TLB,     8, PAGES_4K | PAGES_4M, 0x04, 0}},
+	{ 0xc1, {L2, SHARED_TLB,1024, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x08, 0}},
+	{ 0xc2, {NO, DATA_TLB,    16, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
+	{ 0xc3, {L2, SHARED_TLB,1536, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x04, 0}},
+	{ 0xc3, {L2, SHARED_TLB,  16, PAGES_1G | UNDOCUMENTED, 0x04, 0}},
+	{ 0xc4, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
 	{ 0xca, {L2, SHARED_TLB, 512, PAGES_4K, 0x04, 0}},
 	{ 0xd0, {L3, UNIFIED,    512, NONE, 0x04, 64}},
 	{ 0xd1, {L3, UNIFIED,   1 MB, NONE, 0x04, 64}},
@@ -183,10 +203,12 @@ static const struct cache_desc_index_t descs[] = {
 	{ 0xeb, {L3, UNIFIED,  18 MB, NONE, 0x18, 64}},
 	{ 0xec, {L3, UNIFIED,  24 MB, NONE, 0x18, 64}},
 
-	/* Special cases, not described in this table. */
-	{ 0x40, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	/* Special cases, not described in this table, but handled in the
+	 * create_description() function. */
 	{ 0xf0, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
 	{ 0xf1, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	{ 0xfe, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	{ 0xff, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
 
 	{ 0x00, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}}
 };
@@ -199,7 +221,7 @@ static const struct cache_desc_index_t descriptor_49[] = {
 static const char *page_types(uint32_t attrs)
 {
 	/* There's probably a much better algorithm for this. */
-	attrs &= (PAGES_4K | PAGES_2M | PAGES_4M);
+	attrs &= (PAGES_4K | PAGES_2M | PAGES_4M | PAGES_1G);
 	switch(attrs) {
 	case 0:
 		return NULL;
@@ -209,12 +231,16 @@ static const char *page_types(uint32_t attrs)
 		return "2MB pages";
 	case PAGES_4M:
 		return "4MB pages";
+	case PAGES_4K | PAGES_2M:
+		return "4KB or 2MB pages";
 	case PAGES_4K | PAGES_4M:
 		return "4KB or 4MB pages";
 	case PAGES_2M | PAGES_4M:
 		return "2MB or 4MB pages";
 	case PAGES_4K | PAGES_2M | PAGES_4M:
 		return "4KB, 2MB, or 4MB pages";
+	case PAGES_1G:
+		return "1GB pages";
 	default:
 		abort();
 	}
@@ -257,16 +283,27 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	const char *cp;
 	buffer[0] = 0;
 
+#if 0
+	/* For debugging */
+	sprintf(buffer, "0x%02x: ", idx->descriptor);
+#endif
+
 	/* Special cases. */
 	switch(idx->descriptor) {
 	case 0x40:
-		sprintf(buffer, "No L2 cache, or if L2 cache exists, no L3 cache");
+		strcat(buffer, "No L2 cache, or if L2 cache exists, no L3 cache");
 		goto out;
 	case 0xF0:
-		sprintf(buffer, "64-byte prefetching");
+		strcat(buffer, "64-byte prefetching");
 		goto out;
 	case 0xF1:
-		sprintf(buffer, "128-byte prefetching");
+		strcat(buffer, "128-byte prefetching");
+		goto out;
+	case 0xFE:
+		strcat(buffer, "[NOTICE] For TLB data, see Deterministic Address Translation leaf instead");
+		goto out;
+	case 0xFF:
+		strcat(buffer, "[NOTICE] For cache data, see Deterministic Cache Parameters leaf instead");
 		goto out;
 	}
 
@@ -361,25 +398,31 @@ out:
 
 static int entry_comparator(const void *a, const void *b)
 {
+	/* Make notices appear first. */
+	if ((*(const char **)a)[0] == '[') return -1;
+	if ((*(const char **)b)[0] == '[') return 1;
+
 	/* Make 'prefetching' lines show last. */
 	if (strstr(*(const char **)a, "prefetch")) return 1;
 	if (strstr(*(const char **)b, "prefetch")) return -1;
+
 	/* Simple string compare. */
 	return strcmp(*(const char **)a, *(const char **)b);
 }
 
+#define MAX_ENTRIES 32
 void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *sig)
 {
 	uint8_t buf[16], i;
 
-	/* It's only possible to have 16 entries on a single line, but
-	   we need a 17th for a sentinel value of zero. */
-	char *entries[17];
-
+	/* It's only possible to have 16 entries on a single line, but some
+	 * descriptors have two descriptions tied to them, so support up to 32
+	 * strings for a single line.
+	 */
+	char *entries[MAX_ENTRIES + 1];
 	char **eptr = entries;
 
-	/* Only zero last element. All other entries are initialized below. */
-	entries[16] = 0;
+	entries[MAX_ENTRIES] = 0;
 
 	memset(buf, 0, sizeof(buf));
 
@@ -392,46 +435,51 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 		*(uint32_t *)&buf[0xB] = regs->edx;
 
 	for (i = 0; i < 0xF; i++) {
+		BOOL found_match = FALSE;
 		char *desc = NULL;
 		const struct cache_desc_index_t *d;
 
 		if (buf[i] == 0)
 			continue;
 
-		for(d = descs; d->descriptor; d++) {
-			if (d->descriptor == buf[i])
-				break;
+		if (buf[i] == 0x49) {
+			/* A very stupid special case. AP-485 says this
+			 * is a L3 cache for Intel Xeon processor MP,
+			 * Family 0Fh, Model 06h, while it's a L2 cache
+			 * on everything else.
+			 */
+			*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
+					  create_description(&descriptor_49[1]) :
+					  create_description(&descriptor_49[0]);
+			continue;
 		}
 
-		if (d->descriptor)
+		for(d = descs; d->descriptor; d++) {
+			/* Descriptor table is ordered, and may have multiple entries for
+			 * a specific identifier.
+			 */
+			if (d->descriptor > buf[i])
+				break;
+			if (d->descriptor < buf[i])
+				continue;
+
+			found_match = TRUE;
+
 			desc = create_description(d);
 
-		/* Fetch a description. */
-		if (desc) {
 			*eptr++ = desc;
-		} else {
-			if (buf[i] == 0x49) {
-				/* A very stupid special case. AP-485 says this
-				 * is a L3 cache for Intel Xeon processor MP,
-				 * Family 0Fh, Model 06h, while it's a L2 cache
-				 * on everything else.
-				 */
-				*eptr++ = (sig->family == 0x0F && sig->model == 0x06) ?
-				          create_description(&descriptor_49[1]) :
-				          create_description(&descriptor_49[0]);
-			}
-			else if (buf[i] != 0x00)
-			{
-				/* This one we can just print right away. Its exact string
-				   will vary, and we wouldn't know how to sort it anyway. */
-				printf("  Unknown cache descriptor (0x%02x)\n", buf[i]);
-			}
+		}
+
+		if (!found_match) {
+			/* This one we can just print right away. Its exact string
+			   will vary, and we wouldn't know how to sort it anyway. */
+			printf("  Unknown cache descriptor (0x%02x)\n", buf[i]);
 		}
 	}
 
 	i = eptr - entries;
 
-	for(; eptr < &entries[17]; eptr++) {
+	for(; eptr < &entries[MAX_ENTRIES]; eptr++) {
 		*eptr = 0;
 	}
 
