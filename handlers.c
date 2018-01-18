@@ -66,6 +66,7 @@ static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *st
 static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
@@ -76,6 +77,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000007, handle_dump_std_07},
 	{0x0000000B, handle_dump_std_0B},
 	{0x0000000D, handle_dump_std_0D},
+	{0x00000012, handle_dump_std_12},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_dump_base},
@@ -902,6 +904,34 @@ static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		if (i > 1 && !(regs->eax || regs->ebx || regs->ecx || regs->edx))
 			break;
 		else if (i == 0 && !regs->eax)
+			break;
+		state->cpuid_print(regs, state, TRUE);
+		i++;
+	}
+}
+
+/* EAX = 0000 0012 */
+static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 1;
+
+	/* Always print EAX=0x12, ECX=0 response, even if we don't support SGX. */
+	state->cpuid_print(regs, state, TRUE);
+
+	/* First check if SGX is supported. */
+	ZERO_REGS(regs);
+	regs->eax = 0x07;
+	state->cpuid_call(regs, state);
+	if ((regs->ebx & 0x00000004) == 0)
+		return;
+
+	/* SGX supported, enumerate ECX=1 through ECX=N */
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0x12;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		if (i > 1 && (regs->eax & 0xf) == 0)
 			break;
 		state->cpuid_print(regs, state, TRUE);
 		i++;
