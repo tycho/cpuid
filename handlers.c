@@ -74,11 +74,12 @@ DECLARE_HANDLER(vmm_leaf06);
 DECLARE_HANDLER(vmware_leaf10);
 
 DECLARE_HANDLER(dump_base);
-DECLARE_HANDLER(dump_ecx01);
 DECLARE_HANDLER(dump_until_eax);
 DECLARE_HANDLER(dump_std_04);
 DECLARE_HANDLER(dump_std_0B);
 DECLARE_HANDLER(dump_std_0D);
+DECLARE_HANDLER(dump_std_0F);
+DECLARE_HANDLER(dump_std_10);
 DECLARE_HANDLER(dump_std_12);
 DECLARE_HANDLER(dump_ext_1D);
 
@@ -90,8 +91,8 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000007, handle_dump_until_eax},
 	{0x0000000B, handle_dump_std_0B},
 	{0x0000000D, handle_dump_std_0D},
-	{0x0000000F, handle_dump_ecx01},
-	{0x00000010, handle_dump_ecx01},
+	{0x0000000F, handle_dump_std_0F},
+	{0x00000010, handle_dump_std_10},
 	{0x00000012, handle_dump_std_12},
 	{0x00000014, handle_dump_until_eax},
 	{0x00000017, handle_dump_until_eax},
@@ -165,19 +166,6 @@ static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 {
 	state->curmax = regs->eax;
 	state->cpuid_print(regs, state, FALSE);
-}
-
-/* Dumps EAX=N + ECX=0 and EAX=N + ECX=1 */
-static void handle_dump_ecx01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	uint32_t eax = state->last_leaf.eax, ecx;
-	for (ecx = 0; ecx <= 1; ecx++){
-		ZERO_REGS(regs);
-		regs->eax = eax;
-		regs->ecx = ecx;
-		state->cpuid_call(regs, state);
-		state->cpuid_print(regs, state, TRUE);
-	}
 }
 
 typedef struct _vendor_map_t {
@@ -911,6 +899,21 @@ static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *st
 }
 
 /* EAX = 0000 000F */
+static void handle_dump_std_0F(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 0, max;
+	/* note subtle difference in register used here vs leaf 0x10 */
+	max = ((regs->edx & 0x2) != 0) ? 1 : 0;
+	for (i = 0; i <= max; i++) {
+		ZERO_REGS(regs);
+		regs->eax = 0xf;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+	}
+}
+
+/* EAX = 0000 000F */
 static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct edx_qos_feature {
@@ -985,6 +988,21 @@ static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t
 	}
 
 	printf("\n");
+}
+
+/* EAX = 0000 0010 */
+static void handle_dump_std_10(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 0, max;
+	/* note subtle difference in register used here vs leaf 0x0f */
+	max = ((regs->ebx & 0x2) != 0) ? 1 : 0;
+	for (i = 0; i <= max; i++) {
+		ZERO_REGS(regs);
+		regs->eax = 0xf;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+	}
 }
 
 /* EAX = 0000 0012 */
