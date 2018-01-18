@@ -281,7 +281,6 @@ static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *st
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	struct cpu_regs_t *rvec = NULL;
-	uint8_t *cdesc;
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_CYRIX)) == 0)
 		return;
 
@@ -305,12 +304,6 @@ static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		regs++;
 	}
 
-	/* Scan for 0xFF descriptor, which says to ignore leaf 0x02 */
-	cdesc = (uint8_t *)rvec;
-	while (cdesc <= (uint8_t *)rvec + (sizeof(struct cpu_regs_t) * m))
-		if (*cdesc++ == 0xFF)
-			goto err;
-
 	/* Printout time. */
 	printf("Cache descriptors:\n");
 	regs = rvec;
@@ -320,7 +313,6 @@ static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	}
 	printf("\n");
 
-err:
 	free(rvec);
 }
 
