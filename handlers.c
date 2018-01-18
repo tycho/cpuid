@@ -30,45 +30,48 @@
 #include <stdio.h>
 #include <string.h>
 
-static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+#define DECLARE_HANDLER(name) \
+	static void handle_ ## name (struct cpu_regs_t *, struct cpuid_state_t *)
 
-static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+DECLARE_HANDLER(features);
 
-static void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+DECLARE_HANDLER(std_base);
+DECLARE_HANDLER(std_cache);
+DECLARE_HANDLER(std_psn);
+DECLARE_HANDLER(std_dcp);
+DECLARE_HANDLER(std_monitor);
+DECLARE_HANDLER(std_power);
+DECLARE_HANDLER(std_extfeat);
+DECLARE_HANDLER(std_x2apic);
+DECLARE_HANDLER(std_perfmon);
+DECLARE_HANDLER(std_ext_state);
 
-static void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+DECLARE_HANDLER(ext_base);
+DECLARE_HANDLER(ext_pname);
+DECLARE_HANDLER(ext_amdl1cachefeat);
+DECLARE_HANDLER(ext_l2cachefeat);
+DECLARE_HANDLER(ext_0008);
+DECLARE_HANDLER(ext_svm);
+DECLARE_HANDLER(ext_cacheprop);
+DECLARE_HANDLER(ext_extapic);
 
-static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_ecx01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_until_eax(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+DECLARE_HANDLER(vmm_base);
+DECLARE_HANDLER(vmm_leaf01);
+DECLARE_HANDLER(vmm_leaf02);
+DECLARE_HANDLER(vmm_leaf03);
+DECLARE_HANDLER(vmm_leaf04);
+DECLARE_HANDLER(vmm_leaf05);
+DECLARE_HANDLER(vmm_leaf06);
+DECLARE_HANDLER(vmware_leaf10);
+
+DECLARE_HANDLER(dump_base);
+DECLARE_HANDLER(dump_ecx01);
+DECLARE_HANDLER(dump_until_eax);
+DECLARE_HANDLER(dump_std_04);
+DECLARE_HANDLER(dump_std_0B);
+DECLARE_HANDLER(dump_std_0D);
+DECLARE_HANDLER(dump_std_12);
+DECLARE_HANDLER(dump_ext_1D);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
 {
@@ -98,9 +101,9 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	/* Standard levels */
 	{0x00000000, handle_std_base},
 	{0x00000001, handle_features},
-	{0x00000002, handle_std_cache02},
+	{0x00000002, handle_std_cache},
 	{0x00000003, handle_std_psn},
-	{0x00000004, handle_std_cache04},
+	{0x00000004, handle_std_dcp},
 	{0x00000005, handle_std_monitor},
 	{0x00000006, handle_std_power},
 	{0x00000007, handle_std_extfeat},
@@ -277,7 +280,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 }
 
 /* EAX = 0000 0002 */
-static void handle_std_cache02(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_cache(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	struct cpu_regs_t *rvec = NULL;
@@ -362,7 +365,7 @@ static const char *cache04_type(uint8_t type)
 }
 
 /* EAX = 0000 0004 */
-static void handle_std_cache04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_cache04_t {
 		unsigned type:5;
