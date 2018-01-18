@@ -63,8 +63,8 @@ static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *
 
 static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_ecx01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_until_eax(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
-static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -75,12 +75,13 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	/* Standard levels */
 	{0x00000000, handle_dump_base},
 	{0x00000004, handle_dump_std_04},
-	{0x00000007, handle_dump_std_07},
+	{0x00000007, handle_dump_until_eax},
 	{0x0000000B, handle_dump_std_0B},
 	{0x0000000D, handle_dump_std_0D},
 	{0x0000000F, handle_dump_ecx01},
 	{0x00000010, handle_dump_ecx01},
 	{0x00000012, handle_dump_std_12},
+	{0x00000017, handle_dump_until_eax},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_dump_base},
@@ -613,13 +614,15 @@ static void handle_std_extfeat(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	}
 }
 
-/* EAX = 0000 0007 */
-static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+/* EAX = 0000 0007 and EAX = 0000 0017 */
+static void handle_dump_until_eax(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	uint32_t i = 0, m = regs->eax;
-	while (i <= m) {
+	uint32_t eax = state->last_leaf.eax;
+	uint32_t max_ecx = regs->eax;
+	uint32_t i = 0;
+	while (i <= max_ecx) {
 		ZERO_REGS(regs);
-		regs->eax = 0x7;
+		regs->eax = eax;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 		state->cpuid_print(regs, state, TRUE);
