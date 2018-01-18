@@ -910,34 +910,6 @@ static void handle_dump_std_0D(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	}
 }
 
-/* EAX = 0000 0012 */
-static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state)
-{
-	uint32_t i = 1;
-
-	/* Always print EAX=0x12, ECX=0 response, even if we don't support SGX. */
-	state->cpuid_print(regs, state, TRUE);
-
-	/* First check if SGX is supported. */
-	ZERO_REGS(regs);
-	regs->eax = 0x07;
-	state->cpuid_call(regs, state);
-	if ((regs->ebx & 0x00000004) == 0)
-		return;
-
-	/* SGX supported, enumerate ECX=1 through ECX=N */
-	while (1) {
-		ZERO_REGS(regs);
-		regs->eax = 0x12;
-		regs->ecx = i;
-		state->cpuid_call(regs, state);
-		if (i > 1 && (regs->eax & 0xf) == 0)
-			break;
-		state->cpuid_print(regs, state, TRUE);
-		i++;
-	}
-}
-
 /* EAX = 0000 000F */
 static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
@@ -1013,6 +985,34 @@ static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t
 	}
 
 	printf("\n");
+}
+
+/* EAX = 0000 0012 */
+static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i = 1;
+
+	/* Always print EAX=0x12, ECX=0 response, even if we don't support SGX. */
+	state->cpuid_print(regs, state, TRUE);
+
+	/* First check if SGX is supported. */
+	ZERO_REGS(regs);
+	regs->eax = 0x07;
+	state->cpuid_call(regs, state);
+	if ((regs->ebx & 0x00000004) == 0)
+		return;
+
+	/* SGX supported, enumerate ECX=1 through ECX=N */
+	while (1) {
+		ZERO_REGS(regs);
+		regs->eax = 0x12;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		if (i > 1 && (regs->eax & 0xf) == 0)
+			break;
+		state->cpuid_print(regs, state, TRUE);
+		i++;
+	}
 }
 
 /* EAX = 0000 0014 */
