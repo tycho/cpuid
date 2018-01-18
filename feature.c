@@ -195,8 +195,8 @@ static const struct cpu_feature_t features [] = {
 
 /*	{ 0x00000007, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_EDX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "AVX512_4VNNIW"},
-	{ 0x00000007, 0, REG_EDX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "AVX512_4FMAPS"},
+	{ 0x00000007, 0, REG_EDX, 0x00000004, VENDOR_INTEL                                , "AVX512_4VNNIW"},
+	{ 0x00000007, 0, REG_EDX, 0x00000008, VENDOR_INTEL                                , "AVX512_4FMAPS"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -211,7 +211,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_EDX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , "PCONFIG"},
+	{ 0x00000007, 0, REG_EDX, 0x00040000, VENDOR_INTEL                                , "PCONFIG"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -219,8 +219,8 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "Speculation Control (IBRS and IBPB)"},
-	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , "Single Thread Indirect Branch Predictors (STIBP)"},
+	{ 0x00000007, 0, REG_EDX, 0x04000000, VENDOR_INTEL                                , "Speculation Control (IBRS and IBPB)"},
+	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "Single Thread Indirect Branch Predictors (STIBP)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -231,67 +231,67 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000014, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "Configurable PSB, Cycle-Accurate Mode"},
 	{ 0x00000014, 0, REG_EBX, 0x00000004, VENDOR_INTEL                                , "Filtering preserved across warm reset"},
 	{ 0x00000014, 0, REG_EBX, 0x00000008, VENDOR_INTEL                                , "MTC timing packet, suppression of COFI-based packets"},
-/*	{ 0x00000014, 0, REG_EBX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00002000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00040000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00100000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x10000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x20000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x40000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_EBX, 0x80000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 
-	{ 0x00000014, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "ToPA output scheme"},
-	{ 0x00000014, 0, REG_ECX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , "ToPA tables hold multiple output entries"},
-	{ 0x00000014, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "Single-range output scheme"},
-	{ 0x00000014, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "Trace Transport output support"},
-/*	{ 0x00000014, 0, REG_ECX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000014, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , "IP payloads are LIP"},
+	{ 0x00000014, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "ToPA output scheme"},
+	{ 0x00000014, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "ToPA tables hold multiple output entries"},
+	{ 0x00000014, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "Single-range output scheme"},
+	{ 0x00000014, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Trace Transport output support"},
+/*	{ 0x00000014, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000200, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00001000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00002000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00008000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00010000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00020000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00040000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00100000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x01000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x04000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x08000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x10000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x20000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000014, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000014, 0, REG_ECX, 0x80000000, VENDOR_INTEL                                , "IP payloads are LIP"},
 
 /*  Hypervisor (4000_0001h) */
 	{ 0x40000001, 0, REG_EAX, 0x00000001, VENDOR_HV_KVM                               , "Clocksource"},
