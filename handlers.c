@@ -46,6 +46,7 @@ DECLARE_HANDLER(std_x2apic);
 DECLARE_HANDLER(std_perfmon);
 DECLARE_HANDLER(std_ext_state);
 DECLARE_HANDLER(std_tsc);
+DECLARE_HANDLER(std_cpufreq);
 
 DECLARE_HANDLER(ext_base);
 DECLARE_HANDLER(ext_pname);
@@ -112,6 +113,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x0000000B, handle_std_x2apic},
 	{0x0000000D, handle_std_ext_state},
 	{0x00000015, handle_std_tsc},
+	{0x00000016, handle_std_cpufreq},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
@@ -974,6 +976,26 @@ static void handle_std_tsc(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 	if (regs->eax && regs->ebx && regs->ecx)
 		printf("  TSC frequency: %u MHz\n", (regs->ecx * regs->ebx / regs->eax) / 1000000);
+
+	printf("\n");
+}
+
+/* EAX = 0000 0016 */
+static void handle_std_cpufreq(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if ((state->vendor & (VENDOR_INTEL)) == 0)
+		return;
+
+	if (!regs->eax && !regs->ebx && !regs->ecx)
+		return;
+
+	printf("Processor Frequency Information\n");
+	if (regs->eax)
+		printf("  Base frequency: %u MHz\n", regs->eax & 0xffff);
+	if (regs->ebx)
+		printf("  Maximum frequency: %u MHz\n", regs->ebx & 0xffff);
+	if (regs->ecx)
+		printf("  Bus (reference) frequency: %u MHz\n", regs->ecx & 0xffff);
 
 	printf("\n");
 }
