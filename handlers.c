@@ -45,9 +45,15 @@ DECLARE_HANDLER(std_extfeat);
 DECLARE_HANDLER(std_x2apic);
 DECLARE_HANDLER(std_perfmon);
 DECLARE_HANDLER(std_ext_state);
+//DECLARE_HANDLER(std_qos_monitor);
+//DECLARE_HANDLER(std_qos_enforce);
+//DECLARE_HANDLER(std_sgx);
 DECLARE_HANDLER(std_trace);
 DECLARE_HANDLER(std_tsc);
 DECLARE_HANDLER(std_cpufreq);
+//DECLARE_HANDLER(std_soc);
+//DECLARE_HANDLER(std_dat);
+//DECLARE_HANDLER(std_pconfig);
 
 DECLARE_HANDLER(ext_base);
 DECLARE_HANDLER(ext_pname);
@@ -115,9 +121,17 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x0000000A, handle_std_perfmon},
 	{0x0000000B, handle_std_x2apic},
 	{0x0000000D, handle_std_ext_state},
+	//{0x0000000F, handle_std_qos_monitor},
+	//{0x00000010, handle_std_qos_enforce},
+	//{0x00000012, handle_std_sgx},
 	{0x00000014, handle_std_trace},
 	{0x00000015, handle_std_tsc},
 	{0x00000016, handle_std_cpufreq},
+
+	/* TODO, when I have hardware that I can develop/test these on. */
+	//{0x00000017, handle_std_soc},
+	//{0x00000018, handle_std_dat},
+	//{0x0000001b, handle_std_pconfig},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
