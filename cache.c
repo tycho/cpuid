@@ -266,7 +266,7 @@ static char *create_description(const struct cache_desc_index_t *idx)
 		sprintf(buffer, "64-byte prefetching");
 		goto out;
 	case 0xF1:
-		sprintf(buffer, "64-byte prefetching");
+		sprintf(buffer, "128-byte prefetching");
 		goto out;
 	}
 
