@@ -1062,7 +1062,6 @@ static void handle_std_trace(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 
 	printf("Processor Trace Enumeration\n");
 
-	regs->eax = 0;
 	print_features(regs, state);
 	printf("\n");
 

@@ -661,6 +661,9 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				printf("Structured extended feature flags (ecx=%d), %s:\n",
 				       state->last_leaf.ecx, reg_name(last_reg));
 				break;
+			case 0x00000014:
+				accounting.eax = 0;
+				break;
 			case 0x40000001:
 				printf("KVM features, %s:\n",
 				       reg_name(last_reg));
