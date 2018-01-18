@@ -126,6 +126,73 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , "RDRAND instruction"},
 	{ 0x00000001, 0, REG_ECX, 0x80000000, VENDOR_ANY                                  , "RAZ (hypervisor)"},
 
+/*  Thermal and Power Management Feature Flags (0000_0006h) */
+	{ 0x00000006, 0, REG_EAX, 0x00000001, VENDOR_INTEL                                , "Digital temperature sensor"},
+	{ 0x00000006, 0, REG_EAX, 0x00000002, VENDOR_INTEL                                , "Intel Turbo Boost Technology"},
+	{ 0x00000006, 0, REG_EAX, 0x00000004, VENDOR_INTEL                                , "APIC timer always running"},
+/*	{ 0x00000006, 0, REG_EAX, 0x00000008, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00000010, VENDOR_INTEL                                , "Power limit notification controls"},
+	{ 0x00000006, 0, REG_EAX, 0x00000020, VENDOR_INTEL                                , "Clock modulation duty cycle extensions"},
+	{ 0x00000006, 0, REG_EAX, 0x00000040, VENDOR_INTEL                                , "Package thermal management"},
+	{ 0x00000006, 0, REG_EAX, 0x00000080, VENDOR_INTEL                                , "Hardware-managed P-state base support (HWP)"},
+	{ 0x00000006, 0, REG_EAX, 0x00000100, VENDOR_INTEL                                , "HWP notification interrupt enable MSR"},
+	{ 0x00000006, 0, REG_EAX, 0x00000200, VENDOR_INTEL                                , "HWP activity window MSR"},
+	{ 0x00000006, 0, REG_EAX, 0x00000400, VENDOR_INTEL                                , "HWP energy/performance preference MSR"},
+	{ 0x00000006, 0, REG_EAX, 0x00000800, VENDOR_INTEL                                , "HWP package level request MSR"},
+/*	{ 0x00000006, 0, REG_EAX, 0x00001000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00002000, VENDOR_INTEL                                , "Hardware duty cycle programming (HDC)"},
+	{ 0x00000006, 0, REG_EAX, 0x00004000, VENDOR_INTEL                                , "Intel Turbo Boost Max Technology 3.0"},
+/*	{ 0x00000006, 0, REG_EAX, 0x00008000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00010000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00020000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00040000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00100000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x01000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x02000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x04000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x08000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x10000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x20000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_EAX, 0x40000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x80000000, VENDOR_INTEL                                , "IP payloads are LIP"},
+
+	{ 0x00000006, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "Hardware Coordination Feedback Capability"},
+/*	{ 0x00000006, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Performance-energy bias perference"},
+/*	{ 0x00000006, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000200, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00001000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00002000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00004000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00008000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00010000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00020000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00040000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00100000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x01000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x04000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x08000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x10000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x20000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+/*	{ 0x00000006, 0, REG_ECX, 0x80000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+
 /*  Structured Extended Feature Flags (0000_0007h) */
 	{ 0x00000007, 0, REG_EBX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "FSGSBASE instructions"},
 	{ 0x00000007, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "IA32_TSC_ADJUST MSR supported"},
@@ -656,6 +723,9 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				 * out so they don't appear to be unaccounted for.
 				 */
 				accounting.eax = accounting.ebx = 0;
+				break;
+			case 0x00000006:
+				accounting.ebx = accounting.edx = 0;
 				break;
 			case 0x00000007:
 				printf("Structured extended feature flags (ecx=%d), %s:\n",

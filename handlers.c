@@ -556,30 +556,11 @@ no_enumeration:
 /* EAX = 0000 0006 */
 static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	struct eax_power_t {
-		unsigned temp_sensor:1;
-		unsigned turbo_boost:1;
-		unsigned arat:1;
-		unsigned reserved_1:1;
-		unsigned pln:1;
-		unsigned ecmd:1;
-		unsigned ptm:1;
-		unsigned hwp:1;
-		unsigned reserved_2:24;
-	};
 	struct ebx_power_t {
 		unsigned dts_thresholds:4;
 		unsigned reserved:28;
 	};
-	struct ecx_power_t {
-		unsigned hcf:1;
-		unsigned reserved_1:2;
-		unsigned perf_bias:1;
-		unsigned reserved_2:28;
-	};
-	struct eax_power_t *eax = (struct eax_power_t *)&regs->eax;
 	struct ebx_power_t *ebx = (struct ebx_power_t *)&regs->ebx;
-	struct ecx_power_t *ecx = (struct ecx_power_t *)&regs->ecx;
 
 	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
@@ -589,26 +570,9 @@ static void handle_std_power(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 		return;
 
 	printf("Intel Thermal and Power Management Features:\n");
-	if (eax->temp_sensor)
-		printf("  Digital temperature sensor\n");
-	if (eax->turbo_boost)
-		printf("  Intel Turbo Boost Technology\n");
-	if (eax->arat)
-		printf("  APIC timer always running\n");
-	if (eax->pln)
-		printf("  Power limit notification controls\n");
-	if (eax->ecmd)
-		printf("  Clock modulation duty cycle extension\n");
-	if (eax->ptm)
-		printf("  Package thermal management\n");
-	if (eax->hwp)
-		printf("  Hardware Managed Performance States\n");
+	print_features(regs, state);
 	if (ebx->dts_thresholds)
 		printf("  Interrupt thresholds in DTS: %d\n", ebx->dts_thresholds);
-	if (ecx->hcf)
-		printf("  Hardware Coordination Feedback Capability\n");
-	if (ecx->perf_bias)
-		printf("  Performance-energy bias preference\n");
 	printf("\n");
 }
 
