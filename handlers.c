@@ -45,6 +45,7 @@ DECLARE_HANDLER(std_extfeat);
 DECLARE_HANDLER(std_x2apic);
 DECLARE_HANDLER(std_perfmon);
 DECLARE_HANDLER(std_ext_state);
+DECLARE_HANDLER(std_trace);
 DECLARE_HANDLER(std_tsc);
 DECLARE_HANDLER(std_cpufreq);
 
@@ -114,6 +115,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x0000000A, handle_std_perfmon},
 	{0x0000000B, handle_std_x2apic},
 	{0x0000000D, handle_std_ext_state},
+	{0x00000014, handle_std_trace},
 	{0x00000015, handle_std_tsc},
 	{0x00000016, handle_std_cpufreq},
 
@@ -956,6 +958,35 @@ static void handle_dump_std_12(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		state->cpuid_print(regs, state, TRUE);
 		i++;
 	}
+}
+
+/* EAX = 0000 0014 */
+static void handle_std_trace(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if ((state->vendor & (VENDOR_INTEL)) == 0)
+		return;
+
+	if (!regs->eax)
+		return;
+
+	printf("Processor Trace Enumeration\n");
+
+	regs->eax = 0;
+	print_features(regs, state);
+	printf("\n");
+
+	ZERO_REGS(regs);
+	regs->eax = 0x14;
+	regs->ecx = 1;
+	state->cpuid_call(regs, state);
+
+	printf("  Number of configurable address ranges for filtering: %u\n", regs->eax & 0x7);
+	printf("  Supported MTC period encodings: 0x%04x\n", (regs->eax >> 16) & 0xffff);
+
+	printf("  Supported cycle threshold value encodings: 0x%04x\n", regs->ebx & 0xffff);
+	printf("  Supported configurable PSB frequency encodings: 0x%04x\n", (regs->ebx >> 16) & 0xffff);
+
+	printf("\n");
 }
 
 /* EAX = 0000 0015 */
