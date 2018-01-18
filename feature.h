@@ -25,6 +25,6 @@
 struct cpu_regs_t;
 struct cpuid_state_t;
 
-void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 #endif

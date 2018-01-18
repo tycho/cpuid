@@ -618,12 +618,15 @@ static const char *vendors(char *buffer, uint32_t mask)
 	return buffer;
 }
 
-void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	const struct cpu_feature_t *p = features;
+	struct cpu_regs_t accounting;
 	cpu_register_t last_reg = REG_NULL;
+	memcpy(&accounting, regs, sizeof(struct cpu_regs_t));
 	while (p && p->m_reg != REG_NULL) {
-		uint32_t *reg;
+		const uint32_t *reg;
+		uint32_t *acct_reg;
 
 		if (state->last_leaf.eax != p->m_level) {
 			p++;
@@ -639,6 +642,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			p++;
 			continue;
 		}
+		acct_reg = &accounting.regs[p->m_reg];
 
 		if (last_reg != p->m_reg) {
 			last_reg = p->m_reg;
@@ -651,7 +655,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				/* EAX and EBX don't contain feature bits. We should zero these
 				 * out so they don't appear to be unaccounted for.
 				 */
-				regs->eax = regs->ebx = 0;
+				accounting.eax = accounting.ebx = 0;
 				break;
 			case 0x00000007:
 				printf("Structured extended feature flags (ecx=%d), %s:\n",
@@ -673,7 +677,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				/* EBX doesn't contain feature bits. We should zero these
 				 * out so they don't appear to be unaccounted for.
 				 */
-				regs->ebx = 0;
+				accounting.ebx = 0;
 				break;
 			case 0x40000006:
 				printf("Hyper-V hardware features detected and in use, %s:\n",
@@ -686,7 +690,7 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				/* EAX and EBX don't contain feature bits. We should zero these
 				 * out so they don't appear to be unaccounted for.
 				 */
-				regs->eax = regs->ebx = 0;
+				accounting.eax = accounting.ebx = 0;
 				break;
 			case 0x80000007:
 				if (p->m_reg == REG_EBX)
@@ -705,21 +709,21 @@ void print_features(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				char feat[64], vendorlist[32];
 				snprintf(feat, sizeof(feat), "%s (%s)", p->m_name, vendors(vendorlist, p->m_vendor));
 				printf("  %s\n", feat);
-				*reg &= (~p->m_bitmask);
+				*acct_reg &= (~p->m_bitmask);
 			}
 		} else {
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
 				&& (*reg & p->m_bitmask) != 0)
 			{
 				printf("  %s\n", p->m_name);
-				*reg &= (~p->m_bitmask);
+				*acct_reg &= (~p->m_bitmask);
 			}
 		}
 		p++;
 	}
 
-	if (regs->eax || regs->ebx || regs->ecx || regs->edx)
+	if (accounting.eax || accounting.ebx || accounting.ecx || accounting.edx)
 		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
 			state->last_leaf.eax, state->last_leaf.ecx,
-		    regs->eax, regs->ebx, regs->ecx, regs->edx);
+		    accounting.eax, accounting.ebx, accounting.ecx, accounting.edx);
 }
