@@ -62,6 +62,7 @@ static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *state);
+static void handle_dump_ecx01(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_04(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_07(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -77,6 +78,8 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000007, handle_dump_std_07},
 	{0x0000000B, handle_dump_std_0B},
 	{0x0000000D, handle_dump_std_0D},
+	{0x0000000F, handle_dump_ecx01},
+	{0x00000010, handle_dump_ecx01},
 	{0x00000012, handle_dump_std_12},
 
 	/* Hypervisor levels */
@@ -136,6 +139,19 @@ static void handle_dump_base(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 {
 	state->curmax = regs->eax;
 	state->cpuid_print(regs, state, FALSE);
+}
+
+/* Dumps EAX=N + ECX=0 and EAX=N + ECX=1 */
+static void handle_dump_ecx01(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t eax = state->last_leaf.eax, ecx;
+	for (ecx = 0; ecx <= 1; ecx++){
+		ZERO_REGS(regs);
+		regs->eax = eax;
+		regs->ecx = ecx;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+	}
 }
 
 typedef struct _vendor_map_t {
