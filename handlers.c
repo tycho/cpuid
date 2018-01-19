@@ -672,7 +672,7 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	uint32_t i, id = 0;
 	uint32_t total_logical = state->thread_count(state);
 
-	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
+	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 	if (!regs->eax && !regs->ebx)
 		return;
