@@ -129,7 +129,7 @@ static const struct cpu_feature_t features [] = {
 /*  Thermal and Power Management Feature Flags (0000_0006h) */
 	{ 0x00000006, 0, REG_EAX, 0x00000001, VENDOR_INTEL                                , "Digital temperature sensor"},
 	{ 0x00000006, 0, REG_EAX, 0x00000002, VENDOR_INTEL                                , "Intel Turbo Boost Technology"},
-	{ 0x00000006, 0, REG_EAX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "APIC timer always running"},
+	{ 0x00000006, 0, REG_EAX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "Always running APIC timer (ARAT)"},
 /*	{ 0x00000006, 0, REG_EAX, 0x00000008, VENDOR_INTEL                                , ""}, */   /* Reserved */
 	{ 0x00000006, 0, REG_EAX, 0x00000010, VENDOR_INTEL                                , "Power limit notification controls"},
 	{ 0x00000006, 0, REG_EAX, 0x00000020, VENDOR_INTEL                                , "Clock modulation duty cycle extensions"},
