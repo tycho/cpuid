@@ -366,7 +366,7 @@ char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsi
 		ADD_LINE("Shared by max %d threads", desc->max_threads_sharing);
 	}
 
-	return strdup(buffer);
+	return buffer;
 }
 #undef ADD_LINE
 
