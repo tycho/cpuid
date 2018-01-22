@@ -657,6 +657,40 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000007, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "Connected standby"},
 	{ 0x80000007, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , "Running average power limit (RAPL)"},
 
+/* Extended Feature Extensions ID (8000_0008h) */
+	{ 0x80000008, 0, REG_EBX, 0x00000001,                VENDOR_AMD                   , "CLZERO instruction"},
+	{ 0x80000008, 0, REG_EBX, 0x00000002,                VENDOR_AMD                   , "Instructions retired count support (IRPerf)"},
+	{ 0x80000008, 0, REG_EBX, 0x00000004,                VENDOR_AMD                   , "XSAVE always saves/restores error pointers"},
+/*	{ 0x80000008, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000010,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000020,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000040,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000080,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000100,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000200,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000400,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00001000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00002000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00008000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x20000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x80000008, 0, REG_EBX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
 
@@ -772,6 +806,10 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				else if (p->m_reg == REG_EDX)
 					printf("Advanced Power Management features, %s:\n",
 						   reg_name(last_reg));
+				break;
+			case 0x80000008:
+				if (p->m_reg == REG_EBX)
+					printf("Extended Feature Extensions:\n");
 				break;
 			}
 		}

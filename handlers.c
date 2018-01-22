@@ -1398,6 +1398,7 @@ static void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		printf("Core count: %u\n", nc);
 		printf("Performance time-stamp counter size: %u bits\n", tscsize);
 		printf("Maximum core count: %u\n", mnc);
+		print_features(regs, state);
 		printf("\n");
 	}
 }
