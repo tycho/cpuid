@@ -432,7 +432,6 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 		i++;
 	}
-	printf("\n");
 }
 
 /* EAX = 0000 0004 */
