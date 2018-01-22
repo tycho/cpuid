@@ -23,51 +23,11 @@
 
 #include "cache.h"
 #include "state.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef enum {
-	DATA_TLB = 0x0,
-	CODE_TLB,
-	SHARED_TLB,
-	DATA,
-	CODE,
-	TRACE,
-	UNIFIED,
-	INVALID_TYPE = 0xff,
-} cache_type_t;
-
-typedef enum {
-	NO = 0x0,
-	L0,
-	L1,
-	L2,
-	L3,
-	INVALID_LEVEL = 0xff,
-} cache_level_t;
-
-typedef enum {
-	NONE = 0x0,
-	UNDOCUMENTED = 0x1,
-	IA64 = 0x2,
-	ECC = 0x4,
-	SECTORED = 0x8,
-	PAGES_4K = 0x10,
-	PAGES_2M = 0x20,
-	PAGES_4M = 0x40,
-	PAGES_1G = 0x80,
-} extra_attrs_t;
-
-struct cache_desc_t {
-	cache_level_t level;
-	cache_type_t type;
-	uint32_t size;
-	uint32_t attrs;
-	uint8_t assoc;
-	uint8_t linesize;
-};
 
 struct cache_desc_index_t {
 	uint8_t descriptor;
@@ -76,145 +36,145 @@ struct cache_desc_index_t {
 
 #define MB * 1024
 static const struct cache_desc_index_t descs[] = {
-	{ 0x01, {NO, CODE_TLB,    32, PAGES_4K, 0x04, 0}},
-	{ 0x02, {NO, CODE_TLB,     2, PAGES_4M, 0xFF, 0}},
-	{ 0x03, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
-	{ 0x04, {NO, DATA_TLB,     8, PAGES_4M, 0x04, 0}},
-	{ 0x05, {NO, DATA_TLB,    32, PAGES_4M, 0x04, 0}},
-	{ 0x06, {L1, CODE,         8, NONE, 0x04, 32}},
-	{ 0x08, {L1, CODE,        16, NONE, 0x04, 32}},
-	{ 0x09, {L1, CODE,        32, NONE, 0x04, 64}},
-	{ 0x0a, {L1, DATA,         8, NONE, 0x02, 32}},
-	{ 0x0b, {L1, CODE_TLB,     4, PAGES_4M, 0x04, 0}},
-	{ 0x0c, {L1, DATA,        16, NONE, 0x04, 32}},
-	{ 0x0d, {L1, DATA,        16, ECC, 0x04, 64}},
-	{ 0x0e, {L1, DATA,        24, NONE, 0x06, 64}},
-	{ 0x10, {L1, DATA,        16, IA64, 0x04, 32}},
-	{ 0x15, {L1, CODE,        16, IA64, 0x04, 32}},
-	{ 0x1a, {L2, UNIFIED,     96, IA64, 0x06, 64}},
-	{ 0x21, {L2, UNIFIED,    256, NONE, 0x08, 64}},
-	{ 0x22, {L3, UNIFIED,    512, SECTORED, 0x04, 64}},
-	{ 0x23, {L3, UNIFIED,   1 MB, SECTORED, 0x08, 64}},
-	{ 0x24, {L2, UNIFIED,   1 MB, UNDOCUMENTED, 0x10, 64}},
-	{ 0x25, {L3, UNIFIED,   2 MB, SECTORED, 0x08, 64}},
-	{ 0x29, {L3, UNIFIED,   4 MB, SECTORED, 0x08, 64}},
-	{ 0x2c, {L1, DATA,        32, NONE, 0x08, 64}},
-	{ 0x30, {L1, CODE,        32, NONE, 0x08, 64}},
-	{ 0x39, {L2, UNIFIED,    128, SECTORED, 0x04, 64}},
-	{ 0x3a, {L2, UNIFIED,    192, SECTORED, 0x06, 64}},
-	{ 0x3b, {L2, UNIFIED,    128, SECTORED, 0x02, 64}},
-	{ 0x3c, {L2, UNIFIED,    256, SECTORED, 0x04, 64}},
-	{ 0x3d, {L2, UNIFIED,    384, SECTORED, 0x06, 64}},
-	{ 0x3e, {L2, UNIFIED,    512, SECTORED, 0x04, 64}},
-	{ 0x40, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}}, /* Special case, see create_description() */
-	{ 0x41, {L2, UNIFIED,    128, NONE, 0x04, 32}},
-	{ 0x42, {L2, UNIFIED,    256, NONE, 0x04, 32}},
-	{ 0x43, {L2, UNIFIED,    512, NONE, 0x04, 32}},
-	{ 0x44, {L2, UNIFIED,   1 MB, NONE, 0x04, 32}},
-	{ 0x45, {L2, UNIFIED,   2 MB, NONE, 0x04, 32}},
-	{ 0x46, {L3, UNIFIED,   4 MB, NONE, 0x04, 64}},
-	{ 0x47, {L3, UNIFIED,   8 MB, NONE, 0x08, 64}},
-	{ 0x48, {L2, UNIFIED,   3 MB, NONE, 0x0C, 64}},
-	{ 0x4a, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64}},
-	{ 0x4b, {L3, UNIFIED,   8 MB, NONE, 0x10, 64}},
-	{ 0x4c, {L3, UNIFIED,  12 MB, NONE, 0x0C, 64}},
-	{ 0x4d, {L3, UNIFIED,  16 MB, NONE, 0x10, 64}},
-	{ 0x4e, {L2, UNIFIED,   6 MB, NONE, 0x18, 64}},
-	{ 0x4f, {NO, CODE_TLB,    32, PAGES_4K, 0x00, 0}},
-	{ 0x50, {NO, CODE_TLB,    64, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0}},
-	{ 0x51, {NO, CODE_TLB,   128, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0}},
-	{ 0x52, {NO, CODE_TLB,   256, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0}},
-	{ 0x55, {NO, CODE_TLB,   256, PAGES_2M | PAGES_4M, 0xFF, 0}},
-	{ 0x56, {L0, DATA_TLB,    16, PAGES_4M, 0x04, 0}},
-	{ 0x57, {L0, DATA_TLB,    16, PAGES_4K, 0x04, 0}},
-	{ 0x59, {L0, DATA_TLB,    16, PAGES_4K, 0xFF, 0}},
-	{ 0x5a, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M, 0x04, 0}},
-	{ 0x5b, {NO, DATA_TLB,    64, PAGES_4K | PAGES_4M, 0xFF, 0}},
-	{ 0x5c, {NO, DATA_TLB,   128, PAGES_4K | PAGES_4M, 0xFF, 0}},
-	{ 0x5d, {NO, DATA_TLB,   256, PAGES_4K | PAGES_4M, 0xFF, 0}},
-	{ 0x60, {L1, DATA,        16, SECTORED, 0x08, 64}},
-	{ 0x61, {NO, CODE_TLB,    48, UNDOCUMENTED, 0xFF, 0}},
-	{ 0x63, {NO, DATA_TLB, 32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
-	{ 0x63, {NO, DATA_TLB, 4, PAGES_1G | UNDOCUMENTED, 0x04, 0}},
-	{ 0x64, {NO, DATA_TLB,   512, PAGES_4K | UNDOCUMENTED, 0x04, 0}},
-	{ 0x66, {L1, DATA,         8, SECTORED, 0x04, 64}},
-	{ 0x67, {L1, DATA,        16, SECTORED, 0x04, 64}},
-	{ 0x68, {L1, DATA,        32, SECTORED, 0x04, 64}},
-	{ 0x6a, {L0, DATA_TLB,    64, PAGES_4K | UNDOCUMENTED, 0x08, 0}},
-	{ 0x6b, {NO, DATA_TLB,   256, PAGES_4K | UNDOCUMENTED, 0x08, 0}},
-	{ 0x6c, {NO, DATA_TLB,   128, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x08, 0}},
-	{ 0x6d, {NO, DATA_TLB,    16, PAGES_1G | UNDOCUMENTED, 0xFF, 0}},
-	{ 0x70, {L1, TRACE,       12, NONE, 0x08, 0}},
-	{ 0x71, {L1, TRACE,       16, NONE, 0x08, 0}},
-	{ 0x72, {L1, TRACE,       32, NONE, 0x08, 0}},
-	{ 0x73, {L1, TRACE,       64, UNDOCUMENTED, 0x08, 0}},
-	{ 0x76, {NO, CODE_TLB,     8, PAGES_2M | PAGES_4M, 0xFF, 0}},
-	{ 0x77, {L1, CODE,        16, SECTORED | IA64, 0x04, 64}},
-	{ 0x78, {L2, UNIFIED,   1 MB, NONE, 0x04, 64}},
-	{ 0x79, {L2, UNIFIED,    128, SECTORED, 0x08, 64}},
-	{ 0x7a, {L2, UNIFIED,    256, SECTORED, 0x04, 64}},
-	{ 0x7b, {L2, UNIFIED,    512, SECTORED, 0x04, 64}},
-	{ 0x7c, {L2, UNIFIED,   1 MB, SECTORED, 0x04, 64}},
-	{ 0x7d, {L2, UNIFIED,   2 MB, NONE, 0x08, 64}},
-	{ 0x7e, {L2, UNIFIED,    256, SECTORED | IA64, 0x08, 128}},
-	{ 0x7f, {L2, UNIFIED,    512, NONE, 0x02, 64}},
-	{ 0x80, {L2, UNIFIED,    512, NONE, 0x08, 64}},
-	{ 0x81, {L2, UNIFIED,    128, UNDOCUMENTED, 0x08, 32}},
-	{ 0x82, {L2, UNIFIED,    256, NONE, 0x08, 32}},
-	{ 0x83, {L2, UNIFIED,    512, NONE, 0x08, 32}},
-	{ 0x84, {L2, UNIFIED,   1 MB, NONE, 0x08, 32}},
-	{ 0x85, {L2, UNIFIED,   2 MB, NONE, 0x08, 32}},
-	{ 0x86, {L2, UNIFIED,    512, NONE, 0x04, 64}},
-	{ 0x87, {L2, UNIFIED,   1 MB, NONE, 0x08, 64}},
-	{ 0x88, {L3, UNIFIED,   2 MB, IA64, 0x04, 64}},
-	{ 0x89, {L3, UNIFIED,   4 MB, IA64, 0x04, 64}},
-	{ 0x8a, {L3, UNIFIED,   8 MB, IA64, 0x04, 64}},
-	{ 0x8d, {L3, UNIFIED,   3 MB, IA64, 0x0C, 128}},
-	{ 0xa0, {NO, DATA_TLB,    32, PAGES_4K | UNDOCUMENTED, 0xFF, 0}},
-	{ 0xb0, {NO, CODE_TLB,   128, PAGES_4K, 0x04, 0}},
-	{ 0xb1, {NO, CODE_TLB,     4, PAGES_4M | UNDOCUMENTED, 0x04, 0}},
-	{ 0xb1, {NO, CODE_TLB,     8, PAGES_2M | UNDOCUMENTED, 0x04, 0}},
-	{ 0xb2, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
-	{ 0xb3, {NO, DATA_TLB,   128, PAGES_4K, 0x04, 0}},
-	{ 0xb4, {L1, DATA_TLB,   256, PAGES_4K, 0x04, 0}},
-	{ 0xb5, {NO, CODE_TLB,    64, PAGES_4K, 0x08, 0}},
-	{ 0xb6, {NO, CODE_TLB,   128, PAGES_4K, 0x08, 0}},
-	{ 0xba, {L1, DATA_TLB,    64, PAGES_4K, 0x04, 0}},
-	{ 0xc0, {NO, DATA_TLB,     8, PAGES_4K | PAGES_4M, 0x04, 0}},
-	{ 0xc1, {L2, SHARED_TLB,1024, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x08, 0}},
-	{ 0xc2, {NO, DATA_TLB,    16, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
-	{ 0xc3, {L2, SHARED_TLB,1536, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x04, 0}},
-	{ 0xc3, {L2, SHARED_TLB,  16, PAGES_1G | UNDOCUMENTED, 0x04, 0}},
-	{ 0xc4, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0}},
-	{ 0xca, {L2, SHARED_TLB, 512, PAGES_4K, 0x04, 0}},
-	{ 0xd0, {L3, UNIFIED,    512, NONE, 0x04, 64}},
-	{ 0xd1, {L3, UNIFIED,   1 MB, NONE, 0x04, 64}},
-	{ 0xd2, {L3, UNIFIED,   2 MB, NONE, 0x04, 64}},
-	{ 0xd6, {L3, UNIFIED,   1 MB, NONE, 0x08, 64}},
-	{ 0xd7, {L3, UNIFIED,   2 MB, NONE, 0x08, 64}},
-	{ 0xd8, {L3, UNIFIED,   4 MB, NONE, 0x08, 64}},
-	{ 0xdc, {L3, UNIFIED, 1.5 MB, NONE, 0x0C, 64}},
-	{ 0xdd, {L3, UNIFIED,   3 MB, NONE, 0x0C, 64}},
-	{ 0xde, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64}},
-	{ 0xe2, {L3, UNIFIED,   2 MB, NONE, 0x10, 64}},
-	{ 0xe3, {L3, UNIFIED,   4 MB, NONE, 0x10, 64}},
-	{ 0xe4, {L3, UNIFIED,   8 MB, NONE, 0x10, 64}},
-	{ 0xea, {L3, UNIFIED,  12 MB, NONE, 0x18, 64}},
-	{ 0xeb, {L3, UNIFIED,  18 MB, NONE, 0x18, 64}},
-	{ 0xec, {L3, UNIFIED,  24 MB, NONE, 0x18, 64}},
+	{ 0x01, {NO, CODE_TLB,    32, PAGES_4K, 0x04, 0, 0}},
+	{ 0x02, {NO, CODE_TLB,     2, PAGES_4M, 0xFF, 0, 0}},
+	{ 0x03, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0, 0}},
+	{ 0x04, {NO, DATA_TLB,     8, PAGES_4M, 0x04, 0, 0}},
+	{ 0x05, {NO, DATA_TLB,    32, PAGES_4M, 0x04, 0, 0}},
+	{ 0x06, {L1, CODE,         8, NONE, 0x04, 32, 0}},
+	{ 0x08, {L1, CODE,        16, NONE, 0x04, 32, 0}},
+	{ 0x09, {L1, CODE,        32, NONE, 0x04, 64, 0}},
+	{ 0x0a, {L1, DATA,         8, NONE, 0x02, 32, 0}},
+	{ 0x0b, {L1, CODE_TLB,     4, PAGES_4M, 0x04, 0, 0}},
+	{ 0x0c, {L1, DATA,        16, NONE, 0x04, 32, 0}},
+	{ 0x0d, {L1, DATA,        16, ECC, 0x04, 64, 0}},
+	{ 0x0e, {L1, DATA,        24, NONE, 0x06, 64, 0}},
+	{ 0x10, {L1, DATA,        16, IA64, 0x04, 32, 0}},
+	{ 0x15, {L1, CODE,        16, IA64, 0x04, 32, 0}},
+	{ 0x1a, {L2, UNIFIED,     96, IA64, 0x06, 64, 0}},
+	{ 0x21, {L2, UNIFIED,    256, NONE, 0x08, 64, 0}},
+	{ 0x22, {L3, UNIFIED,    512, SECTORED, 0x04, 64, 0}},
+	{ 0x23, {L3, UNIFIED,   1 MB, SECTORED, 0x08, 64, 0}},
+	{ 0x24, {L2, UNIFIED,   1 MB, UNDOCUMENTED, 0x10, 64, 0}},
+	{ 0x25, {L3, UNIFIED,   2 MB, SECTORED, 0x08, 64, 0}},
+	{ 0x29, {L3, UNIFIED,   4 MB, SECTORED, 0x08, 64, 0}},
+	{ 0x2c, {L1, DATA,        32, NONE, 0x08, 64, 0}},
+	{ 0x30, {L1, CODE,        32, NONE, 0x08, 64, 0}},
+	{ 0x39, {L2, UNIFIED,    128, SECTORED, 0x04, 64, 0}},
+	{ 0x3a, {L2, UNIFIED,    192, SECTORED, 0x06, 64, 0}},
+	{ 0x3b, {L2, UNIFIED,    128, SECTORED, 0x02, 64, 0}},
+	{ 0x3c, {L2, UNIFIED,    256, SECTORED, 0x04, 64, 0}},
+	{ 0x3d, {L2, UNIFIED,    384, SECTORED, 0x06, 64, 0}},
+	{ 0x3e, {L2, UNIFIED,    512, SECTORED, 0x04, 64, 0}},
+	{ 0x40, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}}, /* Special case, see create_description() */
+	{ 0x41, {L2, UNIFIED,    128, NONE, 0x04, 32, 0}},
+	{ 0x42, {L2, UNIFIED,    256, NONE, 0x04, 32, 0}},
+	{ 0x43, {L2, UNIFIED,    512, NONE, 0x04, 32, 0}},
+	{ 0x44, {L2, UNIFIED,   1 MB, NONE, 0x04, 32, 0}},
+	{ 0x45, {L2, UNIFIED,   2 MB, NONE, 0x04, 32, 0}},
+	{ 0x46, {L3, UNIFIED,   4 MB, NONE, 0x04, 64, 0}},
+	{ 0x47, {L3, UNIFIED,   8 MB, NONE, 0x08, 64, 0}},
+	{ 0x48, {L2, UNIFIED,   3 MB, NONE, 0x0C, 64, 0}},
+	{ 0x4a, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64, 0}},
+	{ 0x4b, {L3, UNIFIED,   8 MB, NONE, 0x10, 64, 0}},
+	{ 0x4c, {L3, UNIFIED,  12 MB, NONE, 0x0C, 64, 0}},
+	{ 0x4d, {L3, UNIFIED,  16 MB, NONE, 0x10, 64, 0}},
+	{ 0x4e, {L2, UNIFIED,   6 MB, NONE, 0x18, 64, 0}},
+	{ 0x4f, {NO, CODE_TLB,    32, PAGES_4K, 0x00, 0, 0}},
+	{ 0x50, {NO, CODE_TLB,    64, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0, 0}},
+	{ 0x51, {NO, CODE_TLB,   128, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0, 0}},
+	{ 0x52, {NO, CODE_TLB,   256, PAGES_4K | PAGES_2M | PAGES_4M, 0x00, 0, 0}},
+	{ 0x55, {NO, CODE_TLB,   256, PAGES_2M | PAGES_4M, 0xFF, 0, 0}},
+	{ 0x56, {L0, DATA_TLB,    16, PAGES_4M, 0x04, 0, 0}},
+	{ 0x57, {L0, DATA_TLB,    16, PAGES_4K, 0x04, 0, 0}},
+	{ 0x59, {L0, DATA_TLB,    16, PAGES_4K, 0xFF, 0, 0}},
+	{ 0x5a, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M, 0x04, 0, 0}},
+	{ 0x5b, {NO, DATA_TLB,    64, PAGES_4K | PAGES_4M, 0xFF, 0, 0}},
+	{ 0x5c, {NO, DATA_TLB,   128, PAGES_4K | PAGES_4M, 0xFF, 0, 0}},
+	{ 0x5d, {NO, DATA_TLB,   256, PAGES_4K | PAGES_4M, 0xFF, 0, 0}},
+	{ 0x60, {L1, DATA,        16, SECTORED, 0x08, 64, 0}},
+	{ 0x61, {NO, CODE_TLB,    48, PAGES_4K | UNDOCUMENTED, 0xFF, 0, 0}},
+	{ 0x63, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0x63, {NO, DATA_TLB,     4, PAGES_1G | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0x64, {NO, DATA_TLB,   512, PAGES_4K | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0x66, {L1, DATA,         8, SECTORED, 0x04, 64, 0}},
+	{ 0x67, {L1, DATA,        16, SECTORED, 0x04, 64, 0}},
+	{ 0x68, {L1, DATA,        32, SECTORED, 0x04, 64, 0}},
+	{ 0x6a, {L0, DATA_TLB,    64, PAGES_4K | UNDOCUMENTED, 0x08, 0, 0}},
+	{ 0x6b, {NO, DATA_TLB,   256, PAGES_4K | UNDOCUMENTED, 0x08, 0, 0}},
+	{ 0x6c, {NO, DATA_TLB,   128, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x08, 0, 0}},
+	{ 0x6d, {NO, DATA_TLB,    16, PAGES_1G | UNDOCUMENTED, 0xFF, 0, 0}},
+	{ 0x70, {L1, TRACE,       12, NONE, 0x08, 0, 0}},
+	{ 0x71, {L1, TRACE,       16, NONE, 0x08, 0, 0}},
+	{ 0x72, {L1, TRACE,       32, NONE, 0x08, 0, 0}},
+	{ 0x73, {L1, TRACE,       64, UNDOCUMENTED, 0x08, 0, 0}},
+	{ 0x76, {NO, CODE_TLB,     8, PAGES_2M | PAGES_4M, 0xFF, 0, 0}},
+	{ 0x77, {L1, CODE,        16, SECTORED | IA64, 0x04, 64, 0}},
+	{ 0x78, {L2, UNIFIED,   1 MB, NONE, 0x04, 64, 0}},
+	{ 0x79, {L2, UNIFIED,    128, SECTORED, 0x08, 64, 0}},
+	{ 0x7a, {L2, UNIFIED,    256, SECTORED, 0x04, 64, 0}},
+	{ 0x7b, {L2, UNIFIED,    512, SECTORED, 0x04, 64, 0}},
+	{ 0x7c, {L2, UNIFIED,   1 MB, SECTORED, 0x04, 64, 0}},
+	{ 0x7d, {L2, UNIFIED,   2 MB, NONE, 0x08, 64, 0}},
+	{ 0x7e, {L2, UNIFIED,    256, SECTORED | IA64, 0x08, 128, 0}},
+	{ 0x7f, {L2, UNIFIED,    512, NONE, 0x02, 64, 0}},
+	{ 0x80, {L2, UNIFIED,    512, NONE, 0x08, 64, 0}},
+	{ 0x81, {L2, UNIFIED,    128, UNDOCUMENTED, 0x08, 32, 0}},
+	{ 0x82, {L2, UNIFIED,    256, NONE, 0x08, 32, 0}},
+	{ 0x83, {L2, UNIFIED,    512, NONE, 0x08, 32, 0}},
+	{ 0x84, {L2, UNIFIED,   1 MB, NONE, 0x08, 32, 0}},
+	{ 0x85, {L2, UNIFIED,   2 MB, NONE, 0x08, 32, 0}},
+	{ 0x86, {L2, UNIFIED,    512, NONE, 0x04, 64, 0}},
+	{ 0x87, {L2, UNIFIED,   1 MB, NONE, 0x08, 64, 0}},
+	{ 0x88, {L3, UNIFIED,   2 MB, IA64, 0x04, 64, 0}},
+	{ 0x89, {L3, UNIFIED,   4 MB, IA64, 0x04, 64, 0}},
+	{ 0x8a, {L3, UNIFIED,   8 MB, IA64, 0x04, 64, 0}},
+	{ 0x8d, {L3, UNIFIED,   3 MB, IA64, 0x0C, 128, 0}},
+	{ 0xa0, {NO, DATA_TLB,    32, PAGES_4K | UNDOCUMENTED, 0xFF, 0, 0}},
+	{ 0xb0, {NO, CODE_TLB,   128, PAGES_4K, 0x04, 0, 0}},
+	{ 0xb1, {NO, CODE_TLB,     4, PAGES_4M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xb1, {NO, CODE_TLB,     8, PAGES_2M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xb2, {NO, DATA_TLB,    64, PAGES_4K, 0x04, 0, 0}},
+	{ 0xb3, {NO, DATA_TLB,   128, PAGES_4K, 0x04, 0, 0}},
+	{ 0xb4, {L1, DATA_TLB,   256, PAGES_4K, 0x04, 0, 0}},
+	{ 0xb5, {NO, CODE_TLB,    64, PAGES_4K, 0x08, 0, 0}},
+	{ 0xb6, {NO, CODE_TLB,   128, PAGES_4K, 0x08, 0, 0}},
+	{ 0xba, {L1, DATA_TLB,    64, PAGES_4K, 0x04, 0, 0}},
+	{ 0xc0, {NO, DATA_TLB,     8, PAGES_4K | PAGES_4M, 0x04, 0, 0}},
+	{ 0xc1, {L2, SHARED_TLB,1024, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x08, 0, 0}},
+	{ 0xc2, {NO, DATA_TLB,    16, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xc3, {L2, SHARED_TLB,1536, PAGES_4K | PAGES_2M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xc3, {L2, SHARED_TLB,  16, PAGES_1G | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xc4, {NO, DATA_TLB,    32, PAGES_2M | PAGES_4M | UNDOCUMENTED, 0x04, 0, 0}},
+	{ 0xca, {L2, SHARED_TLB, 512, PAGES_4K, 0x04, 0, 0}},
+	{ 0xd0, {L3, UNIFIED,    512, NONE, 0x04, 64, 0}},
+	{ 0xd1, {L3, UNIFIED,   1 MB, NONE, 0x04, 64, 0}},
+	{ 0xd2, {L3, UNIFIED,   2 MB, NONE, 0x04, 64, 0}},
+	{ 0xd6, {L3, UNIFIED,   1 MB, NONE, 0x08, 64, 0}},
+	{ 0xd7, {L3, UNIFIED,   2 MB, NONE, 0x08, 64, 0}},
+	{ 0xd8, {L3, UNIFIED,   4 MB, NONE, 0x08, 64, 0}},
+	{ 0xdc, {L3, UNIFIED, 1.5 MB, NONE, 0x0C, 64, 0}},
+	{ 0xdd, {L3, UNIFIED,   3 MB, NONE, 0x0C, 64, 0}},
+	{ 0xde, {L3, UNIFIED,   6 MB, NONE, 0x0C, 64, 0}},
+	{ 0xe2, {L3, UNIFIED,   2 MB, NONE, 0x10, 64, 0}},
+	{ 0xe3, {L3, UNIFIED,   4 MB, NONE, 0x10, 64, 0}},
+	{ 0xe4, {L3, UNIFIED,   8 MB, NONE, 0x10, 64, 0}},
+	{ 0xea, {L3, UNIFIED,  12 MB, NONE, 0x18, 64, 0}},
+	{ 0xeb, {L3, UNIFIED,  18 MB, NONE, 0x18, 64, 0}},
+	{ 0xec, {L3, UNIFIED,  24 MB, NONE, 0x18, 64, 0}},
 
 	/* Special cases, not described in this table, but handled in the
 	 * create_description() function. */
-	{ 0xf0, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
-	{ 0xf1, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
-	{ 0xfe, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
-	{ 0xff, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}},
+	{ 0xf0, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}},
+	{ 0xf1, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}},
+	{ 0xfe, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}},
+	{ 0xff, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}},
 
-	{ 0x00, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0}}
+	{ 0x00, {INVALID_LEVEL, INVALID_TYPE, 0, 0, 0, 0, 0}}
 };
 static const struct cache_desc_index_t descriptor_49[] = {
-	{ 0x49, {L2, UNIFIED,  4 MB, NONE, 0x10, 64}},
-	{ 0x49, {L3, UNIFIED,  4 MB, NONE, 0x10, 64}}
+	{ 0x49, {L2, UNIFIED,  4 MB, NONE, 0x10, 64, 0}},
+	{ 0x49, {L3, UNIFIED,  4 MB, NONE, 0x10, 64, 0}}
 };
 #undef MB
 
@@ -252,8 +212,36 @@ static const char *page_types(uint32_t attrs)
 #endif
 }
 
-static const char *associativity(char *buffer, uint8_t assoc)
+static const char *type(cache_type_t type)
 {
+	switch(type) {
+	case DATA_TLB:   return "Data TLB";
+	case CODE_TLB:   return "Code TLB";
+	case SHARED_TLB: return "Shared TLB";
+	case DATA:       return "data cache";
+	case CODE:       return "code cache";
+	case UNIFIED:    return "unified cache";
+	case TRACE:      return "trace cache";
+	default:         abort();
+	}
+	return NULL;
+}
+
+static const char *level(cache_level_t level)
+{
+	static char buffer[8];
+	buffer[0] = 0;
+	if (level == INVALID_LEVEL || level > LMAX)
+		return NULL;
+	if (level == NO)
+		return buffer;
+	sprintf(buffer, "L%d", (int)level);
+	return buffer;
+}
+
+static const char *associativity(uint8_t assoc)
+{
+	static char buffer[32];
 	switch(assoc) {
 	case 0x00:
 		return "unknown associativity";
@@ -266,8 +254,9 @@ static const char *associativity(char *buffer, uint8_t assoc)
 	return buffer;
 }
 
-static const char *size(char *buffer, uint32_t size)
+static const char *size(uint32_t size)
 {
+	static char buffer[16];
 	if (size > 1024) {
 		sprintf(buffer, "%dMB", size / 1024);
 	} else {
@@ -276,12 +265,102 @@ static const char *size(char *buffer, uint32_t size)
 	return buffer;
 }
 
+#define ADD_LINE(fmt, ...) { \
+		sprintf(temp, "%*s" fmt "\n", indent, "", __VA_ARGS__); \
+		safe_strcat(buffer, temp, bufsize); \
+	}
+
+char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent)
+{
+	char temp[64];
+
+	buffer[0] = 0;
+
+	switch (desc->type) {
+	case DATA_TLB:
+	case CODE_TLB:
+	case SHARED_TLB:
+		/* e.g. "Code TLB: 2MB or 4MB pages" */
+		ADD_LINE("%10s: %s",
+			type(desc->type),
+			page_types(desc->attrs));
+		indent += 14;
+		break;
+	case CODE:
+	case DATA:
+	case UNIFIED:
+		/* e.g. "32KB L1 data cache" */
+		ADD_LINE("%5s %s %s",
+			size(desc->size),
+			level(desc->level),
+			type(desc->type));
+		indent += 6;
+		break;
+	case TRACE:
+		ADD_LINE("%dK-uops trace cache",
+			desc->size);
+		indent += 6;
+		break;
+	default:
+		abort();
+	}
+
+	if (desc->assoc != 0) {
+		/* e.g. "8-way set associative" */
+		ADD_LINE("%s", associativity(desc->assoc));
+	}
+
+	if (desc->attrs & SECTORED) {
+		ADD_LINE("%s", "Sectored cache");
+	}
+
+	switch (desc->type) {
+	case CODE:
+	case DATA:
+	case UNIFIED:
+		ADD_LINE("%d byte line size", desc->linesize);
+		break;
+	case DATA_TLB:
+	case CODE_TLB:
+	case SHARED_TLB:
+		ADD_LINE("%d entries", desc->size);
+		break;
+	default:
+		break;
+	}
+
+	if (desc->attrs & ECC) {
+		ADD_LINE("%s", "ECC");
+	}
+
+	if (desc->attrs & SELF_INIT) {
+		ADD_LINE("%s", "Self-initializing");
+	}
+
+	if (desc->attrs & INCLUSIVE) {
+		ADD_LINE("%s", "Inclusive of lower cache levels");
+	}
+
+	if (desc->attrs & CPLX_INDEX) {
+		ADD_LINE("%s", "Complex indexing");
+	}
+
+	if (desc->attrs & UNDOCUMENTED) {
+		ADD_LINE("%s", "Undocumented descriptor");
+	}
+
+	if (desc->max_threads_sharing) {
+		ADD_LINE("Shared by max %d threads", desc->max_threads_sharing);
+	}
+
+	return strdup(buffer);
+}
+#undef ADD_LINE
+
 static char *create_description(const struct cache_desc_index_t *idx)
 {
 	const struct cache_desc_t *desc = &idx->desc;
-	char buffer[128], temp[32];
-	const char *cp;
-	buffer[0] = 0;
+	char buffer[256];
 
 #if 0
 	/* For debugging */
@@ -290,117 +369,25 @@ static char *create_description(const struct cache_desc_index_t *idx)
 
 	/* Special cases. */
 	switch(idx->descriptor) {
-	case 0x40:
-		strcat(buffer, "No L2 cache, or if L2 cache exists, no L3 cache");
-		goto out;
-	case 0xF0:
-		strcat(buffer, "64-byte prefetching");
-		goto out;
-	case 0xF1:
-		strcat(buffer, "128-byte prefetching");
-		goto out;
-	case 0xFE:
-		strcat(buffer, "[NOTICE] For TLB data, see Deterministic Address Translation leaf instead");
-		goto out;
-	case 0xFF:
-		strcat(buffer, "[NOTICE] For cache data, see Deterministic Cache Parameters leaf instead");
-		goto out;
+	case 0x40: return strdup("  No L2 cache, or if L2 cache exists, no L3 cache\n");
+	case 0xF0: return strdup("  64-byte prefetching\n");
+	case 0xF1: return strdup("  128-byte prefetching\n");
+	case 0xFE: return strdup("  [NOTICE] For TLB data, see Deterministic Address Translation leaf instead\n");
+	case 0xFF: return strdup("  [NOTICE] For cache data, see Deterministic Cache Parameters leaf instead\n");
 	}
 
-	switch(desc->level) {
-	case NO:
-		break;
-	case L0:
-		strcat(buffer, "L0 ");
-		break;
-	case L1:
-		strcat(buffer, "L1 ");
-		break;
-	case L2:
-		strcat(buffer, "L2 ");
-		break;
-	case L3:
-		strcat(buffer, "L3 ");
-		break;
-	default:
-		abort();
-	}
-
-	switch (desc->type) {
-	case TRACE:
-		strcat(buffer, "trace cache: ");
-		sprintf(temp, "%dK-uops", desc->size);
-		strcat(buffer, temp);
-		break;
-	case DATA_TLB:
-		strcat(buffer, "Data TLB: ");
-		break;
-	case CODE_TLB:
-		strcat(buffer, "Code TLB: ");
-		break;
-	case SHARED_TLB:
-		strcat(buffer, "shared TLB: ");
-		break;
-	case CODE:
-		strcat(buffer, "code cache: ");
-		strcat(buffer, size(temp, desc->size));
-		break;
-	case DATA:
-		strcat(buffer, "data cache: ");
-		strcat(buffer, size(temp, desc->size));
-		break;
-	case UNIFIED:
-		strcat(buffer, "cache: ");
-		strcat(buffer, size(temp, desc->size));
-		break;
-	default:
-		abort();
-	}
-
-	cp = page_types(desc->attrs);
-	if (cp) {
-		strcat(buffer, page_types(desc->attrs));
-	}
-
-	if (desc->assoc != 0) {
-		strcat(buffer, ", ");
-		strcat(buffer, associativity(temp, desc->assoc));
-	}
-
-	if (desc->attrs & SECTORED)
-		strcat(buffer, ", sectored cache");
-
-	switch (desc->type) {
-	case CODE:
-	case DATA:
-	case UNIFIED:
-		sprintf(temp, ", %d byte line size", desc->linesize);
-		strcat(buffer, temp);
-		break;
-	case DATA_TLB:
-	case CODE_TLB:
-	case SHARED_TLB:
-		sprintf(temp, ", %d entries", desc->size);
-		strcat(buffer, temp);
-		break;
-	default:
-		break;
-	}
-
-	if (desc->attrs & ECC)
-		strcat(buffer, ", ECC");
-
-	if (desc->attrs & UNDOCUMENTED)
-		strcat(buffer, " (undocumented)");
-out:
+	describe_cache(desc, buffer, sizeof(buffer), 2);
 	return strdup(buffer);
 }
 
 static int entry_comparator(const void *a, const void *b)
 {
+	const char *stra = *(const char **)a;
+	const char *strb = *(const char **)b;
+
 	/* Make notices appear first. */
-	if ((*(const char **)a)[0] == '[') return -1;
-	if ((*(const char **)b)[0] == '[') return 1;
+	if ((stra)[strspn(stra, " ")] == '[') return -1;
+	if ((strb)[strspn(strb, " ")] == '[') return 1;
 
 	/* Make 'prefetching' lines show last. */
 	if (strstr(*(const char **)a, "prefetch")) return 1;

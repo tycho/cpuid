@@ -361,20 +361,6 @@ static void handle_std_psn(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 }
 
 /* EAX = 0000 0004 */
-static const char *cache04_type(uint8_t type)
-{
-	const char *types[] = {
-		"null",
-		"data",
-		"code",
-		"unified"
-	};
-	if (type > 3)
-		return "unknown";
-	return types[type];
-}
-
-/* EAX = 0000 0004 */
 static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct eax_cache04_t {
@@ -391,18 +377,11 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned partitions:10; /* +1 encoded */
 		unsigned assoc:10; /* +1 encoded */
 	};
-	struct edx_cache04_feat_t {
-		unsigned int mask;
-		const char *name;
-	} features[] = {
-		{0x00000001, "Write-back invalidate acts upon lower levels"},
-		{0x00000002, "Inclusive of lower cache levels"},
-		{0x00000004, "Complex indexing"},
-		{0x00000000, NULL}
-	};
 	uint32_t i = 0;
+
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
+
 	printf("Deterministic Cache Parameters:\n");
 	if (sizeof(struct eax_cache04_t) != 4 || sizeof(struct ebx_cache04_t) != 4) {
 		printf("  WARNING: The code appears to have been incorrectly compiled.\n"
@@ -410,9 +389,10 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	}
 
 	while (1) {
+		struct cache_desc_t desc;
+		char desc_str[256];
 		struct eax_cache04_t *eax;
 		struct ebx_cache04_t *ebx;
-		struct edx_cache04_feat_t *feat;
 		uint32_t cacheSize;
 		ZERO_REGS(regs);
 		regs->eax = 4;
@@ -434,40 +414,17 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		/* Convert to kilobytes. */
 		cacheSize /= 1024;
 
-		printf("  %3u%cB L%d %s cache\n",
-		       cacheSize > 1024 ? cacheSize / 1024 : cacheSize,
-		       cacheSize > 1024 ? 'M' : 'K',
-		       eax->level,
-		       cache04_type(eax->type));
-
-		if (eax->self_initializing)
-			printf("        Self-initializing\n");
-
-		if (eax->fully_associative) {
-			printf("        Fully associative\n");
-		} else {
-			printf("        %d-way set associative\n",
-			       ebx->assoc + 1);
-		}
-
-		for (feat = features; feat->name; feat++)
-		{
-			if ((regs->edx & feat->mask))
-				printf("        %s\n", feat->name);
-		}
-
-		printf("        %d byte line size\n"
-		       "        %d partitions\n"
-		       "        %d sets\n"
-		       "        shared by max %d threads\n"
-		       "        maximum %d APIC IDs for cores in package\n",
-		       ebx->line_size + 1,
-		       ebx->partitions + 1,
-		       regs->ecx + 1,
-		       eax->max_threads_sharing + 1,
-		       eax->apics_reserved + 1);
-
-		printf("\n");
+		desc.level = L0 + eax->level;
+		desc.type = DATA + eax->type - 1;
+		desc.size = cacheSize;
+		desc.attrs = (eax->self_initializing ? SELF_INIT : 0) |
+		             ((regs->edx & 0x01) ? WBINVD_INCLUSIVE : 0) |
+		             ((regs->edx & 0x02) ? INCLUSIVE : 0) |
+		             ((regs->edx & 0x04) ? CPLX_INDEX : 0);
+		desc.assoc = eax->fully_associative ? 0xff : ebx->assoc + 1;
+		desc.linesize = ebx->line_size + 1;
+		desc.max_threads_sharing = eax->max_threads_sharing + 1;
+		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
 
 		/* This is the official termination condition for this leaf. */
 		if (!(regs->eax & 0xF))
@@ -475,6 +432,7 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 		i++;
 	}
+	printf("\n");
 }
 
 /* EAX = 0000 0004 */
