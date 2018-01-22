@@ -178,39 +178,52 @@ static const struct cache_desc_index_t descriptor_49[] = {
 };
 #undef MB
 
+#define DELIM() { \
+		if (rem_types >= 2 && num_types >= 3) { \
+			safe_strcat(buffer, ", ", sizeof(buffer)); \
+		} else if (num_types >= 2 && rem_types < num_types) { \
+			safe_strcat(buffer, " or ", sizeof(buffer)); \
+		} \
+	}
+#define ADD_TYPE(type) { \
+		safe_strcat(buffer, type, sizeof(buffer)); \
+		rem_types--; \
+	}
 static const char *page_types(uint32_t attrs)
 {
-	/* There's probably a much better algorithm for this. */
+	uint32_t num_types, rem_types;
+	static char buffer[48];
+
+	buffer[0] = 0;
+
 	attrs &= (PAGES_4K | PAGES_2M | PAGES_4M | PAGES_1G);
-	switch(attrs) {
-	case 0:
-		return NULL;
-	case PAGES_4K:
-		return "4KB pages";
-	case PAGES_2M:
-		return "2MB pages";
-	case PAGES_4M:
-		return "4MB pages";
-	case PAGES_4K | PAGES_2M:
-		return "4KB or 2MB pages";
-	case PAGES_4K | PAGES_4M:
-		return "4KB or 4MB pages";
-	case PAGES_2M | PAGES_4M:
-		return "2MB or 4MB pages";
-	case PAGES_4K | PAGES_2M | PAGES_4M:
-		return "4KB, 2MB, or 4MB pages";
-	case PAGES_1G:
-		return "1GB pages";
-	default:
-		abort();
+	num_types = popcnt(attrs);
+	rem_types = num_types;
+
+	if (attrs & PAGES_4K) {
+		ADD_TYPE("4KB");
 	}
-#ifdef _MSC_VER
-	/* Visual C++ isn't bright enough to figure out that
-	 * all control paths DO return a value (or don't return at all).
-	 */
-	return NULL;
-#endif
+
+	if (attrs & PAGES_2M) {
+		DELIM();
+		ADD_TYPE("2MB");
+	}
+
+	if (attrs & PAGES_4M) {
+		DELIM();
+		ADD_TYPE("4MB");
+	}
+
+	if (attrs & PAGES_1G) {
+		DELIM();
+		ADD_TYPE("1GB");
+	}
+
+	strcat(buffer, " pages");
+	return buffer;
 }
+#undef DELIM
+#undef ADD_TYPE
 
 static const char *type(cache_type_t type)
 {
