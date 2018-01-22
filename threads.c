@@ -44,6 +44,15 @@
 #undef MAX_CPUS
 #define MAX_CPUS CPU_MAXSIZE
 
+#elif defined(TARGET_OS_SOLARIS)
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/processor.h>
+#include <sys/procset.h>
+
+
 #elif defined(TARGET_OS_MACOSX)
 
 #include <sys/sysctl.h>
@@ -61,7 +70,7 @@ extern int utilUnbindThreadFromCPU(void);
 
 uint32_t thread_count_native(struct cpuid_state_t *state)
 {
-#ifdef TARGET_OS_MACOSX
+#if defined(TARGET_OS_MACOSX)
 	uint32_t count;
 	size_t  size = sizeof(count);
 
@@ -69,6 +78,15 @@ uint32_t thread_count_native(struct cpuid_state_t *state)
 		return 1;
 
 	return count;
+#elif defined(TARGET_OS_SOLARIS)
+	long count;
+
+	if ((count = sysconf(_SC_NPROCESSORS_ONLN)) == -1)
+		return 1;
+
+	(void)state;
+
+	return (uint32_t)count;
 #else
 	static unsigned int i = 0;
 	if (i) return i;
@@ -119,6 +137,18 @@ uintptr_t thread_get_binding(void)
 
 	return mask_id;
 
+#elif defined(TARGET_OS_SOLARIS)
+
+	processorid_t bind;
+
+	if (processor_bind(P_LWPID, P_MYID, PBIND_QUERY, &bind) != 0) {
+		fprintf(stderr, "warning: failed to query LWP binding: %s\n",
+			strerror(errno));
+		return 0;
+	}
+
+	return 1 << bind;
+
 #elif defined(TARGET_OS_MACOSX)
 
 	/* Hopefully this function wasn't too important. */
@@ -157,6 +187,16 @@ uintptr_t thread_bind_mask(uintptr_t _mask)
 	ret = pthread_setaffinity_np(pth, sizeof(mask), &mask);
 
 	return (ret == 0) ? 0 : 1;
+
+#elif defined(TARGET_OS_SOLARIS)
+
+	(void)_mask;
+
+	/*
+	 * Mask binding is not directly exposed, but it shouldn't matter
+	 * significantly.
+	 */
+	return 0;
 
 #elif defined(TARGET_OS_MACOSX)
 
@@ -246,6 +286,20 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 
 	return (ret == 0) ? 0 : 1;
 
+#elif defined(TARGET_OS_SOLARIS)
+
+	/*
+	 * This requires permissions, so can easily fail.
+	 */
+	if (processor_bind(P_LWPID, P_MYID, id, NULL) != 0) {
+		fprintf(stderr, "warning: failed to bind to CPU%u: %s\n",
+			id, strerror(errno));
+		return 1;
+	}
+
+	if (state)
+		state->cpu_bound_index = id;
+	return 0;
 #elif defined(TARGET_OS_MACOSX)
 	int ret = 1;
 

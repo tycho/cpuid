@@ -205,4 +205,11 @@
 #endif
 #endif
 
+#if !defined (OS_DETECTED)
+#if defined (__sun__)
+#define OS_DETECTED
+#define TARGET_OS_SOLARIS
+#endif
+#endif
+
 #endif
