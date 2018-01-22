@@ -73,9 +73,12 @@ CFLAGS := -Os -I. -fno-strict-aliasing \
 LDFLAGS := -lm
 OBJECTS := cache.o clock.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
+# GCC is too down-rev on Illumos to allow this
+ifneq ($(uname_S),SunOS)
 ifneq ($(CC),clang)
 CFLAGS += -fPIC
 LDFLAGS += -fPIC
+endif
 endif
 
 ifeq ($(uname_S),Linux)
