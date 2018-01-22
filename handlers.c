@@ -52,7 +52,7 @@ DECLARE_HANDLER(std_trace);
 DECLARE_HANDLER(std_tsc);
 DECLARE_HANDLER(std_cpufreq);
 //DECLARE_HANDLER(std_soc);
-//DECLARE_HANDLER(std_dat);
+//DECLARE_HANDLER(std_tlb);
 //DECLARE_HANDLER(std_pconfig);
 
 DECLARE_HANDLER(ext_base);
@@ -131,7 +131,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 
 	/* TODO, when I have hardware that I can develop/test these on. */
 	//{0x00000017, handle_std_soc},
-	//{0x00000018, handle_std_dat},
+	//{0x00000018, handle_std_tlb},
 	//{0x0000001b, handle_std_pconfig},
 
 	/* Hypervisor levels */
@@ -1062,6 +1062,64 @@ static void handle_std_cpufreq(struct cpu_regs_t *regs, struct cpuid_state_t *st
 
 	printf("\n");
 }
+
+#if 0
+/* Not fully implemented. Need to see some hardware that actually has this leaf
+ * before I finish this.
+ */
+
+/* EAX = 0000 0018 */
+static void handle_std_tlb(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t max_ecx = regs->eax;
+
+	struct eax_tlb_t {
+		unsigned reserved:32;
+	};
+	struct ebx_tlb_t {
+		unsigned has_4k_pages:1;
+		unsigned has_2m_pages:1;
+		unsigned has_4m_pages:1;
+		unsigned has_1g_pages:1;
+		unsigned reserved:4;
+		unsigned partitioning:3; /* 0: soft partitioning between logical processors sharing this structure */
+		unsigned reserved_1:5;
+		unsigned assoc:16;
+	};
+	struct ecx_tlb_t {
+		unsigned sets:32;
+	};
+	struct edx_tlb_t {
+		unsigned type:4;
+		unsigned level:3;
+		unsigned fully_assoc:1;
+		unsigned reserved:5;
+		unsigned max_threads_sharing:12; /* +1 encoded */
+		unsigned reserved_1:7;
+	};
+	uint32_t i = 0;
+
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+
+	printf("Deterministic Address Translation Parameters:\n");
+
+	for (i = 0; i <= max_ecx; i++) {
+		struct eax_tlb_t *eax;
+		struct ebx_tlb_t *ebx;
+		struct ecx_tlb_t *ecx;
+		struct edx_tlb_t *edx;
+
+		ZERO_REGS(regs);
+		regs->eax = 0x18;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+
+		if (edx->type == 0)
+			continue;
+	}
+}
+#endif
 
 /* EAX = 8000 0000 */
 static void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
