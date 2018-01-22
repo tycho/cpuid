@@ -428,13 +428,13 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 
 	*(uint32_t *)&buf[0x0] = regs->eax >> 8;
 	if ((regs->ebx & (1 << 31)) == 0)
-		*(uint32_t *)&buf[0x3] = regs->ebx;
+		*(uint32_t *)&buf[0x4] = regs->ebx;
 	if ((regs->ecx & (1 << 31)) == 0)
-		*(uint32_t *)&buf[0x7] = regs->ecx;
+		*(uint32_t *)&buf[0x8] = regs->ecx;
 	if ((regs->edx & (1 << 31)) == 0)
-		*(uint32_t *)&buf[0xB] = regs->edx;
+		*(uint32_t *)&buf[0xC] = regs->edx;
 
-	for (i = 0; i < 0xF; i++) {
+	for (i = 0; i <= 0xF; i++) {
 		BOOL found_match = FALSE;
 		char *desc = NULL;
 		const struct cache_desc_index_t *d;
