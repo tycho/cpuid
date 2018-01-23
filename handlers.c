@@ -418,7 +418,7 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		desc.type = DATA + eax->type - 1;
 		desc.size = cacheSize;
 		desc.attrs = (eax->self_initializing ? SELF_INIT : 0) |
-		             ((regs->edx & 0x01) ? WBINVD_INCLUSIVE : 0) |
+		             ((regs->edx & 0x01) ? WBINVD_NOT_INCLUSIVE : 0) |
 		             ((regs->edx & 0x02) ? INCLUSIVE : 0) |
 		             ((regs->edx & 0x04) ? CPLX_INDEX : 0);
 		desc.assoc = eax->fully_associative ? 0xff : ebx->assoc + 1;

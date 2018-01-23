@@ -358,6 +358,10 @@ char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsi
 		ADD_LINE("%s", "Complex indexing");
 	}
 
+	if (desc->attrs & WBINVD_NOT_INCLUSIVE) {
+		ADD_LINE("%s", "WBINVD not guaranteed to invalidate lower level caches");
+	}
+
 	if (desc->attrs & UNDOCUMENTED) {
 		ADD_LINE("%s", "Undocumented descriptor");
 	}

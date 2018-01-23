@@ -62,7 +62,7 @@ typedef enum {
 	SELF_INIT = 0x100,
 	CPLX_INDEX = 0x200,
 	INCLUSIVE = 0x400,
-	WBINVD_INCLUSIVE = 0x800,
+	WBINVD_NOT_INCLUSIVE = 0x800,
 } extra_attrs_t;
 
 struct cache_desc_t {
