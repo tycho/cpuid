@@ -721,6 +721,7 @@ static const char *vendors(char *buffer, uint32_t mask)
 
 void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
+	int leaf_checked = 0;
 	const struct cpu_feature_t *p = features;
 	struct cpu_regs_t accounting;
 	cpu_register_t last_reg = REG_NULL;
@@ -814,6 +815,8 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			}
 		}
 
+		leaf_checked = 1;
+
 		if (ignore_vendor) {
 			if ((*reg & p->m_bitmask) != 0)
 			{
@@ -833,7 +836,7 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		p++;
 	}
 
-	if (accounting.eax || accounting.ebx || accounting.ecx || accounting.edx)
+	if (leaf_checked && (accounting.eax || accounting.ebx || accounting.ecx || accounting.edx))
 		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
 			state->last_leaf.eax, state->last_leaf.ecx,
 		    accounting.eax, accounting.ebx, accounting.ecx, accounting.edx);
