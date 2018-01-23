@@ -1530,29 +1530,12 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 	struct ecx_cache {
 		unsigned sets:32;
 	};
-	struct edx_cache_feat {
-		unsigned int mask;
-		const char *name;
-	} features[] = {
-		{0x00000001, "WBINVD not guaranteed"},
-		{0x00000002, "cache inclusive"},
-		{0x00000000, NULL}
-	};
-
-	const char *sizes[] = {
-		"B",
-		"KB",
-		"MB",
-		NULL
-	};
 
 	struct eax_cache *eax = (struct eax_cache *)&regs->eax;
 	struct ebx_cache *ebx = (struct ebx_cache *)&regs->ebx;
 	struct ecx_cache *ecx = (struct ecx_cache *)&regs->ecx;
-	struct edx_cache_feat *feat;
 	struct cpu_regs_t feat_check;
 	unsigned int i = 1;
-	unsigned int unaccounted;
 
 	if (!(state->vendor & VENDOR_AMD))
 		return;
@@ -1566,47 +1549,28 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 
 	printf("AMD Extended Cache Topology:\n");
 	while (1) {
-		char assoc[32];
-		const char *type, **size_str = sizes;
+		struct cache_desc_t desc;
+		char desc_str[256];
 		uint32_t size;
 
-		switch (eax->type) {
-		case 0x1: type = " data"; break;
-		case 0x2: type = " code"; break;
-		case 0x3: type = ""; break;
-		default:  type = " unknown"; break;
-		}
-
-		if (eax->fullyassoc)
-			sprintf(assoc, "fully associative");
-		else {
-			sprintf(assoc, "%d-way set associative", ebx->ways + 1);
-		}
+		if (eax->type == 0)
+			break;
 
 		size = (ebx->linesize + 1) * (ebx->ways + 1) * (ecx->sets + 1);
+		size /= 1024;
 
-		while (size / 1024 > 0) {
-			size_str++;
-			if (!*size_str) {
-				size_str--;
-				break;
-			}
-			size /= 1024;
-		}
+		desc.level = eax->level + L0;
+		desc.type = eax->type + DATA - 1;
+		desc.size = size;
+		desc.attrs = (eax->selfinit ? SELF_INIT : 0) |
+		             ((regs->edx & 0x01) ? WBINVD_NOT_INCLUSIVE : 0) |
+		             ((regs->edx & 0x02) ? INCLUSIVE : 0);
+		desc.assoc = eax->fullyassoc ? 0xff : ebx->ways + 1;
+		desc.linesize = ebx->linesize + 1;
+		desc.max_threads_sharing = eax->sharing + 1;
 
-		printf("  %3d%s L%d%s cache, %s%s, %d cores sharing",
-			size, *size_str, eax->level, type, assoc, eax->selfinit ? "" : ", needs soft-init", eax->sharing + 1);
+		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
 
-		/* Cache feature bits */
-		unaccounted = 0;
-		for (feat = features; feat->mask; feat++) {
-			unaccounted |= feat->mask;
-			if (regs->edx & feat->mask) {
-				printf(", %s", feat->name);
-			}
-		}
-
-		printf("\n");
 		ZERO_REGS(regs);
 		regs->eax = 0x8000001D;
 		regs->ecx = i;
@@ -1615,7 +1579,6 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		if (!regs->eax)
 			break;
 	}
-	printf("\n");
 }
 
 /* EAX = 8000 001E */
