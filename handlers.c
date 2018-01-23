@@ -1430,31 +1430,9 @@ static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned nasid:32;
 	};
 
-	struct edx_svm_feat {
-		unsigned int mask;
-		const char *name;
-	} features[] = {
-		{0x00000001, "Nested paging"},
-		{0x00000002, "LBR virtualization"},
-		{0x00000004, "SVM lock"},
-		{0x00000008, "NRIP save"},
-		{0x00000010, "MSR-based TSC rate control"},
-		{0x00000020, "VMCB clean bits"},
-		{0x00000040, "Flush by ASID"},
-		{0x00000080, "Decode assists"},
-		{0x00000400, "Pause intercept filter"},
-		{0x00001000, "PAUSE filter threshold"},
-		{0x00002000, "AVIC supported"},
-		{0x00008000, "virtualized VMLOAD/VMSAVE"},
-		{0x00010000, "virtualized GIF"},
-		{0x00000000, NULL}
-	};
-
 	struct eax_svm *eax = (struct eax_svm *)&regs->eax;
 	struct ebx_svm *ebx = (struct ebx_svm *)&regs->ebx;
-	struct edx_svm_feat *feat;
 	struct cpu_regs_t feat_check;
-	unsigned int unaccounted;
 
 	if (!(state->vendor & VENDOR_AMD))
 		return;
@@ -1466,21 +1444,15 @@ static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if (!(feat_check.ecx & 0x04))
 		return;
 
+	/* This got clobbered by the feature check. */
+	state->last_leaf.eax = 0x8000000A;
+	state->last_leaf.ecx = 0;
+
 	printf("SVM Features and Revision Information:\n");
 	printf("  Revision: %u\n", eax->svmrev);
 	printf("  NASID: %u\n", ebx->nasid);
 	printf("  Features:\n");
-	unaccounted = 0;
-	for (feat = features; feat->mask; feat++) {
-		unaccounted |= feat->mask;
-		if (regs->edx & feat->mask) {
-			printf("    %s\n", feat->name);
-		}
-	}
-	unaccounted = (regs->edx & ~unaccounted);
-	if (unaccounted) {
-		printf("  Undocumented feature bits: 0x%08x\n", unaccounted);
-	}
+	print_features(regs, state);
 	printf("\n");
 }
 

@@ -691,6 +691,40 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000008, 0, REG_EBX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 
+/* SVM Revision and Feature Identification (8000_000Ah) */
+	{ 0x8000000A, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "Nested paging"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000002,                VENDOR_AMD                   , "LBR virtualization"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000004,                VENDOR_AMD                   , "SVM lock"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000008,                VENDOR_AMD                   , "NRIP save"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000010,                VENDOR_AMD                   , "MSR-based TSC rate control"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000020,                VENDOR_AMD                   , "VMCB clean bits"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000040,                VENDOR_AMD                   , "Flush by ASID"},
+	{ 0x8000000A, 0, REG_EDX, 0x00000080,                VENDOR_AMD                   , "Decode assists"},
+/*	{ 0x8000000A, 0, REG_EDX, 0x00000100,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00000400,                VENDOR_AMD                   , "Pause intercept filter"},
+/*	{ 0x8000000A, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "PAUSE filter threshold"},
+	{ 0x8000000A, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "AMD virtual interrupt controller"},
+/*	{ 0x8000000A, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00008000,                VENDOR_AMD                   , "Virtualized VMLOAD/VMSAVE"},
+	{ 0x8000000A, 0, REG_EDX, 0x00010000,                VENDOR_AMD                   , "Virtualized GIF"},
+/*	{ 0x8000000A, 0, REG_EDX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x20000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000000A, 0, REG_EDX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
 
@@ -812,6 +846,12 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				if (p->m_reg == REG_EBX) {
 					printf("Extended Feature Extensions:\n");
 					accounting.eax = accounting.ecx = accounting.edx = 0;
+				}
+				break;
+			case 0x8000000A:
+				if (p->m_reg == REG_EDX) {
+					printf("SVM Feature Flags:\n");
+					accounting.eax = accounting.ebx = accounting.ecx = 0;
 				}
 				break;
 			}
