@@ -809,8 +809,10 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 						   reg_name(last_reg));
 				break;
 			case 0x80000008:
-				if (p->m_reg == REG_EBX)
+				if (p->m_reg == REG_EBX) {
 					printf("Extended Feature Extensions:\n");
+					accounting.eax = accounting.ecx = accounting.edx = 0;
+				}
 				break;
 			}
 		}
