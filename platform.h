@@ -31,13 +31,13 @@
 * ------------------- */
 
 /* Carbon defines this for us on Mac, apparently... */
-#if defined (TARGET_CPU_PPC)
+#if defined(TARGET_CPU_PPC)
 #define PROCESSOR_DETECTED
 #endif
 
 /* ARM */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__arm__)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__arm__)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_ARM
 #define TARGET_LITTLE_ENDIAN
@@ -45,8 +45,8 @@
 #endif
 
 /* DEC Alpha */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__alpha) || defined (__alpha__)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__alpha) || defined(__alpha__)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_ALPHA
 #define TARGET_LITTLE_ENDIAN /* How should bi-endianness be handled? */
@@ -54,8 +54,8 @@
 #endif
 
 /* Sun SPARC */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__sparc) || defined (__sparc__)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__sparc) || defined(__sparc__)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_SPARC
 #define TARGET_BIG_ENDIAN
@@ -63,10 +63,12 @@
 #endif
 
 /* PowerPC */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (_ARCH_PPC) || defined (__ppc__) || defined (__ppc64__) || defined (__PPC) || defined (powerpc) || defined (__PPC__) || defined (__powerpc64__) || defined (__powerpc64)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(_ARCH_PPC) || defined(__ppc__) || defined(__ppc64__) ||            \
+    defined(__PPC) || defined(powerpc) || defined(__PPC__) ||                  \
+    defined(__powerpc64__) || defined(__powerpc64)
 #define PROCESSOR_DETECTED
-#if defined (__ppc64__) || defined (__powerpc64__) || defined (__powerpc64)
+#if defined(__ppc64__) || defined(__powerpc64__) || defined(__powerpc64)
 #define TARGET_CPU_PPC 64
 #else
 #define TARGET_CPU_PPC 32
@@ -76,8 +78,9 @@
 #endif
 
 /* x86_64 or AMD64 or x64 */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__x86_64__) || defined (__x86_64) || defined (__amd64) || defined (__amd64__) || defined (_AMD64_) || defined (_M_X64)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64) ||            \
+    defined(__amd64__) || defined(_AMD64_) || defined(_M_X64)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_X64
 #define TARGET_CPU_X86_64
@@ -86,8 +89,9 @@
 #endif
 
 /* Intel x86 */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__i386__) || defined (__i386) || defined (i386) || defined (_X86_) || defined (_M_IX86)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__i386__) || defined(__i386) || defined(i386) || defined(_X86_) || \
+    defined(_M_IX86)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_X86
 #define TARGET_LITTLE_ENDIAN
@@ -95,8 +99,8 @@
 #endif
 
 /* IA64 */
-#if !defined (PROCESSOR_DETECTED)
-#if defined (__ia64__) || defined (_IA64) || defined (__ia64) || defined (_M_IA64)
+#if !defined(PROCESSOR_DETECTED)
+#if defined(__ia64__) || defined(_IA64) || defined(__ia64) || defined(_M_IA64)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_IA64
 #define TARGET_LITTLE_ENDIAN
@@ -107,39 +111,39 @@
 * COMPILER DETECTION  *
 * ------------------- */
 
-#if !defined (COMPILER_DETECTED)
-#if defined (__GNUC__)
+#if !defined(COMPILER_DETECTED)
+#if defined(__GNUC__)
 #define COMPILER_DETECTED
 #define TARGET_COMPILER_GCC
 #endif
-#if defined (__CYGWIN__) || defined (__CYGWIN32__)
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
 #define TARGET_COMPILER_CYGWIN
 #define TARGET_OS_WINDOWS
 #define OS_DETECTED
 #endif
-#if defined (__MINGW32__)
+#if defined(__MINGW32__)
 #define TARGET_COMPILER_MINGW
 #define TARGET_OS_WINDOWS
 #define OS_DETECTED
 #endif
 #endif
 
-#if !defined (COMPILER_DETECTED)
-#if defined (__INTEL_COMPILER) || defined (__ICL)
+#if !defined(COMPILER_DETECTED)
+#if defined(__INTEL_COMPILER) || defined(__ICL)
 #define COMPILER_DETECTED
 #define TARGET_COMPILER_ICC
 #endif
 #endif
 
-#if !defined (COMPILER_DETECTED)
-#if defined (_MSC_VER)
+#if !defined(COMPILER_DETECTED)
+#if defined(_MSC_VER)
 #define COMPILER_DETECTED
 #define TARGET_COMPILER_MSVC
 #endif
 #endif
 
-#if !defined (COMPILER_DETECTED)
-#if defined (__BORLANDC__)
+#if !defined(COMPILER_DETECTED)
+#if defined(__BORLANDC__)
 #define COMPILER_DETECTED
 #define TARGET_COMPILER_BORLAND
 #endif
@@ -149,64 +153,65 @@
 * OS DETECTION *
 * ------------ */
 
-#if !defined (OS_DETECTED)
-#if defined (TARGET_COMPILER_VC) || defined (_WIN32) || defined (_WIN64)
+#if !defined(OS_DETECTED)
+#if defined(TARGET_COMPILER_VC) || defined(_WIN32) || defined(_WIN64)
 #define OS_DETECTED
 #define TARGET_OS_WINDOWS
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__linux__) || defined (linux) || defined (__linux) || defined (__gnu_linux__) || defined (__CYGWIN__)
+#if !defined(OS_DETECTED)
+#if defined(__linux__) || defined(linux) || defined(__linux) ||                \
+    defined(__gnu_linux__) || defined(__CYGWIN__)
 #define OS_DETECTED
 #define TARGET_OS_LINUX
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (TARGET_CPU_ARM)
+#if !defined(OS_DETECTED)
+#if defined(TARGET_CPU_ARM)
 #define OS_DETECTED
 #define TARGET_OS_NDSFIRMWARE
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__HAIKU__)
+#if !defined(OS_DETECTED)
+#if defined(__HAIKU__)
 #define OS_DETECTED
 #define TARGET_OS_HAIKU
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__FreeBSD__)
+#if !defined(OS_DETECTED)
+#if defined(__FreeBSD__)
 #define OS_DETECTED
 #define TARGET_OS_FREEBSD
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__NetBSD__)
+#if !defined(OS_DETECTED)
+#if defined(__NetBSD__)
 #define OS_DETECTED
 #define TARGET_OS_NETBSD
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__OpenBSD__)
+#if !defined(OS_DETECTED)
+#if defined(__OpenBSD__)
 #define OS_DETECTED
 #define TARGET_OS_OPENBSD
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__APPLE__) || defined (__MACH__)
+#if !defined(OS_DETECTED)
+#if defined(__APPLE__) || defined(__MACH__)
 #define OS_DETECTED
 #define TARGET_OS_MACOSX
 #endif
 #endif
 
-#if !defined (OS_DETECTED)
-#if defined (__sun__)
+#if !defined(OS_DETECTED)
+#if defined(__sun__)
 #define OS_DETECTED
 #define TARGET_OS_SOLARIS
 #endif

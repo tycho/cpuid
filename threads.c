@@ -52,7 +52,6 @@
 #include <sys/processor.h>
 #include <sys/procset.h>
 
-
 #elif defined(TARGET_OS_MACOSX)
 
 #include <sys/sysctl.h>
@@ -71,88 +70,97 @@ extern int utilUnbindThreadFromCPU(void);
 uint32_t thread_count_native(struct cpuid_state_t *state)
 {
 #if defined(TARGET_OS_MACOSX)
-	uint32_t count;
-	size_t  size = sizeof(count);
+    uint32_t count;
+    size_t size = sizeof(count);
 
-	if (sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
-		return 1;
+    if (sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
+        return 1;
 
-	return count;
+    return count;
 #elif defined(TARGET_OS_SOLARIS)
-	long count;
+    long count;
 
-	if ((count = sysconf(_SC_NPROCESSORS_ONLN)) == -1)
-		return 1;
+    if ((count = sysconf(_SC_NPROCESSORS_ONLN)) == -1)
+        return 1;
 
-	(void)state;
+    (void) state;
 
-	return (uint32_t)count;
+    return (uint32_t) count;
 #else
-	static unsigned int i = 0;
-	if (i) return i;
-	if (thread_bind_native(state, 0) != 0) {
-		fprintf(stderr, "ERROR: thread_bind() doesn't appear to be working correctly.\n");
-		abort();
-	}
-	while (thread_bind_native(state, ++i) == 0);
-	return i;
+    static unsigned int i = 0;
+    if (i)
+        return i;
+    if (thread_bind_native(state, 0) != 0)
+    {
+        fprintf(
+            stderr,
+            "ERROR: thread_bind() doesn't appear to be working correctly.\n");
+        abort();
+    }
+    while (thread_bind_native(state, ++i) == 0)
+        ;
+    return i;
 #endif
 }
 
 uint32_t thread_count_stub(struct cpuid_state_t *state)
 {
-	assert(state);
-	return state->cpu_logical_count;
+    assert(state);
+    return state->cpu_logical_count;
 }
 
 uintptr_t thread_get_binding(void)
 {
 #ifdef TARGET_OS_WINDOWS
 
-	HANDLE hThread = GetCurrentThread();
-	DWORD_PTR mask = SetThreadAffinityMask(hThread, 1);
-	SetThreadAffinityMask(hThread, mask);
+    HANDLE hThread = GetCurrentThread();
+    DWORD_PTR mask = SetThreadAffinityMask(hThread, 1);
+    SetThreadAffinityMask(hThread, mask);
 
-	return mask;
+    return mask;
 
 #elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
 
-	uint32_t ret, mask_id;
-	CPUSET_T mask;
-	pthread_t pth;
+    uint32_t ret, mask_id;
+    CPUSET_T mask;
+    pthread_t pth;
 
-	pth = pthread_self();
-	CPU_ZERO(&mask);
-	ret = pthread_getaffinity_np(pth, sizeof(mask), &mask);
-	if (ret != 0) {
-		fprintf(stderr, "ERROR: pthread_getaffinity_np() failed (returned %d)\n", ret);
-		abort();
-	}
+    pth = pthread_self();
+    CPU_ZERO(&mask);
+    ret = pthread_getaffinity_np(pth, sizeof(mask), &mask);
+    if (ret != 0)
+    {
+        fprintf(stderr,
+                "ERROR: pthread_getaffinity_np() failed (returned %d)\n", ret);
+        abort();
+    }
 
-	mask_id = 0;
-	for (ret = 0; ret < 32; ret++) {
-		if (CPU_ISSET(ret, &mask))
-			mask_id |= (1 << ret);
-	}
+    mask_id = 0;
+    for (ret = 0; ret < 32; ret++)
+    {
+        if (CPU_ISSET(ret, &mask))
+            mask_id |= (1 << ret);
+    }
 
-	return mask_id;
+    return mask_id;
 
 #elif defined(TARGET_OS_SOLARIS)
 
-	processorid_t bind;
+    processorid_t bind;
 
-	if (processor_bind(P_LWPID, P_MYID, PBIND_QUERY, &bind) != 0) {
-		fprintf(stderr, "warning: failed to query LWP binding: %s\n",
-			strerror(errno));
-		return 0;
-	}
+    if (processor_bind(P_LWPID, P_MYID, PBIND_QUERY, &bind) != 0)
+    {
+        fprintf(stderr, "warning: failed to query LWP binding: %s\n",
+                strerror(errno));
+        return 0;
+    }
 
-	return 1 << bind;
+    return 1 << bind;
 
 #elif defined(TARGET_OS_MACOSX)
 
-	/* Hopefully this function wasn't too important. */
-	return 0;
+    /* Hopefully this function wasn't too important. */
+    return 0;
 
 #else
 #error "thread_get_binding() not defined for this platform"
@@ -163,154 +171,157 @@ uintptr_t thread_bind_mask(uintptr_t _mask)
 {
 #ifdef TARGET_OS_WINDOWS
 
-	DWORD ret;
-	HANDLE hThread = GetCurrentThread();
-	ret = SetThreadAffinityMask(hThread, (DWORD_PTR)_mask);
+    DWORD ret;
+    HANDLE hThread = GetCurrentThread();
+    ret            = SetThreadAffinityMask(hThread, (DWORD_PTR) _mask);
 
-	return (ret != 0) ? 0 : 1;
+    return (ret != 0) ? 0 : 1;
 
 #elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
 
-	int ret;
-	CPUSET_T mask;
-	pthread_t pth;
+    int ret;
+    CPUSET_T mask;
+    pthread_t pth;
 
-	pth = pthread_self();
+    pth = pthread_self();
 
-	CPU_ZERO(&mask);
-	for (ret = 0; ret < 64; ret++) {
-		if (_mask & 1)
-			CPU_SET(ret, &mask);
-		_mask >>= 1;
-	}
+    CPU_ZERO(&mask);
+    for (ret = 0; ret < 64; ret++)
+    {
+        if (_mask & 1)
+            CPU_SET(ret, &mask);
+        _mask >>= 1;
+    }
 
-	ret = pthread_setaffinity_np(pth, sizeof(mask), &mask);
+    ret = pthread_setaffinity_np(pth, sizeof(mask), &mask);
 
-	return (ret == 0) ? 0 : 1;
+    return (ret == 0) ? 0 : 1;
 
 #elif defined(TARGET_OS_SOLARIS)
 
-	(void)_mask;
+    (void) _mask;
 
-	/*
-	 * Mask binding is not directly exposed, but it shouldn't matter
-	 * significantly.
-	 */
-	return 0;
+    /*
+     * Mask binding is not directly exposed, but it shouldn't matter
+     * significantly.
+     */
+    return 0;
 
 #elif defined(TARGET_OS_MACOSX)
 
-	/* We just have to pray nothing explodes too dramatically. */
-	return 0;
+    /* We just have to pray nothing explodes too dramatically. */
+    return 0;
 
 #else
 #error "thread_bind_mask() not defined for this platform"
 #endif
 }
 
-int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
+int thread_bind_native(__unused_variable struct cpuid_state_t *state,
+                       uint32_t id)
 {
 #ifdef TARGET_OS_WINDOWS
 
-	BOOL ret;
-	HANDLE hThread = GetCurrentThread();
+    BOOL ret;
+    HANDLE hThread = GetCurrentThread();
 #if _WIN32_WINNT >= 0x0601
-	GROUP_AFFINITY affinity;
+    GROUP_AFFINITY affinity;
 
-	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
+    ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
 
-	affinity.Group = id / 64;
-	affinity.Mask = 1 << (id % 64);
+    affinity.Group = id / 64;
+    affinity.Mask  = 1 << (id % 64);
 
-	ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+    ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
 #else
-	DWORD mask;
+    DWORD mask;
 
-	if (id > 32)
-		return 1;
+    if (id > 32)
+        return 1;
 
-	mask = (1 << id);
+    mask = (1 << id);
 
-	ret = SetThreadAffinityMask(hThread, mask);
+    ret = SetThreadAffinityMask(hThread, mask);
 #endif
 
-	if (state && ret != FALSE)
-		state->cpu_bound_index = id;
+    if (state && ret != FALSE)
+        state->cpu_bound_index = id;
 
-	return (ret != FALSE) ? 0 : 1;
+    return (ret != FALSE) ? 0 : 1;
 
 #elif defined(TARGET_OS_LINUX) || defined(TARGET_OS_FREEBSD)
 
-	int ret;
+    int ret;
 
 #ifdef CPU_SET_S
-	size_t setsize = CPU_ALLOC_SIZE(MAX_CPUS);
-	CPUSET_T *set = CPU_ALLOC(MAX_CPUS);
-	pthread_t pth;
+    size_t setsize = CPU_ALLOC_SIZE(MAX_CPUS);
+    CPUSET_T *set  = CPU_ALLOC(MAX_CPUS);
+    pthread_t pth;
 
-	pth = pthread_self();
+    pth = pthread_self();
 
-	CPU_ZERO_S(setsize, set);
-	CPU_SET_S(id, setsize, set);
-	ret = pthread_setaffinity_np(pth, setsize, set);
-	CPU_FREE(set);
+    CPU_ZERO_S(setsize, set);
+    CPU_SET_S(id, setsize, set);
+    ret = pthread_setaffinity_np(pth, setsize, set);
+    CPU_FREE(set);
 #else
-	size_t bits_per_set = sizeof(CPUSET_T) * 8;
-	size_t bits_per_subset = sizeof(CPUSET_MASK_T) * 8;
-	size_t setsize = sizeof(CPUSET_T) * (MAX_CPUS / bits_per_set);
-	size_t set_id, subset_id;
-	unsigned long long mask;
-	CPUSET_T *set = malloc(setsize);
-	pthread_t pth;
+    size_t bits_per_set    = sizeof(CPUSET_T) * 8;
+    size_t bits_per_subset = sizeof(CPUSET_MASK_T) * 8;
+    size_t setsize         = sizeof(CPUSET_T) * (MAX_CPUS / bits_per_set);
+    size_t set_id, subset_id;
+    unsigned long long mask;
+    CPUSET_T *set = malloc(setsize);
+    pthread_t pth;
 
-	pth = pthread_self();
+    pth = pthread_self();
 
-	for (set_id = 0; set_id < (MAX_CPUS / bits_per_set); set_id++)
-		CPU_ZERO(&set[set_id]);
+    for (set_id = 0; set_id < (MAX_CPUS / bits_per_set); set_id++)
+        CPU_ZERO(&set[set_id]);
 
-	set_id = id / bits_per_set;
-	id %= bits_per_set;
+    set_id = id / bits_per_set;
+    id %= bits_per_set;
 
-	subset_id = id / bits_per_subset;
-	id %= bits_per_subset;
+    subset_id = id / bits_per_subset;
+    id %= bits_per_subset;
 
-	mask = 1ULL << (unsigned long long)id;
+    mask = 1ULL << (unsigned long long) id;
 
-	((unsigned long *)set[set_id].__bits)[subset_id] |= mask;
-	ret = pthread_setaffinity_np(pth, setsize, set);
-	free(set);
+    ((unsigned long *) set[set_id].__bits)[subset_id] |= mask;
+    ret = pthread_setaffinity_np(pth, setsize, set);
+    free(set);
 #endif
 
-	if (state && ret == 0)
-		state->cpu_bound_index = id;
+    if (state && ret == 0)
+        state->cpu_bound_index = id;
 
-	return (ret == 0) ? 0 : 1;
+    return (ret == 0) ? 0 : 1;
 
 #elif defined(TARGET_OS_SOLARIS)
 
-	/*
-	 * This requires permissions, so can easily fail.
-	 */
-	if (processor_bind(P_LWPID, P_MYID, id, NULL) != 0) {
-		fprintf(stderr, "warning: failed to bind to CPU%u: %s\n",
-			id, strerror(errno));
-		return 1;
-	}
+    /*
+     * This requires permissions, so can easily fail.
+     */
+    if (processor_bind(P_LWPID, P_MYID, id, NULL) != 0)
+    {
+        fprintf(stderr, "warning: failed to bind to CPU%u: %s\n", id,
+                strerror(errno));
+        return 1;
+    }
 
-	if (state)
-		state->cpu_bound_index = id;
-	return 0;
+    if (state)
+        state->cpu_bound_index = id;
+    return 0;
 #elif defined(TARGET_OS_MACOSX)
-	int ret = 1;
+    int ret = 1;
 
 #ifdef USE_CHUD
-	ret = (utilBindThreadToCPU(id) == 0) ? 0 : 1;
+    ret     = (utilBindThreadToCPU(id) == 0) ? 0 : 1;
 #endif
 
-	if (state && ret == 0)
-		state->cpu_bound_index = id;
+    if (state && ret == 0)
+        state->cpu_bound_index = id;
 
-	return ret == 0 ? 0 : 1;
+    return ret == 0 ? 0 : 1;
 #else
 #error "thread_bind_native() not defined for this platform"
 #endif
@@ -318,8 +329,8 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 
 int thread_bind_stub(struct cpuid_state_t *state, uint32_t id)
 {
-	assert(state);
-	assert(id < state->cpu_logical_count);
-	state->cpu_bound_index = id;
-	return 0;
+    assert(state);
+    assert(id < state->cpu_logical_count);
+    state->cpu_bound_index = id;
+    return 0;
 }

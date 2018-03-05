@@ -22,24 +22,31 @@
 #ifndef __cpuid_h
 #define __cpuid_h
 
-struct cpu_regs_t {
-	union {
-		struct {
-			uint32_t eax;
-			uint32_t ebx;
-			uint32_t ecx;
-			uint32_t edx;
-		};
-		uint32_t regs[4];
-	};
+struct cpu_regs_t
+{
+    union {
+        struct
+        {
+            uint32_t eax;
+            uint32_t ebx;
+            uint32_t ecx;
+            uint32_t edx;
+        };
+        uint32_t regs[4];
+    };
 };
 
-#define ZERO_REGS(x) {memset((x), 0, sizeof(struct cpu_regs_t));}
+#define ZERO_REGS(x)                                                           \
+    {                                                                          \
+        memset((x), 0, sizeof(struct cpu_regs_t));                             \
+    }
 
 struct cpuid_state_t;
 
-typedef BOOL(*cpuid_call_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
-typedef void(*cpuid_print_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *, BOOL);
+typedef BOOL (*cpuid_call_handler_t)(struct cpu_regs_t *,
+                                     struct cpuid_state_t *);
+typedef void (*cpuid_print_handler_t)(struct cpu_regs_t *,
+                                      struct cpuid_state_t *, BOOL);
 
 /* Makes a lot of calls easier to do. */
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state);
@@ -49,11 +56,16 @@ BOOL cpuid_kernel(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 /* Allows printing dumps in different formats. */
-void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
-void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
-void cpuid_dump_xen_sxp(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
-void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
-void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOOL indexed);
+void cpuid_dump_normal(struct cpu_regs_t *regs, struct cpuid_state_t *state,
+                       BOOL indexed);
+void cpuid_dump_xen(struct cpu_regs_t *regs, struct cpuid_state_t *state,
+                    BOOL indexed);
+void cpuid_dump_xen_sxp(struct cpu_regs_t *regs, struct cpuid_state_t *state,
+                        BOOL indexed);
+void cpuid_dump_etallen(struct cpu_regs_t *regs, struct cpuid_state_t *state,
+                        BOOL indexed);
+void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state,
+                       BOOL indexed);
 
 /* For cpuid_pseudo */
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state);
