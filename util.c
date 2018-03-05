@@ -34,86 +34,92 @@
 
 size_t safe_strcat(char *dst, const char *src, size_t siz)
 {
-	char *d = dst;
-	const char *s = src;
-	size_t n = siz;
-	size_t dlen;
+    char *d       = dst;
+    const char *s = src;
+    size_t n      = siz;
+    size_t dlen;
 
-	/* Find the end of dst and adjust bytes left but don't go past end */
-	while (n-- != 0 && *d != '\0')
-		d++;
-	dlen = d - dst;
-	n = siz - dlen;
+    /* Find the end of dst and adjust bytes left but don't go past end */
+    while (n-- != 0 && *d != '\0')
+        d++;
+    dlen = d - dst;
+    n    = siz - dlen;
 
-	if (n == 0)
-		return(dlen + strlen(s));
-	while (*s != '\0') {
-		if (n != 1) {
-			*d++ = *s;
-			n--;
-		}
-		s++;
-	}
-	*d = '\0';
+    if (n == 0)
+        return (dlen + strlen(s));
+    while (*s != '\0')
+    {
+        if (n != 1)
+        {
+            *d++ = *s;
+            n--;
+        }
+        s++;
+    }
+    *d = '\0';
 
-	return(dlen + (s - src));	/* count does not include NUL */
+    return (dlen + (s - src)); /* count does not include NUL */
 }
 
 uint32_t popcnt(uint32_t v)
 {
-	uint32_t n = 0;
-	while (v) {
-		n += (v & 1);
-		v >>= 1;
-	}
-	return n;
+    uint32_t n = 0;
+    while (v)
+    {
+        n += (v & 1);
+        v >>= 1;
+    }
+    return n;
 }
 
 uint32_t count_trailing_zero_bits(uint32_t v)
 {
-	uint32_t c;
-	if (v) {
-		v = (v ^ (v - 1)) >> 1; /* Set v's trailing 0s to 1s and zero rest */
-		for (c = 0; v; c++)
-		{
-			v >>= 1;
-		}
-	} else {
-		c = CHAR_BIT * sizeof(v);
-	}
-	return c;
+    uint32_t c;
+    if (v)
+    {
+        v = (v ^ (v - 1)) >> 1; /* Set v's trailing 0s to 1s and zero rest */
+        for (c = 0; v; c++)
+        {
+            v >>= 1;
+        }
+    }
+    else
+    {
+        c = CHAR_BIT * sizeof(v);
+    }
+    return c;
 }
 
 void squeeze(char *str)
 {
-	int r; /* next character to be read */
-	int w; /* next character to be written */
+    int r; /* next character to be read */
+    int w; /* next character to be written */
 
-	r=w=0;
-	while (str[r])
-	{
-		if (isspace((int)(str[r])) || iscntrl((int)(str[r])))
-		{
-			if (w > 0 && !isspace((int)(str[w-1])))
-				str[w++] = ' ';
-		}
-		else
-			str[w++] = str[r];
-		r++;
-	}
-	str[w] = 0;
+    r = w = 0;
+    while (str[r])
+    {
+        if (isspace((int) (str[r])) || iscntrl((int) (str[r])))
+        {
+            if (w > 0 && !isspace((int) (str[w - 1])))
+                str[w++] = ' ';
+        }
+        else
+            str[w++] = str[r];
+        r++;
+    }
+    str[w] = 0;
 }
 
 double time_sec(void)
 {
 #ifdef TARGET_OS_WINDOWS
-	LARGE_INTEGER freq, ctr;
-	QueryPerformanceFrequency(&freq);
-	QueryPerformanceCounter(&ctr);
-	return (double)ctr.QuadPart / (double)freq.QuadPart;
+    LARGE_INTEGER freq, ctr;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&ctr);
+    return (double) ctr.QuadPart / (double) freq.QuadPart;
 #else
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (double)tv.tv_sec + ((double)tv.tv_usec / 1000000.0);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (double) tv.tv_sec + ((double) tv.tv_usec / 1000000.0);
 #endif
 }

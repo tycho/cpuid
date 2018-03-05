@@ -25,56 +25,59 @@
 struct cpu_regs_t;
 struct cpu_signature_t;
 
-void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *sig);
+void print_intel_caches(struct cpu_regs_t *regs,
+                        const struct cpu_signature_t *sig);
 
 typedef enum {
-	DATA_TLB = 0x0,
-	CODE_TLB,
-	SHARED_TLB,
-	DATA,
-	CODE,
-	UNIFIED,
-	TRACE,
-	INVALID_TYPE = 0xff,
+    DATA_TLB = 0x0,
+    CODE_TLB,
+    SHARED_TLB,
+    DATA,
+    CODE,
+    UNIFIED,
+    TRACE,
+    INVALID_TYPE = 0xff,
 } cache_type_t;
 
 typedef enum {
-	NO = 0xfe,
-	L0 = 0x0,
-	L1 = 0x1,
-	L2 = 0x2,
-	L3 = 0x3,
-	L4 = 0x4,
-	LMAX = 0xf, /* unlikely, but just cautious */
-	INVALID_LEVEL = 0xff,
+    NO            = 0xfe,
+    L0            = 0x0,
+    L1            = 0x1,
+    L2            = 0x2,
+    L3            = 0x3,
+    L4            = 0x4,
+    LMAX          = 0xf, /* unlikely, but just cautious */
+    INVALID_LEVEL = 0xff,
 } cache_level_t;
 
 typedef enum {
-	NONE = 0x0,
-	UNDOCUMENTED = 0x1,
-	IA64 = 0x2,
-	ECC = 0x4,
-	SECTORED = 0x8,
-	PAGES_4K = 0x10,
-	PAGES_2M = 0x20,
-	PAGES_4M = 0x40,
-	PAGES_1G = 0x80,
-	SELF_INIT = 0x100,
-	CPLX_INDEX = 0x200,
-	INCLUSIVE = 0x400,
-	WBINVD_NOT_INCLUSIVE = 0x800,
+    NONE                 = 0x0,
+    UNDOCUMENTED         = 0x1,
+    IA64                 = 0x2,
+    ECC                  = 0x4,
+    SECTORED             = 0x8,
+    PAGES_4K             = 0x10,
+    PAGES_2M             = 0x20,
+    PAGES_4M             = 0x40,
+    PAGES_1G             = 0x80,
+    SELF_INIT            = 0x100,
+    CPLX_INDEX           = 0x200,
+    INCLUSIVE            = 0x400,
+    WBINVD_NOT_INCLUSIVE = 0x800,
 } extra_attrs_t;
 
-struct cache_desc_t {
-	cache_level_t level;
-	cache_type_t type;
-	uint32_t size;
-	uint32_t attrs;
-	uint8_t assoc;
-	uint8_t linesize;
-	uint16_t max_threads_sharing;
+struct cache_desc_t
+{
+    cache_level_t level;
+    cache_type_t type;
+    uint32_t size;
+    uint32_t attrs;
+    uint8_t assoc;
+    uint8_t linesize;
+    uint16_t max_threads_sharing;
 };
 
-char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent);
+char *describe_cache(const struct cache_desc_t *desc, char *buffer,
+                     size_t bufsize, int indent);
 
 #endif
