@@ -1037,7 +1037,7 @@ static void handle_std_tsc(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("  TSC to core crystal clock ratio: %u / %d\n", regs->ebx, regs->eax);
 
 	if (regs->eax && regs->ebx && regs->ecx)
-		printf("  TSC frequency: %u MHz\n", (regs->ecx * regs->ebx / regs->eax) / 1000000);
+		printf("  TSC frequency: %lu Hz\n", (uint64_t)regs->ecx * regs->ebx / regs->eax);
 
 	printf("\n");
 }
