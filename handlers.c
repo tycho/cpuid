@@ -489,7 +489,7 @@ static void handle_std_monitor(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		printf("  Interrupts as break-event for MWAIT, even when interrupts off\n");
 	if (state->vendor & VENDOR_INTEL) {
 		for (i = 0; i < 8; i++) {
-			uint8_t states = (edx->c & (0xF << (i * 4))) >> (i * 4);
+			uint8_t states = (edx->c >> (i * 4)) & 0xF;
 			if (states)
 				printf("  C%d sub C-states supported by MWAIT: %d\n", i, states);
 		}
