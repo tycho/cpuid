@@ -661,13 +661,13 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 		case 1: /* Thread level */
 			thread.total = regs->ebx & 0xffff;
 			thread.shift = shift;
-			thread.mask = ~((-1) << shift);
+			thread.mask = ~((unsigned)(-1) << shift);
 			thread.reported = 1;
 			break;
 		case 2: /* Core level */
 			core.total = regs->ebx & 0xffff;
 			core.shift = shift;
-			core.mask = ~((-1) << shift);
+			core.mask = ~((unsigned)(-1) << shift);
 			core.reported = 1;
 			socket.shift = core.shift;
 			socket.mask = (-1) ^ core.mask;
@@ -794,7 +794,7 @@ static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *
 			printf("  Features available:\n");
 			for (j = 0; j < 32; j++) {
 				const char *name;
-				if (!(regs->eax & (1 << j)))
+				if (!(regs->eax & (1U << j)))
 					continue;
 				name = xsave_feature_name(j);
 				if (!name)
@@ -809,7 +809,7 @@ static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *
 			printf("  Valid bit fields for lower 32 bits of XCR0:\n");
 			for (j = 0; j < 32; j++) {
 				const char *name;
-				if (!(regs->eax & (1 << j)))
+				if (!(regs->eax & (1U << j)))
 					continue;
 				name = xsave_leaf_name(j);
 				if (!name)
