@@ -99,7 +99,18 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 */
 			for (j = 0; j < sizeof(ignore) / sizeof(struct cpu_regs_t); j++) {
 				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4))
+				{
+					/*
+					 * The bhyve hypervisor maps any request above 0x40000000 to
+					 * 0x40000000 which means that ignore[0] will contain the
+					 * hypervisor signature rather than an entry to ignore.
+					 * Therefore if testing 0x40000000, and ignore[0] looks like
+					 * a bhyve signature, don't ignore it.
+					 */
+					if (j == 0 && i == 0x40000000 && 0 == strncmp((char *)&cr_tmp + 4, "bhyv", 4))
+						break;
 					goto invalid_leaf;
+				}
 			}
 
 			for (h = dump ? dump_handlers : decode_handlers;
