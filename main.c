@@ -98,6 +98,14 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 			 * value of EDX a bit nondeterministic when CPUID is executed.
 			 */
 			for (j = 0; j < sizeof(ignore) / sizeof(struct cpu_regs_t); j++) {
+				/* The BHYVE hypervisor maps any 4000xxxx leaf to 0x40000000,
+				 * which causes the ignore list to exclude leaf 0x40000000
+				 * itself. Special exception here to ensure that the base
+				 * hypervisor leaf doesn't get excluded.
+				 */
+				if (i == 0x40000000)
+					break;
+
 				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4))
 					goto invalid_leaf;
 			}

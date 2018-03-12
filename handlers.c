@@ -1606,6 +1606,12 @@ static void handle_vmm_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	size_t i;
 
 	state->curmax = regs->eax;
+
+	if (state->curmax < 0x40000000)
+		return;
+	if (state->curmax > 0x4000FFFF)
+		return;
+
 	printf("Maximum hypervisor CPUID leaf: 0x%08x\n\n", state->curmax);
 
 	*(uint32_t *)(&buf[0]) = regs->ebx;
