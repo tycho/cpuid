@@ -91,7 +91,7 @@ CFLAGS += -pthread
 LDFLAGS += -pthread
 endif
 
-ifneq ($(findstring MINGW,$(uname_S)),)
+ifneq ($(findstring MINGW,$(uname_S))$(findstring MSYS,$(uname_S)),)
 LDFLAGS += -lpthread -lwinmm
 endif
 
