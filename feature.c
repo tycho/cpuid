@@ -670,10 +670,10 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000008, 0, REG_EBX, 0x00000200,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00000400,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00001000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00001000,                VENDOR_AMD                   , "Indirect Branch Prediction Barrier (IBPB)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00002000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00008000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00004000,                VENDOR_AMD                   , "Indirect Branch Restricted Speculation (IBRS)"},
+	{ 0x80000008, 0, REG_EBX, 0x00008000,                VENDOR_AMD                   , "Single Thread Indirect Branch Predictor (STIBP)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -682,8 +682,8 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000008, 0, REG_EBX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , "Speculative Store Bypass Disable (SSBD)"},
+	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , "VIRT_SPEC_CTL "},
 /*	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
