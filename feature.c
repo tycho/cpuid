@@ -291,7 +291,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "IA32_ARCH_CAPABILITIES MSR"},
 /*	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "Speculative Store Bypass Disable (SSBD)"},
 
 /*  Processor Trace Enumeration (0000_0014h) */
 	{ 0x00000014, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "CR3 filtering"},
