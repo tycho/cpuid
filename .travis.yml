@@ -5,11 +5,20 @@ compiler:
   - clang
 
 script:
+  # Attempt build with scons
   - scons CC=$CC
   - scons -c
+
+  # Attempt build with GNU make
   - make
+
+  # Basic run test
   - ./cpuid -c 0
   - ./cpuid -c 0 -d
+
+  # Try processing a dump file
+  - ./cpuid -c -1 -d > dump.txt
+  - ./cpuid -f dump.txt
 
 notifications:
   pushover:
