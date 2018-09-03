@@ -408,7 +408,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000003, 0, REG_EAX, 0x00000400, VENDOR_HV_HYPERV                            , "Guest Idle MSR"},
 	{ 0x40000003, 0, REG_EAX, 0x00000800, VENDOR_HV_HYPERV                            , "Timer Frequency MSRs"},
 	{ 0x40000003, 0, REG_EAX, 0x00001000, VENDOR_HV_HYPERV                            , "Debug MSRs"},
-/*	{ 0x40000003, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EAX, 0x00002000, VENDOR_HV_HYPERV                            , "Reenlightenment controls"},
 /*	{ 0x40000003, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
@@ -444,12 +444,12 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000003, 0, REG_EBX, 0x00002000, VENDOR_HV_HYPERV                            , "ConfigureProfiler"},
 	{ 0x40000003, 0, REG_EBX, 0x00004000, VENDOR_HV_HYPERV                            , "EnableExpandedStackwalking"},
 /*	{ 0x40000003, 0, REG_EBX, 0x00008000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EBX, 0x00010000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EBX, 0x00020000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EBX, 0x00010000, VENDOR_HV_HYPERV                            , "AccessVSM"},
+	{ 0x40000003, 0, REG_EBX, 0x00020000, VENDOR_HV_HYPERV                            , "AccessVpRegisters"},
 /*	{ 0x40000003, 0, REG_EBX, 0x00040000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EBX, 0x00080000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EBX, 0x00100000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EBX, 0x00200000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EBX, 0x00100000, VENDOR_HV_HYPERV                            , "EnableExtendedHypercalls"},
+	{ 0x40000003, 0, REG_EBX, 0x00200000, VENDOR_HV_HYPERV                            , "StartVirtualProcessor"},
 /*	{ 0x40000003, 0, REG_EBX, 0x00400000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EBX, 0x00800000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EBX, 0x01000000,                                             , ""}, */   /* Reserved */
@@ -461,11 +461,11 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EBX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EBX, 0x80000000,                                             , ""}, */   /* Reserved */
 
-	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT instruction support"},
+	{ 0x40000003, 0, REG_EDX, 0x00000001, VENDOR_HV_HYPERV                            , "MWAIT instruction support (deprecated)"},
 	{ 0x40000003, 0, REG_EDX, 0x00000002, VENDOR_HV_HYPERV                            , "Guest debugging support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000004, VENDOR_HV_HYPERV                            , "Performance Monitor support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000008, VENDOR_HV_HYPERV                            , "Physical CPU dynamic partitioning event support"},
-	{ 0x40000003, 0, REG_EDX, 0x00000010, VENDOR_HV_HYPERV                            , "Hypercall via XMM registers"},
+	{ 0x40000003, 0, REG_EDX, 0x00000010, VENDOR_HV_HYPERV                            , "Hypercall input params via XMM registers"},
 	{ 0x40000003, 0, REG_EDX, 0x00000020, VENDOR_HV_HYPERV                            , "Virtual guest idle state support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000040, VENDOR_HV_HYPERV                            , "Hypervisor sleep state support"},
 	{ 0x40000003, 0, REG_EDX, 0x00000080, VENDOR_HV_HYPERV                            , "NUMA distance query support"},
@@ -475,12 +475,12 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000003, 0, REG_EDX, 0x00000800, VENDOR_HV_HYPERV                            , "Debug MSR support"},
 	{ 0x40000003, 0, REG_EDX, 0x00001000, VENDOR_HV_HYPERV                            , "NPIEP support"},
 	{ 0x40000003, 0, REG_EDX, 0x00002000, VENDOR_HV_HYPERV                            , "Hypervisor disable support"},
-/*	{ 0x40000003, 0, REG_EDX, 0x00004000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00008000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EDX, 0x00004000, VENDOR_HV_HYPERV                            , "Extended GVA ranges for flush virtual address list available"},
+	{ 0x40000003, 0, REG_EDX, 0x00008000, VENDOR_HV_HYPERV                            , "Hypercall output via XMM registers"},
 /*	{ 0x40000003, 0, REG_EDX, 0x00010000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00020000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00040000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000003, 0, REG_EDX, 0x00080000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EDX, 0x00020000, VENDOR_HV_HYPERV                            , "Soft interrupt polling mode available"},
+	{ 0x40000003, 0, REG_EDX, 0x00040000, VENDOR_HV_HYPERV                            , "Hypercall MSR lock available"},
+	{ 0x40000003, 0, REG_EDX, 0x00080000, VENDOR_HV_HYPERV                            , "Direct synthetic timers support"},
 /*	{ 0x40000003, 0, REG_EDX, 0x00100000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00200000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000003, 0, REG_EDX, 0x00400000,                                             , ""}, */   /* Reserved */
@@ -505,15 +505,15 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000004, 0, REG_EAX, 0x00000080, VENDOR_HV_HYPERV                            , "Interrupt remapping"},
 	{ 0x40000004, 0, REG_EAX, 0x00000100, VENDOR_HV_HYPERV                            , "x2APIC MSRs"},
 	{ 0x40000004, 0, REG_EAX, 0x00000200, VENDOR_HV_HYPERV                            , "Deprecating AutoEOI"},
-/*	{ 0x40000004, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+	{ 0x40000004, 0, REG_EAX, 0x00000400, VENDOR_HV_HYPERV                            , "Hypercall for SyntheticClusterIpi"},
+	{ 0x40000004, 0, REG_EAX, 0x00000800, VENDOR_HV_HYPERV                            , "Interface ExProcessorMasks"},
+	{ 0x40000004, 0, REG_EAX, 0x00001000, VENDOR_HV_HYPERV                            , "Nested Hyper-V partition"},
+	{ 0x40000004, 0, REG_EAX, 0x00002000, VENDOR_HV_HYPERV                            , "INT for MBEC system calls"},
+	{ 0x40000004, 0, REG_EAX, 0x00004000, VENDOR_HV_HYPERV                            , "Enlightenment VMCS interface"},
+	{ 0x40000004, 0, REG_EAX, 0x00008000, VENDOR_HV_HYPERV                            , "Synced timeline"},
 /*	{ 0x40000004, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000004, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+	{ 0x40000004, 0, REG_EAX, 0x00020000, VENDOR_HV_HYPERV                            , "Direct local flush entire"},
+	{ 0x40000004, 0, REG_EAX, 0x00040000, VENDOR_HV_HYPERV                            , "No architectural core sharing"},
 /*	{ 0x40000004, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000004, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000004, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
@@ -536,9 +536,9 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000006, 0, REG_EAX, 0x00000010, VENDOR_HV_HYPERV                            , "DMA remapping"},
 	{ 0x40000006, 0, REG_EAX, 0x00000020, VENDOR_HV_HYPERV                            , "Interrupt remapping"},
 	{ 0x40000006, 0, REG_EAX, 0x00000040, VENDOR_HV_HYPERV                            , "Memory patrol scrubber"},
-/*	{ 0x40000006, 0, REG_EAX, 0x00000080,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
+	{ 0x40000006, 0, REG_EAX, 0x00000080, VENDOR_HV_HYPERV                            , "DMA protection"},
+	{ 0x40000006, 0, REG_EAX, 0x00000100, VENDOR_HV_HYPERV                            , "HPET"},
+	{ 0x40000006, 0, REG_EAX, 0x00000200, VENDOR_HV_HYPERV                            , "Volatile synthetic timers"},
 /*	{ 0x40000006, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
@@ -561,6 +561,208 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000006, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+/*  Hypervisor CPU management features (4000_0007h) */
+	{ 0x40000007, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV                            , "Start logical processor"},
+	{ 0x40000007, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV                            , "Create root virtual processor"},
+/*	{ 0x40000007, 0, REG_EAX, 0x00000004,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000008,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000010,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* ReservedIdentityBit */
+
+	{ 0x40000007, 0, REG_EBX, 0x00000001, VENDOR_HV_HYPERV                            , "Processor power management"},
+	{ 0x40000007, 0, REG_EBX, 0x00000002, VENDOR_HV_HYPERV                            , "MWAIT idle states"},
+	{ 0x40000007, 0, REG_EBX, 0x00000004, VENDOR_HV_HYPERV                            , "Logical processor idling"},
+/*	{ 0x40000007, 0, REG_EBX, 0x00000008,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000010,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000007, 0, REG_EBX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+/*  Hypervisor shared virtual memory (SVM) features (4000_0008h) */
+	{ 0x40000008, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV                            , "Shared virtual memory (SVM)"},
+	{ 0x40000008, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV                            , "Create root virtual processor"},
+/*	{ 0x40000008, 0, REG_EAX, 0x00000004,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000008,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000010,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000008, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+/*  Nested hypervisor feature indentification (4000_0009h) */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000001,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000002,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EAX, 0x00000004, VENDOR_HV_HYPERV                            , "Synthetic Timer"},
+/*	{ 0x40000009, 0, REG_EAX, 0x00000008,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EAX, 0x00000010, VENDOR_HV_HYPERV                            , "Interrupt control registers"},
+	{ 0x40000009, 0, REG_EAX, 0x00000020, VENDOR_HV_HYPERV                            , "Hypercall MSRs"},
+	{ 0x40000009, 0, REG_EAX, 0x00000040, VENDOR_HV_HYPERV                            , "VP index MSR"},
+/*	{ 0x40000009, 0, REG_EAX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EAX, 0x00001000, VENDOR_HV_HYPERV                            , "Reenlightenment controls"},
+/*	{ 0x40000009, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00020000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+/*	{ 0x40000009, 0, REG_EDX, 0x00000001,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000002,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000004,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000008,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EDX, 0x00000010, VENDOR_HV_HYPERV                            , "Hypercall input params via XMM registers"},
+/*	{ 0x40000009, 0, REG_EDX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00004000,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EDX, 0x00008000, VENDOR_HV_HYPERV                            , "Hypercall output via XMM registers"},
+/*	{ 0x40000009, 0, REG_EDX, 0x00010000,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EDX, 0x00020000, VENDOR_HV_HYPERV                            , "Soft interrupt polling mode available"},
+/*	{ 0x40000009, 0, REG_EDX, 0x00040000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00080000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EDX, 0x80000000,                                             , ""}, */   /* Reserved */
+
+/*  Nested hypervisor feature indentification (4000_000Ah) */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000001,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000002,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000004,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000008,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000010,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000020,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000040,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000080,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
+	{ 0x40000009, 0, REG_EAX, 0x00020000, VENDOR_HV_HYPERV                            , "Direct virtual flush hypercalls"},
+	{ 0x40000009, 0, REG_EAX, 0x00040000, VENDOR_HV_HYPERV                            , "Flush GPA space and list hypercalls"},
+	{ 0x40000009, 0, REG_EAX, 0x00080000, VENDOR_HV_HYPERV                            , "Enlightened MSR bitmaps"},
+/*	{ 0x40000009, 0, REG_EAX, 0x00100000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00200000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00400000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x00800000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x01000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x02000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x04000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x08000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x10000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x20000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x40000000,                                             , ""}, */   /* Reserved */
+/*	{ 0x40000009, 0, REG_EAX, 0x80000000,                                             , ""}, */   /* Reserved */
 
 
 /*  Extended (8000_0001h) */

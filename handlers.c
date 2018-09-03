@@ -71,6 +71,10 @@ DECLARE_HANDLER(vmm_leaf03);
 DECLARE_HANDLER(vmm_leaf04);
 DECLARE_HANDLER(vmm_leaf05);
 DECLARE_HANDLER(vmm_leaf06);
+DECLARE_HANDLER(hyperv_leaf07);
+DECLARE_HANDLER(hyperv_leaf08);
+DECLARE_HANDLER(hyperv_leaf09);
+DECLARE_HANDLER(hyperv_leaf0A);
 DECLARE_HANDLER(vmware_leaf10);
 
 DECLARE_HANDLER(dump_base);
@@ -142,6 +146,10 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x40000004, handle_vmm_leaf04},
 	{0x40000005, handle_vmm_leaf05},
 	{0x40000006, handle_vmm_leaf06},
+	{0x40000007, handle_hyperv_leaf07},
+	{0x40000008, handle_hyperv_leaf08},
+	{0x40000009, handle_hyperv_leaf09},
+	{0x4000000A, handle_hyperv_leaf0A},
 	{0x40000010, handle_vmware_leaf10},
 
 	/* Extended levels */
@@ -1743,6 +1751,54 @@ static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_HV_HYPERV) {
+		print_features(regs, state);
+		printf("\n");
+	}
+}
+
+/* EAX = 4000 0007 */
+static void handle_hyperv_leaf07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		printf("Hyper-V enlightenments available to the root partition only:\n");
+		print_features(regs, state);
+		printf("\n");
+	}
+}
+
+/* EAX = 4000 0008 */
+static void handle_hyperv_leaf08(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		print_features(regs, state);
+		printf("\n");
+		printf("Maximum PASID space PASID count: %d\n\n", regs->eax >> 12);
+	}
+}
+
+/* EAX = 4000 0009 */
+static void handle_hyperv_leaf09(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		printf("Hyper-V nested feature identification:\n");
+		print_features(regs, state);
+		printf("\n");
+	}
+}
+
+/* EAX = 4000 000A */
+static void handle_hyperv_leaf0A(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (state->vendor & VENDOR_HV_HYPERV) {
+		struct eax_version {
+			unsigned low:8;
+			unsigned high:8;
+		};
+
+		struct eax_version *eax = (struct eax_version *)(&regs->eax);
+
+		printf("Enlightened VMCS version low : %d", eax->low);
+		printf("Enlightened VMCS version high: %d", eax->high);
 		print_features(regs, state);
 		printf("\n");
 	}
