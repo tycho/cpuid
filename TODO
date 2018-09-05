@@ -5,3 +5,5 @@ AMD features
 
 AMD bugs (?)
   * Figure out why leaf 0x8000001D L3 cache is half-size on e.g. Ryzen 5 1400
+    + Most likely because the "max threads sharing" is half of the threads on
+      the physical die (i.e. there are *two* L3 caches on one physical chip)
