@@ -72,6 +72,7 @@ struct cache_desc_t {
 	uint32_t attrs;
 	uint8_t assoc;
 	uint8_t linesize;
+	uint16_t partitions;
 	uint16_t max_threads_sharing;
 };
 

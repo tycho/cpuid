@@ -398,7 +398,7 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 	while (1) {
 		struct cache_desc_t desc;
-		char desc_str[256];
+		char desc_str[512];
 		struct eax_cache04_t *eax;
 		struct ebx_cache04_t *ebx;
 		uint32_t cacheSize;
@@ -431,6 +431,7 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		             ((regs->edx & 0x04) ? CPLX_INDEX : 0);
 		desc.assoc = eax->fully_associative ? 0xff : ebx->assoc + 1;
 		desc.linesize = ebx->line_size + 1;
+		desc.partitions = ebx->partitions + 1;
 		desc.max_threads_sharing = eax->max_threads_sharing + 1;
 		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
 
@@ -1530,7 +1531,7 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 	printf("AMD Extended Cache Topology:\n");
 	while (1) {
 		struct cache_desc_t desc;
-		char desc_str[256];
+		char desc_str[512];
 		uint32_t size;
 
 		if (eax->type == 0)
@@ -1547,6 +1548,7 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		             ((regs->edx & 0x02) ? INCLUSIVE : 0);
 		desc.assoc = eax->fullyassoc ? 0xff : ebx->ways + 1;
 		desc.linesize = ebx->linesize + 1;
+		desc.partitions = ebx->partitions + 1;
 		desc.max_threads_sharing = eax->sharing + 1;
 
 		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
