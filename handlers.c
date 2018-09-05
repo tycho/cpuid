@@ -1537,7 +1537,7 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		if (eax->type == 0)
 			break;
 
-		size = (ebx->linesize + 1) * (ebx->ways + 1) * (ecx->sets + 1);
+		size = (ebx->partitions + 1) * (ebx->linesize + 1) * (ebx->ways + 1) * (ecx->sets + 1);
 		size /= 1024;
 
 		desc.level = eax->level + L0;
