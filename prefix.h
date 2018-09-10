@@ -30,12 +30,16 @@
 #endif
 #endif
 
+#ifdef TARGET_OS_WINDOWS
+#define _WIN32_WINNT 0x0601
+#endif
+
 #include <assert.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdlib.h>
 
-#ifdef _MSC_VER
+#ifdef TARGET_COMPILER_VC
 /* MSVC doesn't actually support most of C99, but we define
    this so that the below actually uses the 'inline' keyword,
    which MSVC does understand. */
