@@ -150,7 +150,7 @@
 * ------------ */
 
 #if !defined (OS_DETECTED)
-#if defined (TARGET_COMPILER_VC) || defined (_WIN32) || defined (_WIN64)
+#if defined (TARGET_COMPILER_MSVC) || defined (_WIN32) || defined (_WIN64)
 #define OS_DETECTED
 #define TARGET_OS_WINDOWS
 #endif
