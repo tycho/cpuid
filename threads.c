@@ -220,7 +220,7 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
 
 	affinity.Group = id / 64;
-	affinity.Mask = 1 << (id % 64);
+	affinity.Mask = 1ULL << (id % 64);
 
 	ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
 #else
