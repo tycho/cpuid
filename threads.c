@@ -109,17 +109,31 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 {
 #ifdef TARGET_OS_WINDOWS
 
-	BOOL ret;
+	BOOL ret = FALSE;
 	HANDLE hThread = GetCurrentThread();
 #if _WIN32_WINNT >= 0x0601
+	DWORD threadsInGroup = 0;
+	WORD groupId, groupCount;
 	GROUP_AFFINITY affinity;
 
 	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
 
-	affinity.Group = id / 64;
-	affinity.Mask = 1ULL << (id % 64);
+	groupCount = GetActiveProcessorGroupCount();
 
-	ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+	for (groupId = 0; groupId < groupCount; groupId++)
+	{
+		threadsInGroup = GetActiveProcessorCount(groupId);
+		if (id < threadsInGroup)
+			break;
+		id -= threadsInGroup;
+	}
+
+	if (groupId < groupCount && id < threadsInGroup) {
+		affinity.Group = groupId;
+		affinity.Mask = 1ULL << id;
+
+		ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+	}
 #else
 	DWORD mask;
 
