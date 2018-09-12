@@ -149,7 +149,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 {
 	int ret = 0;
 	uint32_t hwthreads = thread_count_native(NULL), i, c,
-	         worker_count, oldbinding;
+	         worker_count;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
 	double start, now;
@@ -157,9 +157,6 @@ static int sane_apicid(struct cpuid_state_t *state)
 	                *apic_workers = NULL;
 
 	worker_count = hwthreads / 4 + 1;
-
-	/* Store the current affinity mask. It will get clobbered. */
-	oldbinding = thread_get_binding();
 
 	printf("Verifying APIC ID sanity");
 
@@ -276,9 +273,6 @@ cleanup:
 	free(apic_ids);
 	free(apic_copy);
 	free(apic_state);
-
-	/* Restore the affinity mask from before. */
-	thread_bind_mask(oldbinding);
 
 	return ret;
 }
