@@ -964,7 +964,7 @@ static void handle_dump_std_10(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	max = ((regs->ebx & 0x2) != 0) ? 1 : 0;
 	for (i = 0; i <= max; i++) {
 		ZERO_REGS(regs);
-		regs->eax = 0xf;
+		regs->eax = 0x10;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 		state->cpuid_print(regs, state, TRUE);
