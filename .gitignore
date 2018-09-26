@@ -4,10 +4,17 @@
 /config.log
 
 # Visual Studio junk
+/.vs
+/Backup
+/ipch
 /msvc/*.vcproj.*.user
+/msvc/*.user
 /msvc/*.plg
+/UpgradeLog.htm
 /*.opt
 /*.suo
+/*.opensdf
+/*.sdf
 /*.ncb
 *.obj
 
