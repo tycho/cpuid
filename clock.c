@@ -75,9 +75,10 @@ static uint32_t get_cycles_per_usec(void)
 	return (c_e - c_s + 127) >> 7;
 }
 
+#define NR_TIME_ITERS 10
+
 static void calibrate_cpu_clock(void)
 {
-	const int NR_TIME_ITERS = 10;
 	double delta, mean, S;
 	uint32_t avg, cycles[NR_TIME_ITERS];
 	int i, samples;

@@ -22,12 +22,20 @@
 #ifndef __clock_h
 #define __clock_h
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 static inline uint64_t get_cpu_clock(void)
 {
+#ifdef _MSC_VER
+    return __rdtsc();
+#else
     uint32_t lo, hi;
 
     __asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
     return ((uint64_t) hi << 32ULL) | lo;
+#endif
 }
 
 uint64_t cpu_clock_to_wall(uint64_t clock);

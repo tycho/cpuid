@@ -1356,13 +1356,12 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 		l3_cache = (struct l3_cache_t *)&regs->edx;
 		if (l3_cache->size) {
 			uint32_t size = l3_cache->size * 512;
-			switch(l3_cache->size) {
-			case 0x0003:
-			case 0x0005 ... 0x0007:
-			case 0x0009 ... 0x000F:
-			case 0x0011 ... 0x001F:
+			if ( l3_cache->size == 0x0003 ||
+			    (l3_cache->size >= 0x0005 && l3_cache->size <= 0x0007) ||
+			    (l3_cache->size >= 0x0009 && l3_cache->size <= 0x000F) ||
+			    (l3_cache->size >= 0x0011 && l3_cache->size <= 0x001F))
+			{
 				size /= 2;
-				break;
 			}
 			printf("L3 cache: %u%cB, %s, %d lines per tag, %d byte line size\n",
 			       size > 1024 ? size / 1024 : size,
