@@ -23,9 +23,11 @@
 
 #ifdef TARGET_OS_WINDOWS
 #include <windows.h>
+#define sched_yield() SwitchToThread()
 #else
 #define _USE_GNU
 #include <pthread.h>
+#include <sched.h>
 #include <unistd.h>
 #include <sys/time.h>
 #endif
@@ -335,6 +337,8 @@ static int measure_leaf(struct cpuid_state_t *state, uint32_t eax, uint32_t ecx)
 		d = e - s;
 		if (d < best)
 			best = d;
+		if (t % 3 == 0)
+			sched_yield();
 	}
 
 	printf("cost per read: %6" PRIu64 " ns (%6" PRIu64 " cycles)\n",
