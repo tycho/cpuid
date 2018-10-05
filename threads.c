@@ -105,45 +105,78 @@ uint32_t thread_count_stub(struct cpuid_state_t *state)
 	return state->cpu_logical_count;
 }
 
+#ifdef TARGET_OS_WINDOWS
+
+BOOL IsWindows7OrGreater()
+{
+	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
+	DWORDLONG const dwlConditionMask = VerSetConditionMask(
+		VerSetConditionMask(
+			VerSetConditionMask(
+				0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+			VER_MINORVERSION, VER_GREATER_EQUAL),
+		VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+	osvi.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+	osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+	osvi.wServicePackMajor = 0;
+
+	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+}
+
+typedef WORD(WINAPI *fnGetActiveProcessorGroupCount)();
+typedef DWORD(WINAPI *fnGetActiveProcessorCount)(WORD);
+typedef BOOL(WINAPI *fnSetThreadGroupAffinity)(HANDLE, const GROUP_AFFINITY *, PGROUP_AFFINITY);
+
+#endif
+
 int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
 {
 #ifdef TARGET_OS_WINDOWS
 
 	BOOL ret = FALSE;
 	HANDLE hThread = GetCurrentThread();
-#if _WIN32_WINNT >= 0x0601
-	DWORD threadsInGroup = 0;
-	WORD groupId, groupCount;
-	GROUP_AFFINITY affinity;
 
-	ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
-
-	groupCount = GetActiveProcessorGroupCount();
-
-	for (groupId = 0; groupId < groupCount; groupId++)
+	if (IsWindows7OrGreater())
 	{
-		threadsInGroup = GetActiveProcessorCount(groupId);
-		if (id < threadsInGroup)
-			break;
-		id -= threadsInGroup;
+		DWORD threadsInGroup = 0;
+		WORD groupId, groupCount;
+		GROUP_AFFINITY affinity;
+		HMODULE hKernel32 = GetModuleHandle(L"kernel32.dll");
+		fnGetActiveProcessorGroupCount pGetActiveProcessorGroupCount = (fnGetActiveProcessorGroupCount)(GetProcAddress(hKernel32, "GetActiveProcessorGroupCount"));
+		fnGetActiveProcessorCount pGetActiveProcessorCount = (fnGetActiveProcessorCount)(GetProcAddress(hKernel32, "GetActiveProcessorCount"));
+		fnSetThreadGroupAffinity pSetThreadGroupAffinity = (fnSetThreadGroupAffinity)(GetProcAddress(hKernel32, "SetThreadGroupAffinity"));
+
+		ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
+
+		groupCount = pGetActiveProcessorGroupCount();
+
+		for (groupId = 0; groupId < groupCount; groupId++)
+		{
+			threadsInGroup = pGetActiveProcessorCount(groupId);
+			if (id < threadsInGroup)
+				break;
+			id -= threadsInGroup;
+		}
+
+		if (groupId < groupCount && id < threadsInGroup) {
+			affinity.Group = groupId;
+			affinity.Mask = 1ULL << id;
+
+			ret = pSetThreadGroupAffinity(hThread, &affinity, NULL);
+		}
 	}
+	else
+	{
+		DWORD mask;
 
-	if (groupId < groupCount && id < threadsInGroup) {
-		affinity.Group = groupId;
-		affinity.Mask = 1ULL << id;
+		if (id > 32)
+			return 1;
 
-		ret = SetThreadGroupAffinity(hThread, &affinity, NULL);
+		mask = (1 << id);
+
+		ret = SetThreadAffinityMask(hThread, mask);
 	}
-#else
-	DWORD mask;
-
-	if (id > 32)
-		return 1;
-
-	mask = (1 << id);
-
-	ret = SetThreadAffinityMask(hThread, mask);
-#endif
 
 	if (state && ret != FALSE)
 		state->cpu_bound_index = id;
