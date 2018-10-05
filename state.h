@@ -44,6 +44,7 @@ struct cpuid_leaf_t {
 
 struct cpuid_state_t
 {
+	thread_init_handler_t thread_init;
 	thread_bind_handler_t thread_bind;
 	thread_count_handler_t thread_count;
 	cpuid_call_handler_t cpuid_call;
@@ -65,6 +66,7 @@ struct cpuid_state_t
 	memset((x), 0, sizeof(struct cpuid_state_t)); \
 	(x)->cpuid_print = cpuid_dump_normal; \
 	(x)->cpuid_call = cpuid_native; \
+	(x)->thread_init = thread_init_native; \
 	(x)->thread_bind = thread_bind_native; \
 	(x)->thread_count = thread_count_native; \
 	}

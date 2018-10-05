@@ -304,6 +304,7 @@ int main(int argc, char **argv)
 	if (file) {
 		cpuid_load_from_file(file, &state);
 		state.cpuid_call = cpuid_stub;
+		state.thread_init = thread_init_stub;
 		state.thread_bind = thread_bind_stub;
 		state.thread_count = thread_count_stub;
 #ifdef __linux__
@@ -311,6 +312,8 @@ int main(int argc, char **argv)
 		state.cpuid_call = cpuid_kernel;
 #endif
 	}
+
+	state.thread_init();
 
 	if (cpu_start == -1) {
 		cpu_start = 0;

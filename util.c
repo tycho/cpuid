@@ -118,4 +118,29 @@ double time_sec(void)
 #endif
 }
 
+#ifdef TARGET_OS_WINDOWS
+int is_windows7_or_greater(void)
+{
+	static int cached = -1;
+	if (cached < 0) {
+		OSVERSIONINFOEXW osvi;
+		DWORDLONG const dwlConditionMask = VerSetConditionMask(
+			VerSetConditionMask(
+				VerSetConditionMask(
+					0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+				VER_MINORVERSION, VER_GREATER_EQUAL),
+			VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+		memset(&osvi, 0, sizeof(osvi));
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+		osvi.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+		osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+		osvi.wServicePackMajor = 0;
+
+		cached = (VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE) ? 1 : 0;
+	}
+	return cached;
+}
+#endif
+
 /* vim: set ts=4 sts=4 sw=4 noet: */

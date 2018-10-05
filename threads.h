@@ -24,14 +24,17 @@
 
 struct cpuid_state_t;
 
+typedef void (*thread_init_handler_t)(void);
 typedef int (*thread_bind_handler_t)(struct cpuid_state_t *, uint32_t);
 typedef uint32_t (*thread_count_handler_t)(struct cpuid_state_t *);
 
 /* These do real thread binding. */
+void thread_init_native(void);
 int thread_bind_native(struct cpuid_state_t *state, uint32_t id);
 uint32_t thread_count_native(struct cpuid_state_t *state);
 
 /* These are used to change the logical selector in the state structure. */
+void thread_init_stub(void);
 int thread_bind_stub(struct cpuid_state_t *state, uint32_t id);
 uint32_t thread_count_stub(struct cpuid_state_t *state);
 

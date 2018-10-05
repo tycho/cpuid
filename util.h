@@ -27,6 +27,9 @@ uint32_t popcnt(uint32_t v);
 uint32_t count_trailing_zero_bits(uint32_t v);
 void squeeze(char *str);
 double time_sec(void);
+#ifdef TARGET_OS_WINDOWS
+int is_windows7_or_greater(void);
+#endif
 
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
 

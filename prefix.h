@@ -31,7 +31,7 @@
 #endif
 
 #ifdef TARGET_OS_WINDOWS
-#define _WIN32_WINNT 0x0601
+#define _WIN32_WINNT _WIN32_WINNT_WIN7
 #endif
 
 #include <assert.h>
