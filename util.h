@@ -30,4 +30,8 @@ double time_sec(void);
 
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
 
+#ifdef TARGET_OS_WINDOWS
+BOOL is_windows7_or_greater();
+#endif
+
 #endif
