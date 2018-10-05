@@ -21,8 +21,6 @@
 
 #include "prefix.h"
 
-#include "util.h"
-
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
@@ -31,6 +29,8 @@
 #else
 #include <sys/time.h>
 #endif
+
+#include "util.h"
 
 size_t safe_strcat(char *dst, const char *src, size_t siz)
 {
