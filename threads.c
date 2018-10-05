@@ -67,6 +67,7 @@ extern int utilUnbindThreadFromCPU(void);
 #endif
 
 #include "state.h"
+#include "util.h"
 
 uint32_t thread_count_native(struct cpuid_state_t *state)
 {
@@ -105,31 +106,6 @@ uint32_t thread_count_stub(struct cpuid_state_t *state)
 	return state->cpu_logical_count;
 }
 
-#ifdef TARGET_OS_WINDOWS
-
-BOOL IsWindows7OrGreater()
-{
-	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-	DWORDLONG const dwlConditionMask = VerSetConditionMask(
-		VerSetConditionMask(
-			VerSetConditionMask(
-				0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-			VER_MINORVERSION, VER_GREATER_EQUAL),
-		VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-	osvi.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
-	osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
-	osvi.wServicePackMajor = 0;
-
-	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
-}
-
-typedef WORD(WINAPI *fnGetActiveProcessorGroupCount)();
-typedef DWORD(WINAPI *fnGetActiveProcessorCount)(WORD);
-typedef BOOL(WINAPI *fnSetThreadGroupAffinity)(HANDLE, const GROUP_AFFINITY *, PGROUP_AFFINITY);
-
-#endif
-
 int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
 {
 #ifdef TARGET_OS_WINDOWS
@@ -142,11 +118,6 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 		DWORD threadsInGroup = 0;
 		WORD groupId, groupCount;
 		GROUP_AFFINITY affinity;
-		HMODULE hKernel32 = GetModuleHandle(L"kernel32.dll");
-		fnGetActiveProcessorGroupCount pGetActiveProcessorGroupCount = (fnGetActiveProcessorGroupCount)(GetProcAddress(hKernel32, "GetActiveProcessorGroupCount"));
-		fnGetActiveProcessorCount pGetActiveProcessorCount = (fnGetActiveProcessorCount)(GetProcAddress(hKernel32, "GetActiveProcessorCount"));
-		fnSetThreadGroupAffinity pSetThreadGroupAffinity = (fnSetThreadGroupAffinity)(GetProcAddress(hKernel32, "SetThreadGroupAffinity"));
-
 		ZeroMemory(&affinity, sizeof(GROUP_AFFINITY));
 
 		groupCount = pGetActiveProcessorGroupCount();

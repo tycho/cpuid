@@ -117,3 +117,33 @@ double time_sec(void)
 	return (double)tv.tv_sec + ((double)tv.tv_usec / 1000000.0);
 #endif
 }
+
+BOOL IsWindows7OrGreater()
+{
+	BOOL bW7 = FALSE;
+	HMODULE hKernel32 = NULL;
+
+	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
+	DWORDLONG const dwlConditionMask = VerSetConditionMask(
+		VerSetConditionMask(
+			VerSetConditionMask(
+				0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+			VER_MINORVERSION, VER_GREATER_EQUAL),
+		VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+	osvi.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+	osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+	osvi.wServicePackMajor = 0;
+
+	bW7 = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+
+	if (bW7 && !pGetActiveProcessorGroupCount)
+	{
+		hKernel32 = GetModuleHandle(L"kernel32.dll");
+		pGetActiveProcessorGroupCount = (fnGetActiveProcessorGroupCount)(GetProcAddress(hKernel32, "GetActiveProcessorGroupCount"));
+		pGetActiveProcessorCount = (fnGetActiveProcessorCount)(GetProcAddress(hKernel32, "GetActiveProcessorCount"));
+		pSetThreadGroupAffinity = (fnSetThreadGroupAffinity)(GetProcAddress(hKernel32, "SetThreadGroupAffinity"));
+	}
+
+	return bW7;
+}
