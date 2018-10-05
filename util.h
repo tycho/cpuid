@@ -31,17 +31,7 @@ double time_sec(void);
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
 
 #ifdef TARGET_OS_WINDOWS
-
-typedef WORD(WINAPI *fnGetActiveProcessorGroupCount)();
-typedef DWORD(WINAPI *fnGetActiveProcessorCount)(WORD);
-typedef BOOL(WINAPI *fnSetThreadGroupAffinity)(HANDLE, const GROUP_AFFINITY *, PGROUP_AFFINITY);
-
-fnGetActiveProcessorGroupCount pGetActiveProcessorGroupCount;
-fnGetActiveProcessorCount pGetActiveProcessorCount;
-fnSetThreadGroupAffinity pSetThreadGroupAffinity;
-
-BOOL IsWindows7OrGreater();
-
+BOOL is_windows7_or_greater();
 #endif
 
 #endif

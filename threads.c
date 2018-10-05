@@ -106,6 +106,27 @@ uint32_t thread_count_stub(struct cpuid_state_t *state)
 	return state->cpu_logical_count;
 }
 
+#ifdef TARGET_OS_WINDOWS
+
+typedef WORD(WINAPI *fnGetActiveProcessorGroupCount)();
+typedef DWORD(WINAPI *fnGetActiveProcessorCount)(WORD);
+typedef BOOL(WINAPI *fnSetThreadGroupAffinity)(HANDLE, const GROUP_AFFINITY *, PGROUP_AFFINITY);
+
+fnGetActiveProcessorGroupCount pGetActiveProcessorGroupCount;
+fnGetActiveProcessorCount pGetActiveProcessorCount;
+fnSetThreadGroupAffinity pSetThreadGroupAffinity;
+
+void init_win7_functions_ptrs()
+{
+	HMODULE hKernel32 = GetModuleHandle(L"kernel32.dll");
+
+	pGetActiveProcessorGroupCount = (fnGetActiveProcessorGroupCount)(GetProcAddress(hKernel32, "GetActiveProcessorGroupCount"));
+	pGetActiveProcessorCount = (fnGetActiveProcessorCount)(GetProcAddress(hKernel32, "GetActiveProcessorCount"));
+	pSetThreadGroupAffinity = (fnSetThreadGroupAffinity)(GetProcAddress(hKernel32, "SetThreadGroupAffinity"));
+}
+
+#endif
+
 int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t id)
 {
 #ifdef TARGET_OS_WINDOWS
@@ -113,8 +134,11 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 	BOOL ret = FALSE;
 	HANDLE hThread = GetCurrentThread();
 
-	if (IsWindows7OrGreater())
+	if (is_windows7_or_greater())
 	{
+		if (!pGetActiveProcessorGroupCount)
+			init_win7_functions_ptrs();
+
 		DWORD threadsInGroup = 0;
 		WORD groupId, groupCount;
 		GROUP_AFFINITY affinity;

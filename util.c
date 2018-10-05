@@ -21,6 +21,8 @@
 
 #include "prefix.h"
 
+#include "util.h"
+
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
@@ -29,8 +31,6 @@
 #else
 #include <sys/time.h>
 #endif
-
-#include "util.h"
 
 size_t safe_strcat(char *dst, const char *src, size_t siz)
 {
@@ -118,11 +118,10 @@ double time_sec(void)
 #endif
 }
 
-BOOL IsWindows7OrGreater()
-{
-	BOOL bW7 = FALSE;
-	HMODULE hKernel32 = NULL;
+#ifdef TARGET_OS_WINDOWS
 
+BOOL is_windows7_or_greater()
+{
 	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
 	DWORDLONG const dwlConditionMask = VerSetConditionMask(
 		VerSetConditionMask(
@@ -135,15 +134,7 @@ BOOL IsWindows7OrGreater()
 	osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
 	osvi.wServicePackMajor = 0;
 
-	bW7 = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
-
-	if (bW7 && !pGetActiveProcessorGroupCount)
-	{
-		hKernel32 = GetModuleHandle(L"kernel32.dll");
-		pGetActiveProcessorGroupCount = (fnGetActiveProcessorGroupCount)(GetProcAddress(hKernel32, "GetActiveProcessorGroupCount"));
-		pGetActiveProcessorCount = (fnGetActiveProcessorCount)(GetProcAddress(hKernel32, "GetActiveProcessorCount"));
-		pSetThreadGroupAffinity = (fnSetThreadGroupAffinity)(GetProcAddress(hKernel32, "SetThreadGroupAffinity"));
-	}
-
-	return bW7;
+	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
 }
+
+#endif
