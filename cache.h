@@ -79,3 +79,5 @@ struct cache_desc_t {
 char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

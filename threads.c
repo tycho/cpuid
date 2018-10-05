@@ -234,3 +234,5 @@ int thread_bind_stub(struct cpuid_state_t *state, uint32_t id)
 	state->cpu_bound_index = id;
 	return 0;
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

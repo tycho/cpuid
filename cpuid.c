@@ -521,3 +521,5 @@ void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, __u
 	printf("cpuid.%x.ecx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->ecx));
 	printf("cpuid.%x.edx = \"%s\"\n", state->last_leaf.eax, uint32_to_binary(buffer, regs->edx));
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

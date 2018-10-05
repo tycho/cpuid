@@ -1815,3 +1815,5 @@ static void handle_vmware_leaf10(struct cpu_regs_t *regs, struct cpuid_state_t *
 	       (float)regs->eax / 1000.0f,
 		   (float)regs->ebx / 1000.0f);
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

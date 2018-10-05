@@ -59,3 +59,5 @@ void cpuid_dump_vmware(struct cpu_regs_t *regs, struct cpuid_state_t *state, BOO
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

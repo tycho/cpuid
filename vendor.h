@@ -39,3 +39,5 @@ typedef enum
 } cpu_vendor_t;
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

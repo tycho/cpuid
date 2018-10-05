@@ -127,3 +127,5 @@ static inline int c99_snprintf(char *outBuf, size_t size, const char *format, ..
 extern int ignore_vendor;
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

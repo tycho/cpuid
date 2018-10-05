@@ -36,3 +36,5 @@ int vendor_id(const char *vendor);
 const char *vendor_name(int vendor_id);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

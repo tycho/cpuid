@@ -27,3 +27,5 @@
 int sanity_run(struct cpuid_state_t *state);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

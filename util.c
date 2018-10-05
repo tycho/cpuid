@@ -117,3 +117,5 @@ double time_sec(void)
 	return (double)tv.tv_sec + ((double)tv.tv_usec / 1000000.0);
 #endif
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

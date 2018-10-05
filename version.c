@@ -62,3 +62,5 @@ int cpuid_version_build(void)
 {
 	return CPUID_VERSION_BUILD;
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

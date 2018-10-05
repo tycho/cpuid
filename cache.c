@@ -505,3 +505,4 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 	}
 }
 
+/* vim: set ts=4 sts=4 sw=4 noet: */

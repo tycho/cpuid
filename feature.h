@@ -28,3 +28,5 @@ struct cpuid_state_t;
 void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

@@ -1085,3 +1085,5 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			state->last_leaf.eax, state->last_leaf.ecx,
 		    accounting.eax, accounting.ebx, accounting.ecx, accounting.edx);
 }
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

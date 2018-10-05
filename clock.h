@@ -42,3 +42,5 @@ uint64_t cpu_clock_to_wall(uint64_t clock);
 void init_cpu_clock(void);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */

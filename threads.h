@@ -36,3 +36,5 @@ int thread_bind_stub(struct cpuid_state_t *state, uint32_t id);
 uint32_t thread_count_stub(struct cpuid_state_t *state);
 
 #endif
+
+/* vim: set ts=4 sts=4 sw=4 noet: */
