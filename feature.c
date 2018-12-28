@@ -370,9 +370,9 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000001, 0, REG_EAX, 0x00000040, VENDOR_HV_KVM                               , "PV EOI"},
 	{ 0x40000001, 0, REG_EAX, 0x00000080, VENDOR_HV_KVM                               , "PV UNHALT"},
 /*	{ 0x40000001, 0, REG_EAX, 0x00000100,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000001, 0, REG_EAX, 0x00000200,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000001, 0, REG_EAX, 0x00000400,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000001, 0, REG_EAX, 0x00000800,                                             , ""}, */   /* Reserved */
+	{ 0x40000001, 0, REG_EAX, 0x00000200, VENDOR_HV_KVM                               , "PV TLB FLUSH"},
+	{ 0x40000001, 0, REG_EAX, 0x00000400, VENDOR_HV_KVM                               , "PV ASYNC PF VMEXIT"},
+	{ 0x40000001, 0, REG_EAX, 0x00000800, VENDOR_HV_KVM                               , "PV SEND IPI"},
 /*	{ 0x40000001, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000001, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000001, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
