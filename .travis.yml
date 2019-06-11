@@ -5,10 +5,6 @@ compiler:
   - clang
 
 script:
-  # Attempt build with scons
-  - scons CC=$CC
-  - scons -c
-
   # Attempt build with GNU make
   - make
 
