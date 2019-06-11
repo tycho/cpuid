@@ -7,7 +7,7 @@ set -ex
 # Base build packages
 PACKAGES=(
 	git
-	gcc-c++
+	gcc
 	libasan
 	libubsan
 	clang
