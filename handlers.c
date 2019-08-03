@@ -1798,8 +1798,8 @@ static void handle_hyperv_leaf0A(struct cpu_regs_t *regs, struct cpuid_state_t *
 
 		struct eax_version *eax = (struct eax_version *)(&regs->eax);
 
-		printf("Enlightened VMCS version low : %d", eax->low);
-		printf("Enlightened VMCS version high: %d", eax->high);
+		printf("Enlightened VMCS version low : %d\n", eax->low);
+		printf("Enlightened VMCS version high: %d\n", eax->high);
 		print_features(regs, state);
 		printf("\n");
 	}
