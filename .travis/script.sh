@@ -49,4 +49,5 @@ for BUILD_VARIANT in . ${BUILD_VARIANTS[@]}; do
 			fi
 		done
 	popd
+	[[ "$BUILD_VARIANT" != "." ]] && rm -rf build-$BUILD_VARIANT
 done
