@@ -61,6 +61,8 @@ DECLARE_HANDLER(ext_amdl1cachefeat);
 DECLARE_HANDLER(ext_l2cachefeat);
 DECLARE_HANDLER(ext_0008);
 DECLARE_HANDLER(ext_svm);
+DECLARE_HANDLER(ext_perf_opt_feat);
+DECLARE_HANDLER(ext_ibs_feat);
 DECLARE_HANDLER(ext_cacheprop);
 DECLARE_HANDLER(ext_extapic);
 
@@ -163,8 +165,12 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000007, handle_features},
 	{0x80000008, handle_ext_0008},
 	{0x8000000A, handle_ext_svm},
+	//{0x80000019, handle_ext_amd_tlb},
+	{0x8000001A, handle_ext_perf_opt_feat},
+	{0x8000001B, handle_ext_ibs_feat},
 	{0x8000001D, handle_ext_cacheprop},
 	{0x8000001E, handle_ext_extapic},
+	//{0x8000001F, handle_ext_amd_encryption},
 
 	{0, 0}
 };
@@ -1460,6 +1466,26 @@ static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	printf("  Revision: %u\n", eax->svmrev);
 	printf("  NASID: %u\n", ebx->nasid);
 	printf("  Features:\n");
+	print_features(regs, state);
+	printf("\n");
+}
+
+/* EAX = 8000 001A */
+static void handle_ext_perf_opt_feat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (!(state->vendor & VENDOR_AMD))
+		return;
+	printf("Performance Optimization identifiers:\n");
+	print_features(regs, state);
+	printf("\n");
+}
+
+/* EAX = 8000 001B */
+static void handle_ext_ibs_feat(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	if (!(state->vendor & VENDOR_AMD))
+		return;
+	printf("Instruction Based Sampling identifiers:\n");
 	print_features(regs, state);
 	printf("\n");
 }

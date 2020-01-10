@@ -927,6 +927,74 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x8000000A, 0, REG_EDX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 
+/* Performance Optimization Identifiers (8000_001Ah) */
+	{ 0x8000001A, 0, REG_EAX, 0x00000001,                VENDOR_AMD                   , "128-bit SSE full-width pipelines (FP128)"},
+	{ 0x8000001A, 0, REG_EAX, 0x00000002,                VENDOR_AMD                   , "Efficient MOVU SSE instructions (MOVU)"},
+	{ 0x8000001A, 0, REG_EAX, 0x00000004,                VENDOR_AMD                   , "256-bit AVX full-width pipelines (FP256)"},
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000008,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000010,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000020,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000040,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000080,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000100,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000200,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000400,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00001000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00002000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00008000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x20000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001A, 0, REG_EAX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+
+/* Instruction Based Sampling Identifiers (8000_001Bh) */
+	{ 0x8000001B, 0, REG_EAX, 0x00000001,                VENDOR_AMD                   , "IBS feature flags valid (IBSFFV)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000002,                VENDOR_AMD                   , "IBS fetch sampling (FetchSam)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000004,                VENDOR_AMD                   , "IBS execution sampling (OpSam)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000008,                VENDOR_AMD                   , "Read/write of op counter (RdWrOpCnt)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000010,                VENDOR_AMD                   , "Op counting mode (OpCnt)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000020,                VENDOR_AMD                   , "Branch target address reporting (BrnTrgt)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000040,                VENDOR_AMD                   , "IBS op cur/max count extended by 7 bits (OpCntExt)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000080,                VENDOR_AMD                   , "IBS RIP invalid indication (RipInvalidChk)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000100,                VENDOR_AMD                   , "IBS fused branch micro-op indication (OpBrnFuse)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000200,                VENDOR_AMD                   , "IBS fetch control extended MSR (IbsFetchCtlExtd)"},
+	{ 0x8000001B, 0, REG_EAX, 0x00000400,                VENDOR_AMD                   , "IBS op data 4 MSR (IbsOpData4)"},
+/*	{ 0x8000001B, 0, REG_EAX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00001000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00002000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00008000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x20000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x40000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x8000001B, 0, REG_EAX, 0x80000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
 
