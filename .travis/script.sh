@@ -40,9 +40,11 @@ for BUILD_VARIANT in . ${BUILD_VARIANTS[@]}; do
 	BUILD_DIR=build-$BUILD_VARIANT
 	[[ "$BUILD_VARIANT" == "." ]] && BUILD_DIR=.
 	pushd $BUILD_DIR
-	./cpuid -c 0
-	./cpuid -c 0 -d
-	./cpuid -c -1 -d > dump.txt
-	./cpuid -f dump.txt
+		./cpuid -c 0
+		./cpuid -c 0 -d
+		for DUMP_FORMAT in default etallen sxp vmware xen; do
+			./cpuid -c -1 -d --format=$DUMP_FORMAT > dump.txt
+			./cpuid -f dump.txt
+		done
 	popd
 done
