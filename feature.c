@@ -142,12 +142,12 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000006, 0, REG_EAX, 0x00001000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 	{ 0x00000006, 0, REG_EAX, 0x00002000, VENDOR_INTEL                                , "Hardware duty cycle programming (HDC)"},
 	{ 0x00000006, 0, REG_EAX, 0x00004000, VENDOR_INTEL                                , "Intel Turbo Boost Max Technology 3.0"},
-/*	{ 0x00000006, 0, REG_EAX, 0x00008000, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00010000, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00020000, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00040000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00008000, VENDOR_INTEL                                , "HWP Capabilities, Highest Performance change"},
+	{ 0x00000006, 0, REG_EAX, 0x00010000, VENDOR_INTEL                                , "HWP PECI override"},
+	{ 0x00000006, 0, REG_EAX, 0x00020000, VENDOR_INTEL                                , "Flexible HWP"},
+	{ 0x00000006, 0, REG_EAX, 0x00040000, VENDOR_INTEL                                , "Fast access mode for IA32_HWP_REQUEST MSR"},
 /*	{ 0x00000006, 0, REG_EAX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00100000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00100000, VENDOR_INTEL                                , "Ignoring Idle Logical Processor HWP request"},
 /*	{ 0x00000006, 0, REG_EAX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
