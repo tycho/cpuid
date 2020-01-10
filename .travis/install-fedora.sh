@@ -8,6 +8,7 @@ set -ex
 PACKAGES=(
 	git
 	gcc
+	compiler-rt
 	libasan
 	libubsan
 	clang
