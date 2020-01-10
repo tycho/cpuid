@@ -44,7 +44,9 @@ for BUILD_VARIANT in . ${BUILD_VARIANTS[@]}; do
 		./cpuid -c 0 -d
 		for DUMP_FORMAT in default etallen sxp vmware xen; do
 			./cpuid -c -1 -d --format=$DUMP_FORMAT > dump.txt
-			./cpuid -f dump.txt
+			if [[ "$DUMP_FORMAT" == "default" ]] || [[ "$DUMP_FORMAT" == "etallen" ]]; then
+				./cpuid -f dump.txt
+			fi
 		done
 	popd
 done
