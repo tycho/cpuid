@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 			{"version", no_argument, 0, 'v'},
 			{"help", no_argument, 0, 'h'},
 			{"sanity", no_argument, &do_sanity, 1},
-			{"dump", no_argument, &do_dump, 1},
+			{"dump", no_argument, 0, 'd'},
 			{"cpu", required_argument, 0, 'c'},
 			{"kernel", no_argument, &do_kernel, 'k'},
 			{"ignore-vendor", no_argument, &ignore_vendor, 1},
