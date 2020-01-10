@@ -269,7 +269,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		};
 		uint32_t model;
 		struct std1_ebx_t *ebx = (struct std1_ebx_t *)&regs->ebx;
-		*(uint32_t *)(&state->sig) = regs->eax;
+		state->sig_int = regs->eax;
 
 		/* Model is calculated differently on Intel/AMD. */
 		model = state->sig.model;
@@ -283,7 +283,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		       "  Family:   0x%02x (%d)\n"
 		       "  Model:    0x%02x (%d)\n"
 		       "  Stepping: 0x%02x (%d)\n\n",
-		       *(uint32_t *)&state->sig,
+		       state->sig_int,
 		       state->sig.family + state->sig.extfamily,
 		       state->sig.family + state->sig.extfamily,
 		       model,
