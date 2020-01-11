@@ -1,4 +1,10 @@
-project('cpuid', 'c')
+project('cpuid', 'c',
+    default_options: [
+        'buildtype=minsize',
+        'c_std=gnu99',
+        'b_lto=true',
+    ]
+)
 
 compiler = meson.get_compiler('c')
 
@@ -18,6 +24,12 @@ src = ['cache.c', 'clock.c', 'cpuid.c', 'feature.c', 'handlers.c', 'main.c', 'sa
 incdirs = include_directories('.')
 lm = compiler.find_library('m')
 threads = dependency('threads')
-executable('cpuid', src, gen_build_h, gen_license_h,  include_directories : incdirs, link_args : '-pthread', dependencies : [lm, threads])
+
+executable('cpuid',
+           src,
+           gen_build_h,
+           gen_license_h,
+           include_directories : incdirs,
+           dependencies : [lm, threads])
 
 # vim: set ts=4 sts=4 sw=4 et:
