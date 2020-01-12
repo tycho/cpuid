@@ -93,4 +93,4 @@ Contact
 
 I'm contactable via email and respond frequently.
 
-Steven Noonan <steven@uplinklabs.net>
+[Steven Noonan \<steven@uplinklabs.net>](mailto:steven@uplinklabs.net)
