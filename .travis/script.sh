@@ -14,6 +14,10 @@ BUILD_VARIANTS=(meson)
 BUILD_SANITIZERS=1
 [[ $(uname -s) == MINGW* ]] && BUILD_SANITIZERS=0
 
+if lsb_release -c | grep -q bionic$; then
+	export ASAN_OPTIONS=detect_odr_violation=0
+fi
+
 meson . build-meson -Dwerror=true -Dbuildtype=release -Ddebug=false -Db_lto=true
 
 # Build some tests with sanitizers
