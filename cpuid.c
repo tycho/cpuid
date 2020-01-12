@@ -414,10 +414,10 @@ BOOL cpuid_stub(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 static const char *uint32_to_binary(char *buffer, uint32_t val)
 {
-	int i;
+	unsigned i;
 	buffer[32] = 0;
 	for (i = 0; i < 32; i++) {
-		buffer[31 - i] = (val & (1 << i)) != 0 ? '1' : '0';
+		buffer[31 - i] = (val & (1U << i)) != 0 ? '1' : '0';
 	}
 	return buffer;
 }
