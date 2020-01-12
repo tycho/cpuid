@@ -15,18 +15,19 @@ projects out there. You don't need autoconf/automake or any of the headaches
 that go along with those tools.
 
 Required:
-- C compiler (GNU C Compiler, Microsoft Visual C++, and the Intel C++
-  Compiler are known to work)
+- C compiler (GNU C Compiler, LLVM/Clang, Microsoft Visual C++, and the Intel
+  C++ Compiler are known to work)
 - Perl 5.8 or later
 
 And one of:
 - GNU Make 3.80 or later
-- SCons 2.0 or later
+- Meson 0.50 or later
 
-Depending on whether you have GNU Make or SCons, do one of:
+Depending on whether you have GNU Make or Meson, do one of:
 
 ```
-$ scons
+$ meson . build
+$ ninja -C build
 ```
 
 or
