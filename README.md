@@ -79,9 +79,9 @@ Reference Documentation
 
 You can find current Intel and AMD CPUID specifications at these locations:
 
-[Intel Software Developer Manual volume 2A](https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html)
-
-[AMD Processor Programming Reference](http://developer.amd.com/resources/developer-guides-manuals/)
+- [Intel Software Developer Manual volume 2A](https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html)
+- [Intel Architecture Instruction Set Extensions Programming Reference](https://software.intel.com/en-us/download/intel-architecture-instruction-set-extensions-programming-reference)
+- [AMD Processor Programming Reference](http://developer.amd.com/resources/developer-guides-manuals/)
 
 I try to keep up with these as they change, but sometimes I'm slow on the
 uptake. Please notify me if you notice any inconsistencies or if features you
