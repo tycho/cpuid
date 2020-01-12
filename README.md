@@ -54,10 +54,8 @@ $ ./cpuid --help
 
 ### Reporting Bugs
 
-If you find a bug in CPUID, please submit details about it to the bug tracker
-on GitHub:
-
-https://github.com/tycho/cpuid/issues
+If you find a bug in CPUID, please submit details about it to the [issue
+tracker](https://github.com/tycho/cpuid/issues) on GitHub.
 
 If the bug is regarding the decoding or dumping of CPUID details, then you
 should include the dump.txt and decode.txt generated with these commands:
