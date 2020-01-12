@@ -229,10 +229,10 @@ static const struct cpu_feature_t features [] = {
 
 	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1 instruction"},
 	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512 vector byte manipulation instructions (AVX512VBMI)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "UMIP (User Mode Instruction Prevention)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "PKU (Protection Keys for User-mode pages)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OSPKE (OS has enabled protection keys)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "WAITPKG (Wait and Pause Enhancements)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "User Mode Instruction Prevention (UMIP)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Protection Keys for User-mode pages (PKU)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OS has enabled protection keys (OSPKE)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "Wait and Pause Enhancements (WAITPKG)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "AVX512_VBMI2"},
 	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "CET shadow stack (CET_SS)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "Galois Field NI / Galois Field Affine Transformation (GFNI)"},
@@ -249,15 +249,15 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "RDPID (Read Processor ID)"},
+	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL                                , "Read Processor ID (RDPID)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "CLDEMOTE (Cache Line Demote)"},
+	{ 0x00000007, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "Cache Line Demote (CLDEMOTE)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_ECX, 0x08000000, VENDOR_INTEL                                , "MOVDIRI (32-bit Direct Stores)"},
-	{ 0x00000007, 0, REG_ECX, 0x10000000, VENDOR_INTEL                                , "MOVDIRI64B (64-bit Direct Stores)"},
-	{ 0x00000007, 0, REG_ECX, 0x20000000, VENDOR_INTEL                                , "ENQCMD (Enqueue Stores)"},
-	{ 0x00000007, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "SGX_LC (SGX Launch Configuration)"},
+	{ 0x00000007, 0, REG_ECX, 0x08000000, VENDOR_INTEL                                , "32-bit Direct Stores (MOVDIRI)"},
+	{ 0x00000007, 0, REG_ECX, 0x10000000, VENDOR_INTEL                                , "64-bit Direct Stores (MOVDIRI64B)"},
+	{ 0x00000007, 0, REG_ECX, 0x20000000, VENDOR_INTEL                                , "Enqueue Stores (ENQCMD)"},
+	{ 0x00000007, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "SGX Launch Configuration (SGX_LC)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
 /*	{ 0x00000007, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
