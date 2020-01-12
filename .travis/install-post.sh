@@ -6,4 +6,5 @@ set -x
 meson --version
 g++ --version
 clang++ --version
+lsb_release -a
 exit 0
