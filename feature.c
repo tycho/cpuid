@@ -234,7 +234,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OSPKE (OS has enabled protection keys)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "WAITPKG (Wait and Pause Enhancements)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "AVX512_VBMI2"},
-/*	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "CET shadow stack (CET_SS)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "Galois Field NI / Galois Field Affine Transformation (GFNI)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000200, VENDOR_INTEL                                , "VEX-encoded AES-NI (VAES)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "VEX-encoded PCLMUL (VPCL)"},
@@ -275,12 +275,12 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00008000, VENDOR_INTEL                                , "Hybrid"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00040000, VENDOR_INTEL                                , "PCONFIG"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00100000, VENDOR_INTEL                                , "CET indirect branch tracking (CET_IBT)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -290,7 +290,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "Single Thread Indirect Branch Predictors (STIBP)"},
 	{ 0x00000007, 0, REG_EDX, 0x10000000, VENDOR_INTEL                                , "L1 Data Cache (L1D) Flush"},
 	{ 0x00000007, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "IA32_ARCH_CAPABILITIES MSR"},
-/*	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL                                , "IA32_CORE_CAPABILITIES MSR"},
 	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "Speculative Store Bypass Disable (SSBD)"},
 
 /*  Processor Trace Enumeration (0000_0014h) */
