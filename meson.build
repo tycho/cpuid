@@ -21,15 +21,30 @@ gen_license_h = custom_target('license.h',
 
 src = ['cache.c', 'clock.c', 'cpuid.c', 'feature.c', 'handlers.c', 'main.c', 'sanity.c', 'threads.c', 'util.c', 'version.c']
 
-incdirs = include_directories('.')
-lm = compiler.find_library('m')
-threads = dependency('threads')
+incdirs = [include_directories('.')]
+
+dependencies = [
+    dependency('threads'),
+]
+
+if host_machine.system() != 'windows'
+    dependencies += compiler.find_library('m')
+endif
+
+if target_machine.system() == 'windows'
+    dependencies += compiler.find_library('winmm')
+endif
+
+if not compiler.has_header('getopt.h')
+    incdirs += include_directories('getopt')
+    src += 'getopt/getopt_long.c'
+endif
 
 executable('cpuid',
            src,
            gen_build_h,
            gen_license_h,
            include_directories : incdirs,
-           dependencies : [lm, threads])
+           dependencies : dependencies)
 
 # vim: set ts=4 sts=4 sw=4 et:
