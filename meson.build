@@ -7,17 +7,17 @@ project('cpuid', 'c',
 )
 
 compiler = meson.get_compiler('c')
+perl = find_program('perl')
 
 
 gen_build_h = custom_target('build.h',
-                            input : [],
                             output : ['build.h'],
-                            command : [meson.current_source_dir() + '/tools/build.pl', '@OUTPUT@'])
+                            command : [perl, meson.current_source_dir() + '/tools/build.pl', '@OUTPUT@'])
 
 gen_license_h = custom_target('license.h',
                               input : ['COPYING'],
                               output : ['license.h'],
-                              command : [meson.current_source_dir() + '/tools/license.pl', '@INPUT@', '@OUTPUT@'])
+                              command : [perl, meson.current_source_dir() + '/tools/license.pl', '@INPUT@', '@OUTPUT@'])
 
 src = ['cache.c', 'clock.c', 'cpuid.c', 'feature.c', 'handlers.c', 'main.c', 'sanity.c', 'threads.c', 'util.c', 'version.c']
 
