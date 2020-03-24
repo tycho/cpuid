@@ -279,6 +279,10 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 			model += (model == 0xf ? state->sig.extmodel << 4 : 0);
 		}
 
+		if (regs->ecx & (1 << 31)) {
+			state->vendor |= VENDOR_HV_GENERIC;
+		}
+
 		printf("Signature:  0x%08x\n"
 		       "  Family:   0x%02x (%d)\n"
 		       "  Model:    0x%02x (%d)\n"
@@ -1704,6 +1708,10 @@ static void handle_vmm_leaf01(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 		buf[4] = 0;
 		*(uint32_t *)(&buf[0]) = regs->eax;
 		printf("Hypervisor interface identification: '%s'\n\n", buf);
+	} else if (state->vendor & VENDOR_HV_GENERIC
+			&& regs->eax == 0x31237648 /* "Hv#1" */) {
+		state->vendor |= VENDOR_HV_HYPERV;
+		printf("Hyper-V compliant hypervisor detected\n\n");
 	}
 }
 

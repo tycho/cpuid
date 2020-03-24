@@ -35,6 +35,7 @@ typedef enum
 	VENDOR_HV_HYPERV    = 0x80,
 	VENDOR_HV_PARALLELS = 0x100,
 	VENDOR_HV_BHYVE     = 0x200,
+	VENDOR_HV_GENERIC   = 0x400,
 	VENDOR_ANY          = (int)-1
 } cpu_vendor_t;
 
