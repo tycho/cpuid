@@ -373,8 +373,8 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000001, 0, REG_EAX, 0x00000200, VENDOR_HV_KVM                               , "PV TLB FLUSH"},
 	{ 0x40000001, 0, REG_EAX, 0x00000400, VENDOR_HV_KVM                               , "PV ASYNC PF VMEXIT"},
 	{ 0x40000001, 0, REG_EAX, 0x00000800, VENDOR_HV_KVM                               , "PV SEND IPI"},
-/*	{ 0x40000001, 0, REG_EAX, 0x00001000,                                             , ""}, */   /* Reserved */
-/*	{ 0x40000001, 0, REG_EAX, 0x00002000,                                             , ""}, */   /* Reserved */
+	{ 0x40000001, 0, REG_EAX, 0x00001000, VENDOR_HV_KVM                               , "PV POLL CONTROL"},
+	{ 0x40000001, 0, REG_EAX, 0x00002000, VENDOR_HV_KVM                               , "PV SCHED YIELD"},
 /*	{ 0x40000001, 0, REG_EAX, 0x00004000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000001, 0, REG_EAX, 0x00008000,                                             , ""}, */   /* Reserved */
 /*	{ 0x40000001, 0, REG_EAX, 0x00010000,                                             , ""}, */   /* Reserved */
