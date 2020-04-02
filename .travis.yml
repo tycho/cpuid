@@ -15,7 +15,6 @@ env:
   jobs:
     - IMAGE=ubuntu IMAGE_TAG=latest
     - IMAGE=ubuntu IMAGE_TAG=rolling
-    - IMAGE=ubuntu IMAGE_TAG=devel
     - IMAGE=fedora IMAGE_TAG=latest
 
 before_install:
