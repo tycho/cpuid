@@ -258,7 +258,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_ECX, 0x10000000, VENDOR_INTEL                                , "64-bit Direct Stores (MOVDIRI64B)"},
 	{ 0x00000007, 0, REG_ECX, 0x20000000, VENDOR_INTEL                                , "Enqueue Stores (ENQCMD)"},
 	{ 0x00000007, 0, REG_ECX, 0x40000000, VENDOR_INTEL                                , "SGX Launch Configuration (SGX_LC)"},
-/*	{ 0x00000007, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x80000000, VENDOR_INTEL                                , "Protection keys for supervisor-mode pages (PKS)"},
 
 /*	{ 0x00000007, 0, REG_EDX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -274,9 +274,9 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00002000, VENDOR_INTEL                                , "TSX Force Abort MSR"},
-/*	{ 0x00000007, 0, REG_EDX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00004000, VENDOR_INTEL                                , "SERIALIZE"},
 	{ 0x00000007, 0, REG_EDX, 0x00008000, VENDOR_INTEL                                , "Hybrid"},
-/*	{ 0x00000007, 0, REG_EDX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00010000, VENDOR_INTEL                                , "TSX suspend load address tracking"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00040000, VENDOR_INTEL                                , "PCONFIG"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -293,13 +293,46 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL                                , "IA32_CORE_CAPABILITIES MSR"},
 	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "Speculative Store Bypass Disable (SSBD)"},
 
+/*	{ 0x00000007, 1, REG_EAX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00000020, VENDOR_INTEL                                , "Vector Neural Network BFLOAT16 (AVX512_BF16)"},
+/*	{ 0x00000007, 1, REG_EAX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00010000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00020000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EAX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+
 /*  Processor Trace Enumeration (0000_0014h) */
 	{ 0x00000014, 0, REG_EBX, 0x00000001, VENDOR_INTEL                                , "CR3 filtering"},
 	{ 0x00000014, 0, REG_EBX, 0x00000002, VENDOR_INTEL                                , "Configurable PSB, Cycle-Accurate Mode"},
 	{ 0x00000014, 0, REG_EBX, 0x00000004, VENDOR_INTEL                                , "Filtering preserved across warm reset"},
 	{ 0x00000014, 0, REG_EBX, 0x00000008, VENDOR_INTEL                                , "MTC timing packet, suppression of COFI-based packets"},
-/*	{ 0x00000014, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000014, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000014, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "PTWRITE"},
+	{ 0x00000014, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "Power Event Trace"},
 /*	{ 0x00000014, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000014, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000014, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , ""}, */   /* Reserved */
