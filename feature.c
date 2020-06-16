@@ -1162,6 +1162,16 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				printf("Hyper-V hardware features detected and in use, %s:\n",
 					   reg_name(last_reg));
 				break;
+			case 0x40000008:
+				printf("Hyper-V shared virtual memory features, %s:\n",
+					   reg_name(last_reg));
+
+				/* The top 21 bits are not flags */
+				accounting.eax &= 0x3FF;
+
+				/* EBX, ECX, and EDX do not contain feature flags. */
+				accounting.ebx = accounting.ecx = accounting.edx = 0;
+				break;
 			case 0x80000001:
 				printf("Extended features, %s:\n",
 				       reg_name(last_reg));
