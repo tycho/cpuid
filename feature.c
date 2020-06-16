@@ -1089,9 +1089,10 @@ static const char *vendors(char *buffer, uint32_t mask)
 	return buffer;
 }
 
-void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
+int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	int leaf_checked = 0;
+	int flags_found = 0;
 	const struct cpu_feature_t *p = features;
 	struct cpu_regs_t accounting;
 	cpu_register_t last_reg = REG_NULL;
@@ -1205,6 +1206,7 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				snprintf(feat, sizeof(feat), "%s (%s)", p->m_name, vendors(vendorlist, p->m_vendor));
 				printf("  %s\n", feat);
 				*acct_reg &= (~p->m_bitmask);
+				flags_found++;
 			}
 		} else {
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
@@ -1212,6 +1214,7 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			{
 				printf("  %s\n", p->m_name);
 				*acct_reg &= (~p->m_bitmask);
+				flags_found++;
 			}
 		}
 		p++;
@@ -1221,6 +1224,8 @@ void print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
 			state->last_leaf.eax, state->last_leaf.ecx,
 		    accounting.eax, accounting.ebx, accounting.ecx, accounting.edx);
+
+	return flags_found;
 }
 
 /* vim: set ts=4 sts=4 sw=4 noet: */
