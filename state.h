@@ -54,6 +54,8 @@ struct cpuid_state_t
 	uint32_t cpu_bound_index;
 	uint32_t cpu_logical_count;
 
+	uint32_t logical_in_socket;
+
 	struct cpuid_leaf_t **cpuid_leaves;
 	struct cpu_regs_t last_leaf;
 	union {

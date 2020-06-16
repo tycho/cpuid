@@ -35,6 +35,28 @@
 
 DECLARE_HANDLER(features);
 
+struct x2apic_prop_t {
+	uint32_t mask;
+	uint32_t shift;
+	uint8_t total;
+	unsigned reported:1;
+};
+
+struct x2apic_infer_t {
+	uint32_t sockets;
+	uint32_t cores_per_socket;
+	uint32_t threads_per_core;
+};
+
+struct x2apic_state_t {
+	uint32_t id;
+	struct x2apic_prop_t socket;
+	struct x2apic_prop_t core;
+	struct x2apic_prop_t thread;
+	struct x2apic_infer_t infer;
+};
+static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state, struct x2apic_state_t *apic);
+
 DECLARE_HANDLER(std_base);
 DECLARE_HANDLER(std_cache);
 DECLARE_HANDLER(std_psn);
@@ -254,6 +276,12 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		printf(" (overridden as '%s')", vendor_name(state->vendor));
 	}
 	printf("\n\n");
+
+	/* Try to probe topology early, to set up state->logical_in_socket */
+	{
+		struct x2apic_state_t x2apic;
+		probe_std_x2apic(regs, state, &x2apic);
+	}
 }
 
 /* EAX = 8000 0001 | EAX = 0000 0001 */
@@ -438,7 +466,7 @@ static void handle_std_dcp(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		desc.linesize = ebx->line_size + 1;
 		desc.partitions = ebx->partitions + 1;
 		desc.max_threads_sharing = eax->max_threads_sharing + 1;
-		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 
 		/* This is the official termination condition for this leaf. */
 		if (!(regs->eax & 0xF))
@@ -629,32 +657,24 @@ static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *st
 }
 
 /* EAX = 0000 000B */
-static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state, struct x2apic_state_t *x2apic)
 {
-	struct x2apic_prop_t {
-		uint32_t mask;
-		uint32_t shift;
-		uint8_t total;
-		unsigned reported:1;
-	};
-
-	struct x2apic_prop_t socket, core, thread;
-
-	uint32_t i, id = 0;
+	uint32_t i;
 	uint32_t total_logical = state->thread_count(state);
 
 	if ((state->vendor & VENDOR_INTEL) == 0)
-		return;
+		return 1;
+
+	/* Check if x2APIC is supported. Early exit if not. */
+	ZERO_REGS(regs);
+	regs->eax = 0xb;
+	state->cpuid_call(regs, state);
 	if (!regs->eax && !regs->ebx)
-		return;
+		return 1;
 
-	memset(&socket, 0, sizeof(struct x2apic_prop_t));
-	memset(&core, 0, sizeof(struct x2apic_prop_t));
-	memset(&thread, 0, sizeof(struct x2apic_prop_t));
-	socket.reported = 1;
-	socket.mask = -1;
-
-	printf("x2APIC Processor Topology:\n");
+	memset(x2apic, 0, sizeof(struct x2apic_state_t));
+	x2apic->socket.reported = 1;
+	x2apic->socket.mask = -1;
 
 	/* Inferrence */
 	for (i = 0;; i++) {
@@ -668,34 +688,34 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 		level = (regs->ecx >> 8) & 0xff;
 		shift = regs->eax & 0x1f;
 		if (level > 0)
-			id = regs->edx;
+			x2apic->id = regs->edx;
 		else
 			break;
 		switch (level) {
 		case 1: /* Thread level */
-			thread.total = regs->ebx & 0xffff;
-			thread.shift = shift;
-			thread.mask = ~((unsigned)(-1) << shift);
-			thread.reported = 1;
+			x2apic->thread.total = regs->ebx & 0xffff;
+			x2apic->thread.shift = shift;
+			x2apic->thread.mask = ~((unsigned)(-1) << shift);
+			x2apic->thread.reported = 1;
 			break;
 		case 2: /* Core level */
-			core.total = regs->ebx & 0xffff;
-			core.shift = shift;
-			core.mask = ~((unsigned)(-1) << shift);
-			core.reported = 1;
-			socket.shift = core.shift;
-			socket.mask = (-1) ^ core.mask;
+			x2apic->core.total = regs->ebx & 0xffff;
+			x2apic->core.shift = shift;
+			x2apic->core.mask = ~((unsigned)(-1) << shift);
+			x2apic->core.reported = 1;
+			x2apic->socket.shift = x2apic->core.shift;
+			x2apic->socket.mask = (-1) ^ x2apic->core.mask;
 			break;
 		}
 		if (!(regs->eax || regs->ebx))
 			break;
 	}
-	if (thread.reported && core.reported) {
-		core.mask = core.mask ^ thread.mask;
-	} else if (!core.reported && thread.reported) {
-		core.mask = 0;
-		socket.shift = thread.shift;
-		socket.mask = (-1) ^ thread.mask;
+	if (x2apic->thread.reported && x2apic->core.reported) {
+		x2apic->core.mask = x2apic->core.mask ^ x2apic->thread.mask;
+	} else if (!x2apic->core.reported && x2apic->thread.reported) {
+		x2apic->core.mask = 0;
+		x2apic->socket.shift = x2apic->thread.shift;
+		x2apic->socket.mask = (-1) ^ x2apic->thread.mask;
 	} else {
 		assert(0);
 	}
@@ -704,28 +724,52 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	 *      but the official method doesn't seem to work. Will troubleshoot
 	 *      more later on.
 	 */
-	socket.shift = count_trailing_zero_bits(socket.mask);
-	core.shift = count_trailing_zero_bits(core.mask);
-	thread.shift = count_trailing_zero_bits(thread.mask);
-
-	if (core.total > thread.total)
-		core.total /= thread.total;
-	printf("  Inferred information:\n");
-	printf("    Logical total:       %u%s\n", total_logical, (total_logical >= core.total * thread.total) ? "" : " (?)");
-	printf("    Logical per socket:  %u\n", core.total * thread.total);
-	printf("    Cores per socket:    %u\n", core.total);
-	printf("    Threads per core:    %u\n\n", thread.total);
+	x2apic->socket.shift = count_trailing_zero_bits(x2apic->socket.mask);
+	x2apic->core.shift = count_trailing_zero_bits(x2apic->core.mask);
+	x2apic->thread.shift = count_trailing_zero_bits(x2apic->thread.mask);
 
 	/*
-	printf("  Socket mask: 0x%08x, shift: %d\n", socket.mask, socket.shift);
-	printf("  Core mask: 0x%08x, shift: %d\n", core.mask, core.shift);
-	printf("  Thread mask: 0x%08x, shift: %d\n", thread.mask, thread.shift);
+	printf("  Socket mask: 0x%08x, shift: %d\n", x2apic->socket.mask, x2apic->socket.shift);
+	printf("  Core mask: 0x%08x, shift: %d\n", x2apic->core.mask, x2apic->core.shift);
+	printf("  Thread mask: 0x%08x, shift: %d\n", x2apic->thread.mask, x2apic->thread.shift);
 	*/
+
+	if (x2apic->core.total >  x2apic->thread.total)
+		x2apic->core.total /= x2apic->thread.total;
+
+	state->logical_in_socket = x2apic->core.total * x2apic->thread.total;
+
+	x2apic->infer.sockets = total_logical / (x2apic->core.total * x2apic->thread.total);
+	x2apic->infer.cores_per_socket = x2apic->core.total;
+	x2apic->infer.threads_per_core = x2apic->thread.total;
+
+	return 0;
+}
+
+/* EAX = 0000 000B */
+static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t total_logical = state->thread_count(state);
+	struct x2apic_state_t x2apic;
+
+	if ((state->vendor & VENDOR_INTEL) == 0)
+		return;
+
+	printf("x2APIC Processor Topology:\n");
+
+	probe_std_x2apic(regs, state, &x2apic);
+
+	printf("  Inferred information:\n");
+	printf("    Logical total:       %u%s\n", total_logical, (total_logical >= x2apic.infer.cores_per_socket * x2apic.infer.threads_per_core) ? "" : " (?)");
+	printf("    Logical per socket:  %u\n",   x2apic.infer.cores_per_socket * x2apic.infer.threads_per_core);
+	printf("    Cores per socket:    %u\n",   x2apic.infer.cores_per_socket);
+	printf("    Threads per core:    %u\n\n", x2apic.infer.threads_per_core);
+
 	printf("  x2APIC ID %d (socket %d, core %d, thread %d)\n\n",
-		id,
-		(id & socket.mask) >> socket.shift,
-		(id & core.mask) >> core.shift,
-		(id & thread.mask) >> thread.shift);
+		 x2apic.id,
+		(x2apic.id & x2apic.socket.mask) >> x2apic.socket.shift,
+		(x2apic.id & x2apic.core.mask)   >> x2apic.core.shift,
+		(x2apic.id & x2apic.thread.mask) >> x2apic.thread.shift);
 }
 
 /* EAX = 0000 000B */
@@ -1423,6 +1467,7 @@ static void handle_ext_0008(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		case 3: tscsize = 64; break;
 		}
 
+		state->logical_in_socket = nc;
 		printf("Core count: %u\n", nc);
 		printf("Performance time-stamp counter size: %u bits\n", tscsize);
 		printf("Maximum core count: %u\n", mnc);
@@ -1577,7 +1622,7 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		desc.partitions = ebx->partitions + 1;
 		desc.max_threads_sharing = eax->sharing + 1;
 
-		printf("%s\n", describe_cache(&desc, desc_str, sizeof(desc_str), 2));
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 
 		ZERO_REGS(regs);
 		regs->eax = 0x8000001D;

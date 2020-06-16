@@ -76,7 +76,7 @@ struct cache_desc_t {
 	uint16_t max_threads_sharing;
 };
 
-char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent);
+char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent);
 
 #endif
 

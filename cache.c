@@ -284,11 +284,20 @@ static const char *size(uint32_t size)
 		safe_strcat(buffer, temp, bufsize); \
 	}
 
-char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent)
+char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent)
 {
 	char temp[64];
+	uint32_t instances = 0;
 
 	buffer[0] = 0;
+
+	/* If we know ncpus and max_threads_sharing, we can make an educated guess
+	 * about the number of instances of this particular cache in the socket.
+	 */
+	if (ncpus)
+		instances = 1;
+	if (ncpus && desc->max_threads_sharing && ncpus > desc->max_threads_sharing)
+		instances = ncpus / desc->max_threads_sharing;
 
 	switch (desc->type) {
 	case DATA_TLB:
@@ -303,12 +312,22 @@ char *describe_cache(const struct cache_desc_t *desc, char *buffer, size_t bufsi
 	case CODE:
 	case DATA:
 	case UNIFIED:
-		/* e.g. "32KB L1 data cache" */
-		ADD_LINE("%5s %s %s",
-			size(desc->size),
-			level(desc->level),
-			type(desc->type));
-		indent += 6;
+		if (instances) {
+			/* e.g. "16 x 32KB L1 data cache" */
+			ADD_LINE("%2d x %5s %s %s",
+				instances,
+				size(desc->size),
+				level(desc->level),
+				type(desc->type));
+			indent += 11;
+		} else {
+			/* e.g. "32KB L1 data cache" */
+			ADD_LINE("%5s %s %s",
+				size(desc->size),
+				level(desc->level),
+				type(desc->type));
+			indent += 6;
+		}
 		break;
 	case TRACE:
 		ADD_LINE("%dK-uops trace cache",
@@ -400,7 +419,7 @@ static char *create_description(const struct cache_desc_index_t *idx)
 	case 0xFF: return strdup("  [NOTICE] For cache data, see Deterministic Cache Parameters leaf instead\n");
 	}
 
-	describe_cache(desc, buffer, sizeof(buffer), 2);
+	describe_cache(0, desc, buffer, sizeof(buffer), 2);
 	return strdup(buffer);
 }
 
