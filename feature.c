@@ -229,7 +229,7 @@ static const struct cpu_feature_t features [] = {
 
 	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1 instruction"},
 	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512 vector byte manipulation instructions (AVX512VBMI)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , "User Mode Instruction Prevention (UMIP)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "User Mode Instruction Prevention (UMIP)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Protection Keys for User-mode pages (PKU)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OS has enabled protection keys (OSPKE)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "Wait and Pause Enhancements (WAITPKG)"},
