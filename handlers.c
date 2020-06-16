@@ -338,7 +338,6 @@ static void handle_std_cache(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 		print_intel_caches(regs, &state->sig);
 		regs++;
 	}
-	printf("\n");
 
 	free(rvec);
 }
