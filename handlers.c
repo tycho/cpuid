@@ -299,8 +299,8 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		       ebx->clflushsz << 3,
 		       ebx->brandid);
 	}
-	print_features(regs, state);
-	printf("\n");
+	if (print_features(regs, state))
+		printf("\n");
 }
 
 /* EAX = 0000 0002 */
@@ -1485,6 +1485,8 @@ static void handle_ext_ibs_feat(struct cpu_regs_t *regs, struct cpuid_state_t *s
 {
 	if (!(state->vendor & VENDOR_AMD))
 		return;
+	if (!regs->eax)
+		return;
 	printf("Instruction Based Sampling identifiers:\n");
 	print_features(regs, state);
 	printf("\n");
@@ -1752,65 +1754,87 @@ static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_HV_HYPERV) {
-		printf("Recommended attempts to retry spinlocks: %d\n\n", regs->ebx);
-		print_features(regs, state);
-		printf("\n");
+		struct ecx_addressing {
+			unsigned physbits:7;
+			unsigned reserved:25;
+		};
+
+		struct ecx_addressing *ecx = (struct ecx_addressing *)(&regs->ecx);
+		if (ecx->physbits)
+			printf("Physical address bits in hardware: %d\n", ecx->physbits);
+
+		printf("Spinlock attempts before notifying hypervisor: ");
+		if (regs->ebx == 0xFFFFFFFF)
+			printf("never notify\n\n");
+		else
+			printf("%d\n\n", regs->ebx);
+
+		if (regs->eax) {
+			print_features(regs, state);
+			printf("\n");
+		}
 	}
 }
 
 /* EAX = 4000 0005 */
 static void handle_vmm_leaf05(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
-		if (!(regs->eax || regs->ebx || regs->ecx))
-			return;
-		if (regs->eax)
-			printf("Maximum virtual processors: %d\n", regs->eax);
-		if (regs->ebx)
-			printf("Maximum logical processors: %d\n", regs->ebx);
-		if (regs->ecx)
-			printf("Maximum interrupt vectors for intremap: %d\n", regs->ecx);
-		printf("\n");
-	}
+	if (!(state->vendor & VENDOR_HV_HYPERV))
+		return;
+	if (!(regs->eax || regs->ebx || regs->ecx))
+		return;
+	if (regs->eax)
+		printf("Maximum virtual processors: %d\n", regs->eax);
+	if (regs->ebx)
+		printf("Maximum logical processors: %d\n", regs->ebx);
+	if (regs->ecx)
+		printf("Maximum interrupt vectors for intremap: %d\n", regs->ecx);
+	printf("\n");
 }
 
 /* EAX = 4000 0006 */
 static void handle_vmm_leaf06(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
-		print_features(regs, state);
+	if (!(state->vendor & VENDOR_HV_HYPERV))
+		return;
+	if (print_features(regs, state))
 		printf("\n");
-	}
 }
 
 /* EAX = 4000 0007 */
 static void handle_hyperv_leaf07(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
-		printf("Hyper-V enlightenments available to the root partition only:\n");
-		print_features(regs, state);
-		printf("\n");
-	}
+	if (!(state->vendor & VENDOR_HV_HYPERV))
+		return;
+	if (!(regs->eax || regs->ebx || regs->ecx))
+		return;
+	printf("Hyper-V enlightenments available to the root partition only:\n");
+	print_features(regs, state);
+	printf("\n");
 }
 
 /* EAX = 4000 0008 */
 static void handle_hyperv_leaf08(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
-		print_features(regs, state);
+	if (!(state->vendor & VENDOR_HV_HYPERV))
+		return;
+	if (!regs->eax)
+		return;
+	if (print_features(regs, state))
 		printf("\n");
-		printf("Maximum PASID space PASID count: %d\n\n", regs->eax >> 12);
-	}
+	printf("Maximum PASID space PASID count: %d\n\n", regs->eax >> 12);
 }
 
 /* EAX = 4000 0009 */
 static void handle_hyperv_leaf09(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
-		printf("Hyper-V nested feature identification:\n");
-		print_features(regs, state);
-		printf("\n");
-	}
+	if (!(state->vendor & VENDOR_HV_HYPERV))
+		return;
+	if (!(regs->eax || regs->edx))
+		return;
+	printf("Hyper-V nested feature identification:\n");
+	print_features(regs, state);
+	printf("\n");
 }
 
 /* EAX = 4000 000A */
