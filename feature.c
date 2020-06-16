@@ -1148,9 +1148,6 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				printf("Hyper-V %sfeatures, %s:\n",
 				       last_reg == REG_EBX ? "partition " : "",
 					   reg_name(last_reg));
-				/* EAX and EBX do not contain feature bits for this leaf */
-				accounting.eax = 0;
-				accounting.ebx = 0;
 				break;
 			case 0x40000004:
 				printf("Hyper-V implementation recommendations, %s:\n",
