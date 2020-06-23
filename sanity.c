@@ -51,9 +51,9 @@ static int sane_performance(struct cpuid_state_t *state);
 #endif
 
 sanity_handler_t handlers[] = {
-	//sane_apicid,
-	//sane_l3_sharing,
 	sane_performance,
+	sane_apicid,
+	//sane_l3_sharing,
 	NULL
 };
 
@@ -150,7 +150,7 @@ typedef pthread_t thread_handle_t;
 static int sane_apicid(struct cpuid_state_t *state)
 {
 	int ret = 0;
-	uint32_t hwthreads = thread_count_native(NULL), i, c,
+	uint32_t hwthreads = thread_count_native(NULL), i,
 	         worker_count;
 	uint8_t *apic_ids = NULL, *apic_copy = NULL, worker_flag;
 	struct apic_validate_t *apic_state = NULL;
@@ -160,7 +160,7 @@ static int sane_apicid(struct cpuid_state_t *state)
 
 	worker_count = hwthreads / 4 + 1;
 
-	printf("Verifying APIC ID sanity");
+	printf("Verifying APIC ID sanity:\n");
 
 	/* Populate initial APIC ID array. */
 	apic_ids = (uint8_t *)malloc(hwthreads * sizeof(unsigned char));
@@ -174,9 +174,9 @@ static int sane_apicid(struct cpuid_state_t *state)
 	qsort(apic_copy, hwthreads, sizeof(unsigned char), apic_compare);
 	for (i = 1; i < hwthreads; i++) {
 		if (apic_ids[i - 1] == apic_ids[i]) {
-			printf(". fail (duplicate APIC IDs)\n");
+			printf("  failed (duplicate APIC IDs detected)\n");
 			ret = 1;
-			goto cleanup;
+			break;
 		}
 	}
 	free(apic_copy);
@@ -213,20 +213,10 @@ static int sane_apicid(struct cpuid_state_t *state)
 
 	/* Occasionally signal workers to run validation checks. */
 	start = time_sec();
-	c = 1;
-	printf(".");
-	fflush(stdout);
 	while(worker_flag) {
 		now = time_sec();
 		if (now - start > 3.0)
 			break;
-		if (c % 100 == 0) {
-			c = 1;
-			printf(".");
-			fflush(stdout);
-		} else {
-			c++;
-		}
 #ifdef TARGET_OS_WINDOWS
 		Sleep(10);
 #else
@@ -234,16 +224,17 @@ static int sane_apicid(struct cpuid_state_t *state)
 #endif
 		for (i = 0; i < hwthreads; i++) {
 			if (apic_state[i].failed) {
-				printf(" failed (APIC IDs changed over time)\n");
+				printf("  failed (APIC IDs on CPU %d changed over time)\n", i);
 				ret = 2;
-				goto cleanup;
+				worker_flag = 0;
+				break;
 			}
 		}
 	}
 
-	printf(" ok\n");
+	if (ret == 0)
+		printf("  passed\n");
 
-cleanup:
 	/* Wait for workers to exit. */
 	worker_flag = 0;
 	if (busy_workers) {
