@@ -731,7 +731,7 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		x2apic->socket.shift = x2apic->thread.shift;
 		x2apic->socket.mask = (-1) ^ x2apic->thread.mask;
 	} else {
-		assert(0);
+		return 1;
 	}
 
 	/* XXX: This is a totally non-standard way to determine the shift width,
