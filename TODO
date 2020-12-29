@@ -2,8 +2,3 @@ AMD features
   * Leaf 0x8000 0019  L1 TLB 1G Identifiers
   * Leaf 0x8000 001A  Performance Optimization Identifiers
   * Leaf 0x8000 001B  Instruction Based Sampling Identifiers
-
-AMD bugs (?)
-  * Figure out why leaf 0x8000001D L3 cache is half-size on e.g. Ryzen 5 1400
-    + Most likely because the "max threads sharing" is half of the threads on
-      the physical die (i.e. there are *two* L3 caches on one physical chip)
