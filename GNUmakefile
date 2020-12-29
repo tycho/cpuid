@@ -82,6 +82,11 @@ LDFLAGS += -fPIC
 endif
 endif
 
+ifeq ($(uname_S),Darwin)
+CFLAGS += -arch x86_64
+LDFLAGS += -arch x86_64
+endif
+
 ifeq ($(uname_S),Linux)
 CFLAGS += -pthread
 LDFLAGS += -pthread -lrt
