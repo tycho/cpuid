@@ -1,7 +1,5 @@
 ## CPUID
 
-[![Build Status](https://travis-ci.org/tycho/cpuid.svg?branch=master)](https://travis-ci.org/tycho/cpuid)
-
 "cpuid" is a very simple C program, designed to dump and extract information
 from the x86 CPUID instruction.
 
