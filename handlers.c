@@ -245,7 +245,7 @@ const char *vendor_name(int vendor_id)
 /* EAX = 0000 0000 */
 static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	char buf[13];
+	char buf[13] ALIGNED(4);
 	size_t i;
 
 	state->curmax = regs->eax;

@@ -36,6 +36,12 @@ struct cpu_regs_t {
 
 #define ZERO_REGS(x) {memset((x), 0, sizeof(struct cpu_regs_t));}
 
+#ifdef __GNUC__
+#define ALIGNED(n) __attribute__((aligned(n)))
+#else
+#define ALIGNED(n)
+#endif
+
 struct cpuid_state_t;
 
 typedef BOOL(*cpuid_call_handler_t)(struct cpu_regs_t *, struct cpuid_state_t *);
