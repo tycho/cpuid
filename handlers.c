@@ -37,7 +37,7 @@ DECLARE_HANDLER(features);
 
 struct x2apic_prop_t {
 	uint32_t mask;
-	uint32_t shift;
+	uint8_t shift;
 	uint8_t total;
 	unsigned reported:1;
 };
@@ -758,6 +758,13 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	return 0;
 }
 
+static inline int x2apic_idx_mask(uint32_t id, struct x2apic_prop_t *prop)
+{
+	if (prop->shift >= 32)
+		return 0;
+	return (id & prop->mask) >> prop->shift;
+}
+
 /* EAX = 0000 000B */
 static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
@@ -778,10 +785,10 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	printf("    Threads per core:    %u\n\n", x2apic.infer.threads_per_core);
 
 	printf("  x2APIC ID %d (socket %d, core %d, thread %d)\n\n",
-		 x2apic.id,
-		(x2apic.id & x2apic.socket.mask) >> x2apic.socket.shift,
-		(x2apic.id & x2apic.core.mask)   >> x2apic.core.shift,
-		(x2apic.id & x2apic.thread.mask) >> x2apic.thread.shift);
+	       x2apic.id,
+	       x2apic_idx_mask(x2apic.id, &x2apic.socket),
+	       x2apic_idx_mask(x2apic.id, &x2apic.core),
+	       x2apic_idx_mask(x2apic.id, &x2apic.thread));
 }
 
 /* EAX = 0000 000B */
