@@ -225,14 +225,16 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	leafcount_tmp = 0;
 	while(TRUE) {
 		char linebuf[128];
+		uint32_t id;
 
 		if(!fgets(linebuf, sizeof(linebuf), file))
 			break;
 
 		/* CPU %d:\n */
-		if (strncmp(linebuf, "CPU ", 4) == 0) {
-			uint32_t id;
-			sscanf(linebuf, "CPU %u:", &id);
+		if ((strlen(linebuf) < 9 && sscanf(linebuf, "CPU %u:", &id)) == 1 ||
+			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
+			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
+		{
 			cpucount = (cpucount > id + 1) ? cpucount : id + 1;
 			leafcount = (leafcount > leafcount_tmp) ? leafcount : leafcount_tmp;
 			leafcount_tmp = 0;
@@ -271,6 +273,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	leaf = NULL;
 	while(TRUE) {
 		size_t s;
+		uint32_t id;
 		char linebuf[128];
 
 		if(!fgets(linebuf, sizeof(linebuf), file))
@@ -281,13 +284,10 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		if (s)
 			linebuf[s] = 0;
 
-		if (strncmp(linebuf, "CPU ", 4) == 0) {
-			uint32_t id;
-			int r;
-
-			r = sscanf(linebuf, "CPU %u:", &id);
-			assert(r == 1);
-
+		if ((strlen(linebuf) < 9 && sscanf(linebuf, "CPU %u:", &id)) == 1 ||
+			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
+			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
+		{
 			/* We already have a leaf. Finalize it. */
 			if (leaf) {
 				leaf->input.eax = 0xFFFFFFFF;
@@ -309,18 +309,25 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			uint32_t eax_out, ebx_out, ecx_out, edx_out;
 
 			/* First format, no ecx input. */
-			int r = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
-						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
-			if (r != 5) {
-				r = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
-						   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
-				if (r != 6) {
-					r = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
-							   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
-					if (r != 6)
-						continue;
-				}
-			}
+			int found = 0;
+
+			if (!found)
+				found = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
+							   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
+			if (!found)
+				found = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
+						   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
+			if (!found)
+				found = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
+						   &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
+			if (!found)
+				found = sscanf(linebuf, "CPUID %08X: %08X-%08X-%08X-%08X [SL %2d]",
+						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out, &ecx_in) == 6;
+			if (!found)
+				found = sscanf(linebuf, "CPUID %08X: %08X-%08X-%08X-%08X",
+						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
+			if (!found)
+				continue;
 
 			if (!leaf) {
 				/* No 'CPU %u:' header, assumed CPU 0 */
