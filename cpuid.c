@@ -316,6 +316,11 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 				found = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
 				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
 
+			/* Todd Allen's CPUID tool dump format */
+			if (!found)
+				found = sscanf(linebuf, "0x%08x 0x%02x = eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x",
+				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
+
 			/* Other dump formats from various sources */
 			if (!found)
 				found = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
