@@ -767,10 +767,10 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 
+	if (probe_std_x2apic(regs, state, &x2apic))
+		return;
+
 	printf("x2APIC Processor Topology:\n");
-
-	probe_std_x2apic(regs, state, &x2apic);
-
 	printf("  Inferred information:\n");
 	printf("    Logical total:       %u%s\n", total_logical, (total_logical >= x2apic.infer.cores_per_socket * x2apic.infer.threads_per_core) ? "" : " (?)");
 	printf("    Logical per socket:  %u\n",   x2apic.infer.cores_per_socket * x2apic.infer.threads_per_core);
