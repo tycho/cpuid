@@ -1,0 +1,3 @@
+[submodule "InstLatx64"]
+	path = InstLatx64
+	url = https://github.com/InstLatx64/InstLatx64
