@@ -68,9 +68,10 @@ CFLAGS := -Os -I. -fno-strict-aliasing \
 	-Wno-long-long \
 	$(call cc_supports_flag,-Wno-overlength-strings) \
 	-Wold-style-definition \
-	-Wstrict-prototypes
+	-Wstrict-prototypes \
+	$(EXTRA_CFLAGS)
 
-LDFLAGS := -lm
+LDFLAGS := -lm $(EXTRA_CFLAGS)
 OBJECTS := cache.o clock.o cpuid.o feature.o handlers.o main.o sanity.o threads.o util.o version.o
 
 # GCC is too down-rev on Illumos to allow this
