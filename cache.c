@@ -443,7 +443,7 @@ static int entry_comparator(const void *a, const void *b)
 #define MAX_ENTRIES 32
 void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *sig)
 {
-	uint8_t buf[16], i;
+	uint8_t buf[16] ALIGNED(4), i;
 
 	/* It's only possible to have 16 entries on a single line, but some
 	 * descriptors have two descriptions tied to them, so support up to 32
