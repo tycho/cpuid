@@ -216,9 +216,10 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "Multi-Precision Add-Carry Instruction Extensions (ADX)"},
 	{ 0x00000007, 0, REG_EBX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , "Supervisor Mode Access Prevention (SMAP)"},
 	{ 0x00000007, 0, REG_EBX, 0x00200000, VENDOR_INTEL                                , "AVX512 integer FMA instructions (AVX512IFMA)"},
-	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , "Persistent commit instruction (PCOMMIT)"},
+	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "Persistent commit instruction (PCOMMIT)"},
+	{ 0x00000007, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , "RDPID instruction and TSC_AUX MSR support"},
 	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "CLFLUSHOPT instruction"},
-	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "cache line write-back instruction (CLWB)"},
+	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "cache line write-back instruction (CLWB)"},
 	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "Intel Processor Trace"},
 	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512 prefetch instructions (AVX512PF)"},
 	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512 exponent/reciprocal instructions (AVX512ER)"},
@@ -230,14 +231,14 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_ECX, 0x00000001, VENDOR_INTEL                                , "PREFETCHWT1 instruction"},
 	{ 0x00000007, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , "AVX512 vector byte manipulation instructions (AVX512VBMI)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , "User Mode Instruction Prevention (UMIP)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Protection Keys for User-mode pages (PKU)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , "OS has enabled protection keys (OSPKE)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , "Protection Keys for User-mode pages (PKU)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , "OS has enabled protection keys (OSPKE)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , "Wait and Pause Enhancements (WAITPKG)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , "AVX512_VBMI2"},
-	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL                                , "CET shadow stack (CET_SS)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , "CET shadow stack (CET_SS)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000100, VENDOR_INTEL                                , "Galois Field NI / Galois Field Affine Transformation (GFNI)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000200, VENDOR_INTEL                                , "VEX-encoded AES-NI (VAES)"},
-	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL                                , "VEX-encoded PCLMUL (VPCL)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "VEX-encoded AES-NI (VAES)"},
+	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , "VEX-encoded PCLMUL (VPCL)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000800, VENDOR_INTEL                                , "AVX512 Vector Neural Network Instructions (AVX512VNNI)"},
 	{ 0x00000007, 0, REG_ECX, 0x00001000, VENDOR_INTEL                                , "AVX512 Bitwise Algorithms (AVX515BITALG)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -929,25 +930,25 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000008, 0, REG_EBX, 0x00000001,                VENDOR_AMD                   , "CLZERO instruction"},
 	{ 0x80000008, 0, REG_EBX, 0x00000002,                VENDOR_AMD                   , "Instructions retired count support (IRPerf)"},
 	{ 0x80000008, 0, REG_EBX, 0x00000004,                VENDOR_AMD                   , "XSAVE always saves/restores error pointers"},
-/*	{ 0x80000008, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00000010,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "INVLPGB and TLBSYNC instruction"},
+	{ 0x80000008, 0, REG_EBX, 0x00000010,                VENDOR_AMD                   , "RDPRU instruction"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00000020,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00000040,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00000080,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00000100,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00000100,                VENDOR_AMD                   , "MCOMMIT instruction"},
 	{ 0x80000008, 0, REG_EBX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "WBNOINVD (Write back and do not invalidate cache)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00000400,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000008, 0, REG_EBX, 0x00001000,                VENDOR_AMD                   , "Indirect Branch Prediction Barrier (IBPB)"},
-/*	{ 0x80000008, 0, REG_EBX, 0x00002000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00002000,                VENDOR_AMD                   , "WBINVD (Write back and invalidate cache)"},
 	{ 0x80000008, 0, REG_EBX, 0x00004000,                VENDOR_AMD                   , "Indirect Branch Restricted Speculation (IBRS)"},
 	{ 0x80000008, 0, REG_EBX, 0x00008000,                VENDOR_AMD                   , "Single Thread Indirect Branch Predictor (STIBP)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00100000,                VENDOR_AMD                   , "EFER.LMLSE is unsupported"},
+	{ 0x80000008, 0, REG_EBX, 0x00200000,                VENDOR_AMD                   , "INVLPGB for guest nested translations"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , "Speculative Store Bypass Disable (SSBD)"},
@@ -977,14 +978,14 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x8000000A, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x8000000A, 0, REG_EDX, 0x00008000,                VENDOR_AMD                   , "Virtualized VMLOAD/VMSAVE"},
 	{ 0x8000000A, 0, REG_EDX, 0x00010000,                VENDOR_AMD                   , "Virtualized GIF"},
-/*	{ 0x8000000A, 0, REG_EDX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00020000,                VENDOR_AMD                   , "Guest mode execution trap (GMET)"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x8000000A, 0, REG_EDX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x8000000A, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00080000,                VENDOR_AMD                   , "SVM supervisor shadow stack restrictions"},
+	{ 0x8000000A, 0, REG_EDX, 0x00100000,                VENDOR_AMD                   , "SPEC_CTRL virtualization"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x00200000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x8000000A, 0, REG_EDX, 0x01000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x01000000,                VENDOR_AMD                   , "INVLPGB/TLBSYNC hypervisor enable"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x02000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
