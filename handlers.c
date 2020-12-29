@@ -277,6 +277,13 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	}
 	printf("\n\n");
 
+	if (state->vendor == VENDOR_UNKNOWN) {
+		/* Weird CPU, ignore vendor string for purpose of feature flag
+		 * identification
+		 */
+		state->ignore_vendor = 1;
+	}
+
 	/* Try to probe topology early, to set up state->logical_in_socket */
 	{
 		struct x2apic_state_t x2apic;
