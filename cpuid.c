@@ -371,6 +371,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	 * to have a file without 'CPU %u:' lines, so we only have CPU 0.
 	 * This also means we never hit the sentinel population above.
 	 */
+	assert(leaf);
 	leaf->input.eax = 0xFFFFFFFF;
 	leaf->input.ecx = 0xFFFFFFFF;
 
