@@ -1207,7 +1207,7 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 
 		leaf_checked = 1;
 
-		if (ignore_vendor) {
+		if (state->ignore_vendor) {
 			if ((*reg & p->m_bitmask) != 0)
 			{
 				char feat[96], vendorlist[32];

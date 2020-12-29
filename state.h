@@ -65,6 +65,7 @@ struct cpuid_state_t
 	uint16_t vendor;
 	uint32_t curmax;
 
+	unsigned ignore_vendor:1;
 	unsigned vendor_override:1;
 
 	char procname[48];

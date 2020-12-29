@@ -32,7 +32,6 @@
 #include <string.h>
 #include <getopt.h>
 
-int ignore_vendor = 0;
 static uint32_t scan_to = 0;
 
 static void run_cpuid(struct cpuid_state_t *state, int dump)
@@ -200,7 +199,7 @@ int main(int argc, char **argv)
 			{"dump", no_argument, 0, 'd'},
 			{"cpu", required_argument, 0, 'c'},
 			{"kernel", no_argument, &do_kernel, 'k'},
-			{"ignore-vendor", no_argument, &ignore_vendor, 1},
+			{"ignore-vendor", no_argument, 0, 'i'},
 			{"vendor", required_argument, 0, 'V'},
 			{"parse", required_argument, 0, 'f'},
 			{"format", required_argument, 0, 'o'},
@@ -240,6 +239,9 @@ int main(int argc, char **argv)
 			break;
 		case 'f':
 			file = optarg;
+			break;
+		case 'i':
+			state.ignore_vendor = 1;
 			break;
 		case 'o':
 			assert(optarg);
