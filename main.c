@@ -258,6 +258,7 @@ int main(int argc, char **argv)
 		case 'V':
 			assert(optarg);
 			state.vendor = vendor_id(optarg);
+			state.vendor_override = 1;
 			break;
 		case 'v':
 			version();

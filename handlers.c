@@ -270,9 +270,9 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	buf[12] = 0;
 
 	printf("CPU vendor string: '%s'", buf);
-	if (state->vendor == VENDOR_UNKNOWN ) {
+	if (state->vendor == VENDOR_UNKNOWN) {
 		state->vendor = vendor_id(buf);
-	} else {
+	} else if (state->vendor_override) {
 		printf(" (overridden as '%s')", vendor_name(state->vendor));
 	}
 	printf("\n\n");
