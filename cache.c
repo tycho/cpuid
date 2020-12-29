@@ -444,6 +444,7 @@ static int entry_comparator(const void *a, const void *b)
 void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *sig)
 {
 	uint8_t buf[16] ALIGNED(4), i;
+	uint8_t last_descriptor = 0;
 
 	/* It's only possible to have 16 entries on a single line, but some
 	 * descriptors have two descriptions tied to them, so support up to 32
@@ -471,6 +472,11 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 
 		if (buf[i] == 0)
 			continue;
+
+		if (buf[i] == last_descriptor)
+			continue;
+
+		last_descriptor = buf[i];
 
 		if (buf[i] == 0x49) {
 			/* A very stupid special case. AP-485 says this
