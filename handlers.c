@@ -718,6 +718,7 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		x2apic->core.mask = x2apic->core.mask ^ x2apic->thread.mask;
 	} else if (!x2apic->core.reported && x2apic->thread.reported) {
 		x2apic->core.mask = 0;
+		x2apic->core.total = 1;
 		x2apic->socket.shift = x2apic->thread.shift;
 		x2apic->socket.mask = (-1) ^ x2apic->thread.mask;
 	} else {
@@ -738,12 +739,19 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	printf("  Thread mask: 0x%08x, shift: %d\n", x2apic->thread.mask, x2apic->thread.shift);
 	*/
 
+	if (!x2apic->core.total || !x2apic->thread.total) {
+		/* Something went wrong here, if we don't bomb out now, we'll end up
+		 * dividing by zero.
+		 */
+		return 1;
+	}
+
 	if (x2apic->core.total >  x2apic->thread.total)
 		x2apic->core.total /= x2apic->thread.total;
 
 	state->logical_in_socket = x2apic->core.total * x2apic->thread.total;
 
-	x2apic->infer.sockets = total_logical / (x2apic->core.total * x2apic->thread.total);
+	x2apic->infer.sockets = total_logical / state->logical_in_socket;
 	x2apic->infer.cores_per_socket = x2apic->core.total;
 	x2apic->infer.threads_per_core = x2apic->thread.total;
 
