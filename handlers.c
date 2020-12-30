@@ -404,14 +404,20 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		for (match = amd_package_match; match->name != NULL; match++) {
 			BOOL matches = TRUE;
 			if (match->flags & MATCH_FAMILY)
-				matches &= (match->family == ((uint32_t)state->sig.family + (uint32_t)state->sig.extfamily));
+				matches &= (match->family == state->family);
 			if (match->flags & MATCH_EXTMODEL)
 				matches &= (match->extmodel == state->sig.extmodel);
 			matches &= (match->package_id == package_id);
 			if (matches)
 				break;
 		}
-		printf("CPU Socket: %s (0x%02x)\n\n", match->name ? match->name : "Unknown", package_id);
+		printf("CPU Socket: %s", match->name ? match->name : "Unknown");
+		if (!match->name)
+			printf(" (%02x:%02x:%02x)",
+					state->family,
+					state->sig.extmodel,
+					package_id);
+		printf("\n\n");
 	}
 	if (print_features(regs, state))
 		printf("\n");
