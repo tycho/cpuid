@@ -211,6 +211,7 @@ typedef struct _vendor_map_t {
 
 vendor_map_t vendors[] = {
 	{ "GenuineIntel", VENDOR_INTEL },
+	{ "GenuineIotel", VENDOR_INTEL }, /* There are a few of these out there, oddly... */
 	{ "AuthenticAMD", VENDOR_AMD },
 	{ "GenuineTMx86", VENDOR_TRANSMETA },
 	{ "CyrixInstead", VENDOR_CYRIX },
