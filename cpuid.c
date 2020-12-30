@@ -221,7 +221,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	size_t i, cpucount, leafcount, leafcount_tmp;
 	uint32_t last_eax = (uint32_t)-1, infer_ecx = 0;
 	BOOL zero_based = TRUE;
-	FILE *file = fopen(filename, "r");
+	FILE *file = fopen(filename, "rb");
 
 	if (!file)
 		return FALSE;
@@ -230,11 +230,17 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	leafcount = 0;
 	leafcount_tmp = 0;
 	while(TRUE) {
-		char linebuf[128];
+		size_t s;
 		uint32_t id;
+		char linebuf[128];
 
 		if(!fgets(linebuf, sizeof(linebuf), file))
 			break;
+
+		/* Strip \r and \n */
+		s = strcspn(linebuf, "\r\n");
+		if (s)
+			linebuf[s] = 0;
 
 		/* CPU %d:\n */
 		if ((strlen(linebuf) < 9 && sscanf(linebuf, "CPU %u:", &id)) == 1 ||
