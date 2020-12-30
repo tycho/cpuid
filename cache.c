@@ -326,7 +326,7 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 				size(desc->size),
 				level(desc->level),
 				type(desc->type));
-			indent += 6;
+			indent += 8;
 		}
 		break;
 	case TRACE:
