@@ -28,6 +28,7 @@
 
 static inline uint64_t get_cpu_clock(void)
 {
+#if defined(TARGET_CPU_X86) || defined(TARGET_CPU_X86_64)
 #ifdef _MSC_VER
     return __rdtsc();
 #else
@@ -35,6 +36,11 @@ static inline uint64_t get_cpu_clock(void)
 
     __asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
     return ((uint64_t) hi << 32ULL) | lo;
+#endif
+#else
+	/* This shouldn't be executed on non-x86 */
+	assert(0);
+	return 0;
 #endif
 }
 

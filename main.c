@@ -144,7 +144,9 @@ static void usage(const char *argv0)
 	printf("  %-18s %s\n", "--ignore-vendor", "Show feature flags from all vendors");
 	printf("  %-18s %s\n", "--vendor", "Override the processor vendor string");
 	printf("  %-18s %s\n", "-f, --parse", "Read and decode a raw cpuid table from the file specified");
+#ifdef CPUID_AVAILABLE
 	printf("  %-18s %s\n", "--sanity", "Do a sanity check of the CPUID data");
+#endif
 	printf("\n");
 	exit(0);
 }
@@ -275,11 +277,23 @@ int main(int argc, char **argv)
 	if (cpu_start == -2)
 		cpu_start = cpu_end = 0;
 
+#ifdef CPUID_AVAILABLE
 	if (do_sanity && !file) {
 		state.thread_bind(&state, 0);
 		ret = sanity_run(&state);
 		goto leave;
 	}
+#endif
+
+#ifndef CPUID_AVAILABLE
+	if (!file) {
+		fprintf(stderr, "ERROR: This binary is not compiled for an x86-based architecture.\n");
+		fprintf(stderr, "       You can only use this binary to parse text file based\n");
+		fprintf(stderr, "       CPUID dumps.\n\n");
+		usage(argv[0]);
+		return 1;
+	}
+#endif
 
 	switch(dump_format) {
 	case DUMP_FORMAT_DEFAULT:

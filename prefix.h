@@ -24,6 +24,10 @@
 
 #include "platform.h"
 
+#if defined(TARGET_CPU_X86) || defined(TARGET_CPU_X86_64)
+#define CPUID_AVAILABLE
+#endif
+
 #ifdef TARGET_OS_LINUX
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE

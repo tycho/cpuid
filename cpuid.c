@@ -49,6 +49,7 @@ static const char *reg_to_str(char *buffer, struct cpu_regs_t *regs)
 	return buffer;
 }
 
+#ifdef CPUID_AVAILABLE
 #if defined(TARGET_COMPILER_MSVC)
 #ifdef TARGET_CPU_X86_64
 
@@ -158,7 +159,7 @@ static inline BOOL cpuid(uint32_t *_eax, uint32_t *_ebx, uint32_t *_ecx, uint32_
 	    : "0" (*_eax), "2" (*_ecx));
 	return TRUE;
 }
-
+#endif
 #endif
 
 #ifdef __linux__
@@ -207,8 +208,11 @@ out:
 
 BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
+#if defined(TARGET_CPU_X86) || defined(TARGET_CPU_X86_64)
 	memcpy(&state->last_leaf, regs, sizeof(struct cpu_regs_t));
 	return cpuid(&regs->eax, &regs->ebx, &regs->ecx, &regs->edx);
+#endif
+	return FALSE;
 }
 
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
