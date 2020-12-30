@@ -31,7 +31,7 @@ if host_machine.system() != 'windows'
     dependencies += compiler.find_library('m')
 endif
 
-if target_machine.system() == 'windows'
+if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
     dependencies += compiler.find_library('winmm')
 endif
 
