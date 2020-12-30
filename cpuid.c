@@ -219,6 +219,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 {
 	struct cpuid_leaf_t *leaf;
 	size_t i, cpucount, leafcount, leafcount_tmp;
+	uint32_t last_eax = (uint32_t)-1, infer_ecx = 0;
 	FILE *file = fopen(filename, "r");
 
 	if (!file)
@@ -357,6 +358,18 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 				/* No 'CPU %u:' header, assumed CPU 0 */
 				leaf = state->cpuid_leaves[0];
 			}
+
+			/* If this dump format did not specify an input ECX value, we can
+			 * infer it by how many times we've seen this input EAX repeated.
+			 */
+			if (last_eax == eax_in) {
+				if (!ecx_in)
+					ecx_in = ++infer_ecx;
+			} else {
+				infer_ecx = 0;
+			}
+			last_eax = eax_in;
+
 			assert(leaf);
 			leaf->input.eax = eax_in;
 			leaf->input.ecx = ecx_in;
