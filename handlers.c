@@ -289,7 +289,8 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	/* Try to probe topology early, to set up state->logical_in_socket */
 	{
 		struct x2apic_state_t x2apic;
-		probe_std_x2apic(regs, state, &x2apic);
+		if (probe_std_x2apic(regs, state, &x2apic))
+			state->logical_in_socket = state->cpu_logical_count;
 	}
 }
 
@@ -758,9 +759,7 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	if (x2apic->core.total >  x2apic->thread.total)
 		x2apic->core.total /= x2apic->thread.total;
 
-	state->logical_in_socket = x2apic->core.total * x2apic->thread.total;
-
-	x2apic->infer.sockets = total_logical / state->logical_in_socket;
+	x2apic->infer.sockets = total_logical / x2apic->core.total * x2apic->thread.total;
 	x2apic->infer.cores_per_socket = x2apic->core.total;
 	x2apic->infer.threads_per_core = x2apic->thread.total;
 
