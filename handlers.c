@@ -341,6 +341,7 @@ static const struct amd_package_match_t
 	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 7, "SP3r2"},
 	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 1, 0, "FP5"},
 	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 1, 2, "AM4"},
+	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 7, 2, "AM4"},
 	{ MATCH_NONE, 0, 0, 0, NULL },
 };
 
