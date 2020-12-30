@@ -36,6 +36,10 @@ typedef enum
 	VENDOR_HV_PARALLELS = 0x100,
 	VENDOR_HV_BHYVE     = 0x200,
 	VENDOR_HV_GENERIC   = 0x400,
+
+	/* Chinese-manufactured AMD EPYC clone. */
+	VENDOR_HYGON        = 0x800 | VENDOR_AMD,
+
 	VENDOR_ANY          = (int)-1
 } cpu_vendor_t;
 

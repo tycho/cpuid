@@ -214,6 +214,7 @@ vendor_map_t vendors[] = {
 	{ "AuthenticAMD", VENDOR_AMD },
 	{ "GenuineTMx86", VENDOR_TRANSMETA },
 	{ "CyrixInstead", VENDOR_CYRIX },
+	{ "HygonGenuine", VENDOR_HYGON },
 	{ NULL, VENDOR_UNKNOWN },
 };
 
