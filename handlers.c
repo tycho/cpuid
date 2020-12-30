@@ -294,64 +294,58 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	}
 }
 
-enum match_flags_t {
-	MATCH_NONE = 0,
-	MATCH_FAMILY = 0x1,
-	MATCH_EXTMODEL = 0x2
-};
 static const struct amd_package_match_t
 {
-	uint32_t flags;
 	uint32_t family;
 	uint32_t extmodel;
 	uint32_t package_id;
 	const char *name;
 } amd_package_match [] = {
-	{ MATCH_FAMILY,                  0x10, 0, 0, "F" },
-	{ MATCH_FAMILY,                  0x10, 0, 1, "AM" },
-	{ MATCH_FAMILY,                  0x10, 0, 2, "S1" },
-	{ MATCH_FAMILY,                  0x10, 0, 3, "G34" },
-	{ MATCH_FAMILY,                  0x10, 0, 4, "ASB2" },
-	{ MATCH_FAMILY,                  0x10, 0, 5, "C32" },
-	{ MATCH_FAMILY,                  0x11, 0, 2, "S1g2" },
-	{ MATCH_FAMILY,                  0x12, 0, 1, "FS1 (µPGA)" },
-	{ MATCH_FAMILY,                  0x12, 0, 2, "FM1 (PGA)" },
-	{ MATCH_FAMILY,                  0x14, 0, 0, "FT1 (BGA)" },
-	{ MATCH_FAMILY,                  0x14, 0,15, "FT1 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 0, 1, "AM3" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 0, 3, "G34" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 0, 5, "C32" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 1, 0, "FP2 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 1, 1, "FS1r2 (µPGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 1, 2, "FM2 (PGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 3, 0, "FP3 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 3, 1, "FM2r2 (µPGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 6, 0, "FP4 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 6, 2, "AM4 (µPGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 6, 3, "FM2r2 (µPGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 7, 0, "FP4 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 7, 2, "AM4 (µPGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x15, 7, 4, "FT4 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x16, 0, 0, "FT3 (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x16, 0, 1, "FS1b" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x16, 3, 0, "FT3b (BGA)" },
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x16, 3, 3, "FP4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 1, "SP4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 2, "AM4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 3, "SP4r2"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 4, "SP3"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 0, 7, "SP3r2"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 1, 0, "FP5"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 2, 0, "FP5"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 3, 4, "SP3"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 3, 7, "TRX4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 1, 2, "AM4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 6, 0, "FP6"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 7, 2, "AM4"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x17, 8, 0, "FP5"},
-	{ MATCH_FAMILY | MATCH_EXTMODEL, 0x19, 2, 2, "AM4"},
+	{ 0x10, 0, 0, "F" },
+	{ 0x10, 0, 1, "AM" },
+	{ 0x10, 0, 2, "S1" },
+	{ 0x10, 0, 3, "G34" },
+	{ 0x10, 0, 4, "ASB2" },
+	{ 0x10, 0, 5, "C32" },
+	{ 0x11, 0, 2, "S1g2" },
+	{ 0x12, 0, 1, "FS1 (µPGA)" },
+	{ 0x12, 0, 2, "FM1 (PGA)" },
+	{ 0x14, 0, 0, "FT1 (BGA)" },
+	{ 0x14, 0,15, "FT1 (BGA)" },
+	{ 0x15, 0, 1, "AM3" },
+	{ 0x15, 0, 3, "G34" },
+	{ 0x15, 0, 5, "C32" },
+	{ 0x15, 1, 0, "FP2 (BGA)" },
+	{ 0x15, 1, 1, "FS1r2 (µPGA)" },
+	{ 0x15, 1, 2, "FM2 (PGA)" },
+	{ 0x15, 3, 0, "FP3 (BGA)" },
+	{ 0x15, 3, 1, "FM2r2 (µPGA)" },
+	{ 0x15, 6, 0, "FP4 (BGA)" },
+	{ 0x15, 6, 2, "AM4 (µPGA)" },
+	{ 0x15, 6, 3, "FM2r2 (µPGA)" },
+	{ 0x15, 7, 0, "FP4 (BGA)" },
+	{ 0x15, 7, 2, "AM4 (µPGA)" },
+	{ 0x15, 7, 4, "FT4 (BGA)" },
+	{ 0x16, 0, 0, "FT3 (BGA)" },
+	{ 0x16, 0, 1, "FS1b" },
+	{ 0x16, 3, 0, "FT3b (BGA)" },
+	{ 0x16, 3, 3, "FP4"},
+	{ 0x17, 0, 1, "SP4"},
+	{ 0x17, 0, 2, "AM4"},
+	{ 0x17, 0, 3, "SP4r2"},
+	{ 0x17, 0, 4, "SP3"},
+	{ 0x17, 0, 7, "SP3r2"},
+	{ 0x17, 1, 0, "FP5"},
+	{ 0x17, 2, 0, "FP5"},
+	{ 0x17, 3, 4, "SP3"},
+	{ 0x17, 3, 7, "TRX4"},
+	{ 0x17, 1, 2, "AM4"},
+	{ 0x17, 6, 0, "FP6"},
+	{ 0x17, 7, 2, "AM4"},
+	{ 0x17, 8, 0, "FP5"},
+	{ 0x19, 2, 2, "AM4"},
 
-	{ MATCH_NONE, 0, 0, 0, NULL },
+	{ 0, 0, 0, NULL },
 };
 
 /* EAX = 8000 0001 | EAX = 0000 0001 */
@@ -409,9 +403,8 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		const struct amd_package_match_t *match;
 		for (match = amd_package_match; match->name != NULL; match++) {
 			BOOL matches = TRUE;
-			if (match->flags & MATCH_FAMILY)
-				matches &= (match->family == state->family);
-			if (match->flags & MATCH_EXTMODEL)
+			matches &= (match->family == state->family);
+			if (state->family >= 0x15)
 				matches &= (match->extmodel == state->sig.extmodel);
 			matches &= (match->package_id == package_id);
 			if (matches)
