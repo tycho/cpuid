@@ -1229,7 +1229,7 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	}
 
 	if (leaf_checked && (accounting.eax || accounting.ebx || accounting.ecx || accounting.edx))
-		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax: 0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
+		printf("Unaccounted for in 0x%08x:0x%08x:\n  eax:0x%08x ebx:0x%08x ecx:0x%08x edx:0x%08x\n",
 			state->last_leaf.eax, state->last_leaf.ecx,
 		    accounting.eax, accounting.ebx, accounting.ecx, accounting.edx);
 
