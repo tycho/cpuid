@@ -239,6 +239,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 		/* CPU %d:\n */
 		if ((strlen(linebuf) < 9 && sscanf(linebuf, "CPU %u:", &id)) == 1 ||
 			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
+			sscanf(linebuf, "------[ Logical CPU #%u ]------", &id) == 1 ||
 			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
 		{
 			if (cpucount == 0 && id == 1)
@@ -296,6 +297,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 
 		if ((strlen(linebuf) < 9 && sscanf(linebuf, "CPU %u:", &id)) == 1 ||
 			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
+			sscanf(linebuf, "------[ Logical CPU #%u ]------", &id) == 1 ||
 			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
 		{
 			if (!zero_based)
