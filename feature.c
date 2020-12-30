@@ -511,7 +511,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x40000003, 0, REG_EDX, 0x00002000, VENDOR_HV_HYPERV                            , "Hypervisor disable support"},
 	{ 0x40000003, 0, REG_EDX, 0x00004000, VENDOR_HV_HYPERV                            , "Extended GVA ranges for flush virtual address list available"},
 	{ 0x40000003, 0, REG_EDX, 0x00008000, VENDOR_HV_HYPERV                            , "Hypercall output via XMM registers"},
-/*	{ 0x40000003, 0, REG_EDX, 0x00010000,                                             , ""}, */   /* Reserved */
+	{ 0x40000003, 0, REG_EDX, 0x00010000, VENDOR_HV_HYPERV                            , "Virtual guest idle state"},
 	{ 0x40000003, 0, REG_EDX, 0x00020000, VENDOR_HV_HYPERV                            , "Soft interrupt polling mode available"},
 	{ 0x40000003, 0, REG_EDX, 0x00040000, VENDOR_HV_HYPERV                            , "Hypercall MSR lock available"},
 	{ 0x40000003, 0, REG_EDX, 0x00080000, VENDOR_HV_HYPERV                            , "Direct synthetic timers support"},
@@ -1162,6 +1162,10 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			case 0x40000006:
 				printf("Hyper-V hardware features detected and in use, %s:\n",
 					   reg_name(last_reg));
+				break;
+			case 0x40000007:
+				/* Clear ReservedIdentityBit */
+				accounting.eax &= ~0x80000000;
 				break;
 			case 0x40000008:
 				printf("Hyper-V shared virtual memory features, %s:\n",
