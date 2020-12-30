@@ -220,6 +220,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 	struct cpuid_leaf_t *leaf;
 	size_t i, cpucount, leafcount, leafcount_tmp;
 	uint32_t last_eax = (uint32_t)-1, infer_ecx = 0;
+	BOOL zero_based = TRUE;
 	FILE *file = fopen(filename, "r");
 
 	if (!file)
@@ -240,6 +241,10 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
 			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
 		{
+			if (cpucount == 0 && id == 1)
+				zero_based = FALSE;
+			if (!zero_based)
+				id--;
 			cpucount = (cpucount > id + 1) ? cpucount : id + 1;
 			leafcount = (leafcount > leafcount_tmp) ? leafcount : leafcount_tmp;
 			leafcount_tmp = 0;
@@ -293,6 +298,9 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			sscanf(linebuf, "------[ CPUID Registers / Logical CPU #%u ]------", &id) == 1 ||
 			sscanf(linebuf, "CPUID Registers (CPU #%u)", &id) == 1)
 		{
+			if (!zero_based)
+				id--;
+
 			/* We already have a leaf. Finalize it. */
 			if (leaf) {
 				leaf->input.eax = 0xFFFFFFFF;
