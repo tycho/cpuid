@@ -408,11 +408,10 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 			if (match->flags & MATCH_EXTMODEL)
 				matches &= (match->extmodel == state->sig.extmodel);
 			matches &= (match->package_id == package_id);
-			if (!matches)
-				continue;
-			printf("CPU Socket: %s\n\n", match->name);
-			break;
+			if (matches)
+				break;
 		}
+		printf("CPU Socket: %s (0x%02x)\n\n", match->name ? match->name : "Unknown", package_id);
 	}
 	if (print_features(regs, state))
 		printf("\n");
