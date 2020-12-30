@@ -1158,6 +1158,9 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				 * out so they don't appear to be unaccounted for.
 				 */
 				accounting.ebx = 0;
+
+				/* ECX[0:6] are not feature bits. */
+				accounting.ecx &= ~0x3f;
 				break;
 			case 0x40000006:
 				printf("Hyper-V hardware features detected and in use, %s:\n",
