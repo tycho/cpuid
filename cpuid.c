@@ -307,7 +307,7 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			leaf = state->cpuid_leaves[id];
 		}
 
-		if (strncmp(linebuf, "CPUID", 5) == 0) {
+		if (strncmp(linebuf, "CPUID ", 6) == 0) {
 			/* Probably a valid line. */
 			uint32_t eax_in, ecx_in = 0;
 			uint32_t eax_out, ebx_out, ecx_out, edx_out;
@@ -318,11 +318,6 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			/* Dump format from this tool */
 			if (!found)
 				found = sscanf(linebuf, "CPUID %08x:%02x = %08x %08x %08x %08x",
-				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
-
-			/* Todd Allen's CPUID tool dump format */
-			if (!found)
-				found = sscanf(linebuf, "0x%08x 0x%02x = eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x",
 				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
 
 			/* Other dump formats from various sources */
@@ -364,16 +359,18 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			leaf->output.edx = edx_out;
 
 			leaf++;
-		} else  if (strncmp(linebuf, "   0x", 4) == 0) {
+		} else if (strncmp(linebuf, "   0x", 4) == 0) {
 			/* Probably a valid line. */
 			uint32_t eax_in, ecx_in = 0;
 			uint32_t eax_out, ebx_out, ecx_out, edx_out;
 
-			/* First format, no ecx input. */
-			int r = sscanf(linebuf, "   0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x",
-			               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out);
+			int found = 0;
 
-			if (r != 6)
+			/* Todd Allen's CPUID tool dump format */
+			found = sscanf(linebuf, "   0x%08x 0x%02x: eax=0x%08x ebx=0x%08x ecx=0x%08x edx=0x%08x",
+			               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
+
+			if (!found)
 				continue;
 
 			if (!leaf) {
