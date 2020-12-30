@@ -398,7 +398,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		       ebx->logicalcount,
 		       ebx->clflushsz << 3,
 		       ebx->brandid);
-	} else if (state->last_leaf.eax == 0x80000001) {
+	} else if (state->last_leaf.eax == 0x80000001 && state->family >= 0x10) {
 		uint32_t package_id = (regs->ebx >> 28) & 0xf;
 		const struct amd_package_match_t *match;
 		for (match = amd_package_match; match->name != NULL; match++) {
