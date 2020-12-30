@@ -68,7 +68,7 @@ struct cpuid_state_t
 	unsigned ignore_vendor:1;
 	unsigned vendor_override:1;
 
-	char procname[48];
+	char procname[48] ALIGNED(4);
 };
 
 #define INIT_CPUID_STATE(x) { \
