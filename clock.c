@@ -36,12 +36,14 @@ static uint64_t wallclock_ns(void)
 #if defined(TARGET_OS_WINDOWS)
 	static LARGE_INTEGER frequency;
 	LARGE_INTEGER ts;
-	QueryPerformanceCounter(&ts);
+	uint64_t whole, part;
 	if (!frequency.QuadPart) {
 		QueryPerformanceFrequency(&frequency);
 	}
 	QueryPerformanceCounter(&ts);
-	return ts.QuadPart / (frequency.QuadPart * 1e-9);
+	whole = (ts.QuadPart / frequency.QuadPart) * 1000000000;
+	part = (ts.QuadPart % frequency.QuadPart) * 1000000000 / frequency.QuadPart;
+	return whole + part;
 #elif defined(TARGET_OS_MACOSX)
 	static mach_timebase_info_data_t timebase;
 	if (!timebase.denom)
