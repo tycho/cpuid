@@ -82,14 +82,14 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000001, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , "CLFLUSH instruction"},
 /*	{ 0x00000001, 0, REG_EDX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000001, 0, REG_EDX, 0x00200000, VENDOR_INTEL                                , "debug store"},
-	{ 0x00000001, 0, REG_EDX, 0x00400000, VENDOR_INTEL                                , "ACPI"},
+	{ 0x00000001, 0, REG_EDX, 0x00400000, VENDOR_INTEL              | VENDOR_TRANSMETA, "ACPI"},
 	{ 0x00000001, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD | VENDOR_TRANSMETA, "MMX instruction set"},
 	{ 0x00000001, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "FXSAVE/FXRSTOR instructions"},
 	{ 0x00000001, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE instructions"},
 	{ 0x00000001, 0, REG_EDX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , "SSE2 instructions"},
-	{ 0x00000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "self snoop"},
+	{ 0x00000001, 0, REG_EDX, 0x08000000, VENDOR_INTEL              | VENDOR_TRANSMETA, "self snoop"},
 	{ 0x00000001, 0, REG_EDX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , "max APIC IDs reserved field is valid"},
-	{ 0x00000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL                                , "thermal monitor"},
+	{ 0x00000001, 0, REG_EDX, 0x20000000, VENDOR_INTEL              | VENDOR_TRANSMETA, "thermal monitor"},
 /*	{ 0x00000001, 0, REG_EDX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000001, 0, REG_EDX, 0x80000000, VENDOR_INTEL                                , "pending break enable"},
 
