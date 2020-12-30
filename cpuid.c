@@ -321,9 +321,11 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
 
 			/* Other dump formats from various sources */
-			if (!found)
+			if (!found) {
+				ecx_in = 0;
 				found = sscanf(linebuf, "CPUID %08x, results = %08x %08x %08x %08x",
 				               &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
+			}
 			if (!found)
 				found = sscanf(linebuf, "CPUID %08x, index %x = %08x %08x %08x %08x",
 				               &eax_in, &ecx_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 6;
@@ -332,15 +334,21 @@ BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 			if (!found)
 				found = sscanf(linebuf, "CPUID %08X: %08X-%08X-%08X-%08X [SL %2d]",
 						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out, &ecx_in) == 6;
-			if (!found)
+			if (!found) {
+				ecx_in = 0;
 				found = sscanf(linebuf, "CPUID %08X: %08X-%08X-%08X-%08X",
 						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
-			if (!found)
+			}
+			if (!found) {
+				ecx_in = 0;
 				found = sscanf(linebuf, "CPUID %08X %08X-%08X-%08X-%08X",
 						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
-			if (!found)
+			}
+			if (!found) {
+				ecx_in = 0;
 				found = sscanf(linebuf, "CPUID %08X : %08X %08X %08X %08X",
 						   &eax_in, &eax_out, &ebx_out, &ecx_out, &edx_out) == 5;
+			}
 
 			if (!found)
 				continue;
