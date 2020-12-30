@@ -365,7 +365,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		if (state->vendor & VENDOR_INTEL) {
 			model += ((state->sig.family == 0xf || state->sig.family == 0x6) ? state->sig.extmodel << 4 : 0);
 		} else if (state->vendor & VENDOR_AMD) {
-			model += (model == 0xf ? state->sig.extmodel << 4 : 0);
+			model += (state->sig.family == 0xf ? state->sig.extmodel << 4 : 0);
 		}
 
 		if (regs->ecx & (1 << 31)) {
