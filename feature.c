@@ -907,7 +907,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000007, 0, REG_EBX, 0x00000002,                VENDOR_AMD                   , "Software uncorrectable error containment and recovery"},
 	{ 0x80000007, 0, REG_EBX, 0x00000004,                VENDOR_AMD                   , "Hardware assert (HWA)"},
 	{ 0x80000007, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "Scalable MCA"},
-/*	{ 0x80000007, 0, REG_EBX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000007, 0, REG_EBX, 0x00000010,                VENDOR_AMD                   , "Platform First Error Handling (PFEH)"},
 
 /*  Advanced Power Management information (8000_0007h) */
 	{ 0x80000007, 0, REG_EDX, 0x00000001,                VENDOR_AMD                   , "Temperature Sensor"},
@@ -933,27 +933,27 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000008, 0, REG_EBX, 0x00000008,                VENDOR_AMD                   , "INVLPGB and TLBSYNC instruction"},
 	{ 0x80000008, 0, REG_EBX, 0x00000010,                VENDOR_AMD                   , "RDPRU instruction"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00000020,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00000040,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00000040,                VENDOR_AMD                   , "Memory bandwidth enforcement (MBE)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00000080,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000008, 0, REG_EBX, 0x00000100,                VENDOR_AMD                   , "MCOMMIT instruction"},
 	{ 0x80000008, 0, REG_EBX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "WBNOINVD (Write back and do not invalidate cache)"},
-/*	{ 0x80000008, 0, REG_EBX, 0x00000400,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00000400,                VENDOR_AMD                   , "LBR extensions"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000008, 0, REG_EBX, 0x00001000,                VENDOR_AMD                   , "Indirect Branch Prediction Barrier (IBPB)"},
 	{ 0x80000008, 0, REG_EBX, 0x00002000,                VENDOR_AMD                   , "WBINVD (Write back and invalidate cache)"},
 	{ 0x80000008, 0, REG_EBX, 0x00004000,                VENDOR_AMD                   , "Indirect Branch Restricted Speculation (IBRS)"},
 	{ 0x80000008, 0, REG_EBX, 0x00008000,                VENDOR_AMD                   , "Single Thread Indirect Branch Predictor (STIBP)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00010000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00020000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00040000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00080000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00020000,                VENDOR_AMD                   , "STIBP always on"},
+	{ 0x80000008, 0, REG_EBX, 0x00040000,                VENDOR_AMD                   , "IBRS preferred over software solution"},
+	{ 0x80000008, 0, REG_EBX, 0x00080000,                VENDOR_AMD                   , "IBRS provides Same Mode Protection"},
 	{ 0x80000008, 0, REG_EBX, 0x00100000,                VENDOR_AMD                   , "EFER.LMLSE is unsupported"},
 	{ 0x80000008, 0, REG_EBX, 0x00200000,                VENDOR_AMD                   , "INVLPGB for guest nested translations"},
 /*	{ 0x80000008, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , "Protected Processor Inventory Number (PPIN)"},
 	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , "Speculative Store Bypass Disable (SSBD)"},
 	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , "VIRT_SPEC_CTL "},
-/*	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD                   , "SSBD no longer needed"},
 /*	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x20000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -972,7 +972,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x8000000A, 0, REG_EDX, 0x00000100,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x8000000A, 0, REG_EDX, 0x00000400,                VENDOR_AMD                   , "Pause intercept filter"},
-/*	{ 0x8000000A, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , "Encrypted µcode patch"},
 	{ 0x8000000A, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "PAUSE filter threshold"},
 	{ 0x8000000A, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "AMD virtual interrupt controller"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , ""}, */   /* Reserved */
