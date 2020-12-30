@@ -371,6 +371,10 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 			model += (state->sig.family == 0xf ? state->sig.extmodel << 4 : 0);
 		}
 
+		/* Store the derived values */
+		state->family = state->sig.family + state->sig.extfamily;
+		state->model = model;
+
 		if (regs->ecx & (1 << 31)) {
 			state->vendor |= VENDOR_HV_GENERIC;
 		}
