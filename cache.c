@@ -351,10 +351,10 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 	case CODE:
 	case DATA:
 	case UNIFIED:
-		if (desc->partitions > 1) {
+		if (desc->partitions >= 1) {
 			ADD_LINE("%d byte line size (%d partitions)", desc->linesize * desc->partitions, desc->partitions);
 		} else {
-			ADD_LINE("%d byte line size", desc->linesize * desc->partitions);
+			ADD_LINE("%d byte line size", desc->linesize);
 		}
 		break;
 	case DATA_TLB:
