@@ -62,6 +62,8 @@ struct cpuid_state_t
 		struct cpu_signature_t sig;
 		uint32_t sig_int;
 	};
+	uint16_t family;
+	uint16_t model;
 	uint16_t vendor;
 	uint32_t curmax;
 
