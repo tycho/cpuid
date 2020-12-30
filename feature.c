@@ -203,13 +203,13 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , "x87 FPU data pointer updated only on x87 exceptions"},
 	{ 0x00000007, 0, REG_EBX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , "Supervisor Mode Execution Protection (SMEP)"},
 	{ 0x00000007, 0, REG_EBX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "Bit Manipulation Instructions 2 (BMI2)"},
-	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , "Enhanced REP MOVSB/STOSB"},
-	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL                                , "INVPCID instruction"},
+	{ 0x00000007, 0, REG_EBX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , "Enhanced REP MOVSB/STOSB"}, /* Undocumented on AMD */
+	{ 0x00000007, 0, REG_EBX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , "INVPCID instruction"}, /* Undocumented on AMD, but instruction documented */
 	{ 0x00000007, 0, REG_EBX, 0x00000800, VENDOR_INTEL                                , "Restricted Transactional Memory (RTM)"},
-	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL                                , "Platform QoS Monitoring (PQM)"},
+	{ 0x00000007, 0, REG_EBX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , "Platform QoS Monitoring (PQM)"},
 	{ 0x00000007, 0, REG_EBX, 0x00002000, VENDOR_INTEL                                , "x87 FPU CS and DS deprecated"},
 	{ 0x00000007, 0, REG_EBX, 0x00004000, VENDOR_INTEL                                , "Memory Protection Extensions (MPX)"},
-	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL                                , "Platform QoS Enforcement (PQE)"},
+	{ 0x00000007, 0, REG_EBX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , "Platform QoS Enforcement (PQE)"},
 	{ 0x00000007, 0, REG_EBX, 0x00010000, VENDOR_INTEL                                , "AVX512 foundation (AVX512F)"},
 	{ 0x00000007, 0, REG_EBX, 0x00020000, VENDOR_INTEL                                , "AVX512 double/quadword instructions (AVX512DQ)"},
 	{ 0x00000007, 0, REG_EBX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , "RDSEED instruction"},
@@ -219,7 +219,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EBX, 0x00400000, VENDOR_INTEL                                , "Persistent commit instruction (PCOMMIT)"},
 	{ 0x00000007, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , "RDPID instruction and TSC_AUX MSR support"},
 	{ 0x00000007, 0, REG_EBX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , "CLFLUSHOPT instruction"},
-	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL                                , "cache line write-back instruction (CLWB)"},
+	{ 0x00000007, 0, REG_EBX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , "cache line write-back instruction (CLWB)"},
 	{ 0x00000007, 0, REG_EBX, 0x02000000, VENDOR_INTEL                                , "Intel Processor Trace"},
 	{ 0x00000007, 0, REG_EBX, 0x04000000, VENDOR_INTEL                                , "AVX512 prefetch instructions (AVX512PF)"},
 	{ 0x00000007, 0, REG_EBX, 0x08000000, VENDOR_INTEL                                , "AVX512 exponent/reciprocal instructions (AVX512ER)"},
@@ -265,7 +265,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00000004, VENDOR_INTEL                                , "AVX512_4VNNIW"},
 	{ 0x00000007, 0, REG_EDX, 0x00000008, VENDOR_INTEL                                , "AVX512_4FMAPS"},
-	{ 0x00000007, 0, REG_EDX, 0x00000010, VENDOR_INTEL                                , "Fast Short REP MOV"},
+	{ 0x00000007, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , "Fast Short REP MOV"}, /* Undocumented on AMD */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
