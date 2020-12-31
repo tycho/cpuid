@@ -879,7 +879,6 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000001, 0, REG_ECX, 0x00000004,                VENDOR_AMD                   , "secure virtual machine (SVM)"},
 	{ 0x80000001, 0, REG_ECX, 0x00000008,                VENDOR_AMD                   , "extended APIC space"},
 	{ 0x80000001, 0, REG_ECX, 0x00000010,                VENDOR_AMD                   , "AltMovCr8"},
-	{ 0x80000001, 0, REG_ECX, 0x00000020,                VENDOR_AMD                   , "advanced bit manipulation"},
 	{ 0x80000001, 0, REG_ECX, 0x00000020, VENDOR_INTEL | VENDOR_AMD                   , "LZCNT instruction"},
 	{ 0x80000001, 0, REG_ECX, 0x00000040,                VENDOR_AMD                   , "SSE4A instructions"},
 	{ 0x80000001, 0, REG_ECX, 0x00000080,                VENDOR_AMD                   , "mis-aligned SSE support"},
