@@ -27,6 +27,12 @@
 #include <stdio.h>
 #include <string.h>
 
+/* There are a bunch of base features duplicated in
+ * the Extended Features base list on AMD platforms. Define this to decode
+ * those as well.
+ */
+#define SHOW_REDUNDANT
+
 typedef enum
 {
 	REG_EAX = 0,
@@ -1184,6 +1190,10 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				printf("Extended features, %s:\n",
 				       reg_name(last_reg));
 
+#if !defined(SHOW_REDUNDANT)
+				accounting.edx &= ~0x0183FFFF;
+#endif
+
 				/* EAX and EBX don't contain feature bits. We should zero these
 				 * out so they don't appear to be unaccounted for.
 				 */
@@ -1215,17 +1225,19 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		leaf_checked = 1;
 
 		if (state->ignore_vendor) {
-			if ((*reg & p->m_bitmask) != 0)
+			if ((*acct_reg & p->m_bitmask) != 0)
 			{
 				char feat[96], vendorlist[32];
-				snprintf(feat, sizeof(feat), "%s (%s)", p->m_name, vendors(vendorlist, p->m_vendor));
-				printf("  %s\n", feat);
+				if (p->m_name) {
+					snprintf(feat, sizeof(feat), "%s (%s)", p->m_name, vendors(vendorlist, p->m_vendor));
+					printf("  %s\n", feat);
+				}
 				*acct_reg &= (~p->m_bitmask);
 				flags_found++;
 			}
 		} else {
 			if (((int)p->m_vendor == VENDOR_ANY || (state->vendor & p->m_vendor) != 0)
-				&& (*reg & p->m_bitmask) != 0)
+				&& (*acct_reg & p->m_bitmask) != 0)
 			{
 				printf("  %s\n", p->m_name);
 				*acct_reg &= (~p->m_bitmask);
