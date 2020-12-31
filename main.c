@@ -71,6 +71,7 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 		}
 		state->curmax = r;
 		for (i = r; i <= (scan_to ? r + scan_to : state->curmax); i++) {
+			BOOL valid_leaf = TRUE;
 
 			/* If a particular range is unsupported, the processor can report
 			 * a really wacky upper boundary. This is a quick sanity check,
@@ -105,8 +106,10 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 				if (i == 0x40000000)
 					break;
 
-				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4))
-					goto invalid_leaf;
+				if (i == r && 0 == memcmp(&ignore[j], &cr_tmp, sizeof(struct cpu_regs_t) - 4)) {
+					valid_leaf = FALSE;
+					break;
+				}
 			}
 
 			for (h = dump ? dump_handlers : decode_handlers;
@@ -119,8 +122,11 @@ static void run_cpuid(struct cpuid_state_t *state, int dump)
 
 			if (h->handler)
 				h->handler(&cr_tmp, state);
-			else if (dump)
+			else if (dump && valid_leaf)
 				state->cpuid_print(&cr_tmp, state, FALSE);
+
+			if (!valid_leaf)
+				goto invalid_leaf;
 		}
 invalid_leaf:
 
