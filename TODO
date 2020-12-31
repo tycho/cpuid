@@ -7,7 +7,6 @@ Intel features
   * Leaf 0x0000 0010  L3 Cache Intel RDT
   * Leaf 0x0000 0012  SGX
   * Leaf 0x0000 0017  SOC Vendor Attribute
-  * Leaf 0x0000 0018  Deterministic address translation
   * Leaf 0x0000 0019  Key locker
   * Leaf 0x0000 001a  Hybrid information
   * Leaf 0x0000 001d  Tile information, tile palette

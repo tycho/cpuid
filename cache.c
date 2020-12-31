@@ -229,14 +229,16 @@ static const char *page_types(uint32_t attrs)
 static const char *type(cache_type_t type)
 {
 	switch(type) {
-	case DATA_TLB:   return "Data TLB";
-	case CODE_TLB:   return "Code TLB";
-	case SHARED_TLB: return "Shared TLB";
-	case DATA:       return "data cache";
-	case CODE:       return "code cache";
-	case UNIFIED:    return "unified cache";
-	case TRACE:      return "trace cache";
-	default:         abort();
+	case DATA_TLB:       return "Data TLB";
+	case CODE_TLB:       return "Code TLB";
+	case SHARED_TLB:     return "Shared TLB";
+	case LOADONLY_TLB:   return "Load-only TLB";
+	case STOREONLY_TLB:  return "Store-only TLB";
+	case DATA:           return "data cache";
+	case CODE:           return "code cache";
+	case UNIFIED:        return "unified cache";
+	case TRACE:          return "trace cache";
+	default:             abort();
 	}
 	return NULL;
 }
@@ -286,7 +288,7 @@ static const char *size(uint32_t size)
 
 char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buffer, size_t bufsize, int indent)
 {
-	char temp[64];
+	char temp[64], temp1[32];
 	uint32_t instances = 0;
 
 	buffer[0] = 0;
@@ -303,11 +305,21 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 	case DATA_TLB:
 	case CODE_TLB:
 	case SHARED_TLB:
+	case LOADONLY_TLB:
+	case STOREONLY_TLB:
 		/* e.g. "Code TLB: 2MB or 4MB pages" */
-		ADD_LINE("%10s: %s",
-			type(desc->type),
-			page_types(desc->attrs));
-		indent += 14;
+		if (desc->level != NO) {
+			sprintf(temp1, "%s %s", level(desc->level), type(desc->type));
+			ADD_LINE("%17s: %s",
+				temp1,
+				page_types(desc->attrs));
+			indent += 19;
+		} else {
+			ADD_LINE("%15s: %s",
+				type(desc->type),
+				page_types(desc->attrs));
+			indent += 17;
+		}
 		break;
 	case CODE:
 	case DATA:
@@ -384,8 +396,6 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 
 	if (desc->attrs & WBINVD_NOT_INCLUSIVE) {
 		ADD_LINE("%s", "Does not invalidate lower level caches");
-	} else {
-		ADD_LINE("%s", "Write-back invalidates lower level caches");
 	}
 
 	if (desc->attrs & UNDOCUMENTED) {

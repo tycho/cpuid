@@ -74,7 +74,7 @@ DECLARE_HANDLER(std_trace);
 DECLARE_HANDLER(std_tsc);
 DECLARE_HANDLER(std_cpufreq);
 //DECLARE_HANDLER(std_soc);
-//DECLARE_HANDLER(std_tlb);
+DECLARE_HANDLER(std_tlb);
 //DECLARE_HANDLER(std_keylocker);
 //DECLARE_HANDLER(std_hybrid);
 //DECLARE_HANDLER(std_pconfig);
@@ -167,10 +167,10 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x00000014, handle_std_trace},
 	{0x00000015, handle_std_tsc},
 	{0x00000016, handle_std_cpufreq},
+	{0x00000018, handle_std_tlb},
 
 	/* TODO, when I have hardware that I can develop/test these on. */
 	//{0x00000017, handle_std_soc},
-	//{0x00000018, handle_std_tlb},
 	//{0x00000019, handle_std_keylocker},
 	//{0x0000001a, handle_std_hybrid},
 	//{0x0000001b, handle_std_pconfig},
@@ -1257,7 +1257,6 @@ static void handle_std_cpufreq(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	printf("\n");
 }
 
-#if 0
 /* Not fully implemented. Need to see some hardware that actually has this leaf
  * before I finish this.
  */
@@ -1284,14 +1283,15 @@ static void handle_std_tlb(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		unsigned sets:32;
 	};
 	struct edx_tlb_t {
-		unsigned type:4;
+		unsigned type:5;
 		unsigned level:3;
 		unsigned fully_assoc:1;
 		unsigned reserved:5;
 		unsigned max_threads_sharing:12; /* +1 encoded */
-		unsigned reserved_1:7;
+		unsigned reserved_1:6;
 	};
 	uint32_t i = 0;
+	char buffer[256];
 
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
@@ -1299,21 +1299,46 @@ static void handle_std_tlb(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	printf("Deterministic Address Translation Parameters:\n");
 
 	for (i = 0; i <= max_ecx; i++) {
-		struct eax_tlb_t *eax;
-		struct ebx_tlb_t *ebx;
-		struct ecx_tlb_t *ecx;
-		struct edx_tlb_t *edx;
+		struct cache_desc_t tlb;
+		//struct eax_tlb_t *eax = (struct eax_tlb_t *)&regs->eax;
+		struct ebx_tlb_t *ebx = (struct ebx_tlb_t *)&regs->ebx;
+		struct ecx_tlb_t *ecx = (struct ecx_tlb_t *)&regs->ecx;
+		struct edx_tlb_t *edx = (struct edx_tlb_t *)&regs->edx;
 
 		ZERO_REGS(regs);
 		regs->eax = 0x18;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 
-		if (edx->type == 0)
-			continue;
+		memset(&tlb, 0, sizeof(struct cache_desc_t));
+		switch(edx->type) {
+		case 0: continue; /* Invalid */
+		case 1: tlb.type = DATA_TLB; break;
+		case 2: tlb.type = CODE_TLB; break;
+		case 3: tlb.type = SHARED_TLB; break;
+		case 4: tlb.type = LOADONLY_TLB; break;
+		case 5: tlb.type = STOREONLY_TLB; break;
+		default: printf("  Unknown TLB type: %x (%d)\n\n", edx->type, edx->type); continue;
+		}
+
+		tlb.level = edx->level;
+		if (ebx->has_4k_pages)
+			tlb.attrs |=  PAGES_4K;
+		if (ebx->has_2m_pages)
+			tlb.attrs |=  PAGES_2M;
+		if (ebx->has_4m_pages)
+			tlb.attrs |=  PAGES_4M;
+		if (ebx->has_1g_pages)
+			tlb.attrs |=  PAGES_1G;
+		tlb.assoc = edx->fully_assoc ? 0xFF : ebx->assoc;
+		tlb.partitions = ebx->partitioning;
+		tlb.size = ecx->sets;
+		tlb.max_threads_sharing = edx->max_threads_sharing + 1;
+
+		describe_cache(state->logical_in_socket, &tlb, buffer, sizeof(buffer), 2);
+		printf("%s\n", buffer);
 	}
 }
-#endif
 
 /* EAX = 0000 001B */
 static void handle_dump_std_1B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
