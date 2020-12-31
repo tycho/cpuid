@@ -110,6 +110,9 @@ DECLARE_HANDLER(hyperv_leaf09);
 DECLARE_HANDLER(hyperv_leaf0A);
 DECLARE_HANDLER(vmware_leaf10);
 
+DECLARE_HANDLER(tmta_base);
+DECLARE_HANDLER(tmta_cmsinfo);
+
 DECLARE_HANDLER(dump_base);
 DECLARE_HANDLER(dump_until_eax);
 DECLARE_HANDLER(dump_std_04);
@@ -222,6 +225,13 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x8000001E, handle_ext_extapic},
 	//{0x8000001F, handle_ext_amd_encryption},
 	//{0x80000020, handle_ext_amd_mem_qos},
+
+	/* Transmeta levels */
+	{0x80860000, handle_tmta_base},
+	{0x80860003, handle_tmta_cmsinfo},
+	{0x80860004, handle_tmta_cmsinfo},
+	{0x80860005, handle_tmta_cmsinfo},
+	{0x80860006, handle_tmta_cmsinfo},
 
 	{0, 0}
 };
@@ -1900,6 +1910,62 @@ static void handle_dump_ext_20(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	regs->ecx = 1;
 	state->cpuid_call(regs, state);
 	state->cpuid_print(regs, state, TRUE);
+}
+
+/* EAX = 8086 0000 */
+static void handle_tmta_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	char buf[13] ALIGNED(4);
+	size_t i;
+
+	state->curmax = regs->eax;
+
+	if (!(state->vendor & VENDOR_TRANSMETA))
+		return;
+
+	printf("Maximum Transmeta CPUID leaf: 0x%08x\n\n", state->curmax);
+
+	*(uint32_t *)(&buf[0]) = regs->ebx;
+	*(uint32_t *)(&buf[4]) = regs->edx;
+	*(uint32_t *)(&buf[8]) = regs->ecx;
+	buf[12] = 0;
+
+	for (i = 0; i < sizeof(buf); i++) {
+		/* End of vendor string */
+		if (buf[i] == 0)
+			break;
+
+		/* Character outside printable range */
+		if (buf[i] < 0x20 || buf[i] > 0x7E)
+			buf[i] = '.';
+	}
+
+	buf[12] = 0;
+
+	printf("CPU vendor string: '%s'\n\n", buf);
+}
+
+/* EAX = 8086 0003 through EAX = 8086 0006 */
+static void handle_tmta_cmsinfo(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t base = (state->last_leaf.eax - 0x80860003) * 16;
+
+	if (!(state->vendor & VENDOR_TRANSMETA))
+		return;
+
+	if (base == 0)
+		memset(state->cmsinfo, 0, sizeof(state->cmsinfo));
+
+	*(uint32_t *)&state->cmsinfo[base] = regs->eax;
+	*(uint32_t *)&state->cmsinfo[base+4] = regs->ebx;
+	*(uint32_t *)&state->cmsinfo[base+8] = regs->ecx;
+	*(uint32_t *)&state->cmsinfo[base+12] = regs->edx;
+
+	if (base == 48) {
+		state->cmsinfo[63] = 0;
+		squeeze(state->cmsinfo);
+		printf("CMS Information: %s\n\n", state->cmsinfo);
+	}
 }
 
 /* EAX = 4000 0000 */
