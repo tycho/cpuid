@@ -89,10 +89,13 @@ DECLARE_HANDLER(ext_amdl1cachefeat);
 DECLARE_HANDLER(ext_l2cachefeat);
 DECLARE_HANDLER(ext_0008);
 DECLARE_HANDLER(ext_svm);
+//DECLARE_HANDLER(ext_amd_tlb);
 DECLARE_HANDLER(ext_perf_opt_feat);
 DECLARE_HANDLER(ext_ibs_feat);
 DECLARE_HANDLER(ext_cacheprop);
 DECLARE_HANDLER(ext_extapic);
+//DECLARE_HANDLER(ext_amd_encryption);
+//DECLARE_HANDLER(ext_amd_mem_qos);
 
 DECLARE_HANDLER(vmm_base);
 DECLARE_HANDLER(vmm_leaf01);
@@ -210,6 +213,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x8000001D, handle_ext_cacheprop},
 	{0x8000001E, handle_ext_extapic},
 	//{0x8000001F, handle_ext_amd_encryption},
+	//{0x80000020, handle_ext_amd_mem_qos},
 
 	{0, 0}
 };
