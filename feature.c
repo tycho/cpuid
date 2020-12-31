@@ -927,7 +927,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000007, 0, REG_EDX, 0x00000200,                VENDOR_AMD                   , "Core performance boost"},
 	{ 0x80000007, 0, REG_EDX, 0x00000400,                VENDOR_AMD                   , "Read-only effective frequency interface"},
 	{ 0x80000007, 0, REG_EDX, 0x00000800,                VENDOR_AMD                   , "Processor feedback interface"},
-	{ 0x80000007, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "APM power reporting"},
+	{ 0x80000007, 0, REG_EDX, 0x00001000,                VENDOR_AMD                   , "Core power reporting"},
 	{ 0x80000007, 0, REG_EDX, 0x00002000,                VENDOR_AMD                   , "Connected standby"},
 	{ 0x80000007, 0, REG_EDX, 0x00004000,                VENDOR_AMD                   , "Running average power limit (RAPL)"},
 
