@@ -1597,6 +1597,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 
 		l3_cache = (struct l3_cache_t *)&regs->edx;
 		if (l3_cache->size) {
+			char associativity[32];
 			uint32_t size = l3_cache->size * 512;
 			if ( l3_cache->size == 0x0003 ||
 			    (l3_cache->size >= 0x0005 && l3_cache->size <= 0x0007) ||
@@ -1605,10 +1606,14 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			{
 				size /= 2;
 			}
-			printf("L3 cache: %u%cB, %s, %d lines per tag, %d byte line size\n",
+			if (l3_cache->assoc == 0x9)
+				associativity[0] = 0;
+			else
+				sprintf(associativity, ", %s", assoc[l3_cache->assoc] ? assoc[l3_cache->assoc] : "unknown associativity");
+			printf("L3 cache: %u%cB%s, %d lines per tag, %d byte line size\n",
 			       size > 1024 ? size / 1024 : size,
 			       size > 1024 ? 'M' : 'K',
-			       assoc[l3_cache->assoc] ? assoc[l3_cache->assoc] : "unknown associativity",
+			       associativity,
 			       l3_cache->linespertag,
 			       l3_cache->linesize);
 		}
