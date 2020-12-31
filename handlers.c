@@ -120,6 +120,7 @@ DECLARE_HANDLER(dump_std_10);
 DECLARE_HANDLER(dump_std_12);
 DECLARE_HANDLER(dump_std_1B);
 DECLARE_HANDLER(dump_ext_1D);
+DECLARE_HANDLER(dump_ext_20);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
 {
@@ -146,6 +147,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	/* Extended levels */
 	{0x80000000, handle_dump_base},
 	{0x8000001D, handle_dump_ext_1D},
+	{0x80000020, handle_dump_ext_20},
 
 	{0, 0}
 };
@@ -1880,6 +1882,18 @@ static void handle_ext_extapic(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	} else {
 		printf("  Nodes per processor: UNKNOWN (0x%02x)\n", ecx->nodes_per_processor);
 	}
+}
+
+/* EAX = 8000 0020 */
+static void handle_dump_ext_20(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	state->cpuid_print(regs, state, TRUE);
+
+	ZERO_REGS(regs);
+	regs->eax = 0x80000020;
+	regs->ecx = 1;
+	state->cpuid_call(regs, state);
+	state->cpuid_print(regs, state, TRUE);
 }
 
 /* EAX = 4000 0000 */
