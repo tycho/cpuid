@@ -110,11 +110,12 @@ DECLARE_HANDLER(vmware_leaf10);
 DECLARE_HANDLER(dump_base);
 DECLARE_HANDLER(dump_until_eax);
 DECLARE_HANDLER(dump_std_04);
-DECLARE_HANDLER(dump_std_0B);
+DECLARE_HANDLER(dump_x2apic);
 DECLARE_HANDLER(dump_std_0D);
 DECLARE_HANDLER(dump_std_0F);
 DECLARE_HANDLER(dump_std_10);
 DECLARE_HANDLER(dump_std_12);
+DECLARE_HANDLER(dump_std_1B);
 DECLARE_HANDLER(dump_ext_1D);
 
 const struct cpuid_leaf_handler_index_t dump_handlers[] =
@@ -123,7 +124,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000000, handle_dump_base},
 	{0x00000004, handle_dump_std_04},
 	{0x00000007, handle_dump_until_eax},
-	{0x0000000B, handle_dump_std_0B},
+	{0x0000000B, handle_dump_x2apic},
 	{0x0000000D, handle_dump_std_0D},
 	{0x0000000F, handle_dump_std_0F},
 	{0x00000010, handle_dump_std_10},
@@ -131,6 +132,10 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x00000014, handle_dump_until_eax},
 	{0x00000017, handle_dump_until_eax},
 	{0x00000018, handle_dump_until_eax},
+	{0x0000001B, handle_dump_std_1B},
+	{0x0000001D, handle_dump_until_eax},
+	{0x0000001F, handle_dump_x2apic},
+	{0x00000020, handle_dump_until_eax},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_dump_base},
@@ -893,13 +898,14 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	       x2apic_idx_mask(x2apic.id, &x2apic.thread));
 }
 
-/* EAX = 0000 000B */
-static void handle_dump_std_0B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+/* EAX = 0000 000B and EAX = 0000 001F */
+static void handle_dump_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	uint32_t i = 0;
+	uint32_t eax = state->last_leaf.eax;
 	while (1) {
 		ZERO_REGS(regs);
-		regs->eax = 0xb;
+		regs->eax = eax;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
 		state->cpuid_print(regs, state, TRUE);
@@ -1308,6 +1314,37 @@ static void handle_std_tlb(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	}
 }
 #endif
+
+/* EAX = 0000 001B */
+static void handle_dump_std_1B(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	uint32_t i;
+	struct eax_pconfig {
+		unsigned leaftype:12;
+		unsigned reserved:20;
+	};
+
+	/* Always print EAX=0x1b, ECX=0 response, even if we don't support PCONFIG. */
+	state->cpuid_print(regs, state, TRUE);
+
+	/* First check if PCONFIG is supported. */
+	ZERO_REGS(regs);
+	regs->eax = 0x07;
+	state->cpuid_call(regs, state);
+	if ((regs->edx & 0x00040000) == 0)
+		return;
+
+	for (i = 1; ; i++) {
+		struct eax_pconfig *eax = (struct eax_pconfig *)&regs->eax;
+		ZERO_REGS(regs);
+		regs->eax = 0x1b;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+		if (!eax->leaftype)
+			break;
+	}
+}
 
 /* EAX = 8000 0000 */
 static void handle_ext_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
