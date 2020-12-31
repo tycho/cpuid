@@ -273,7 +273,7 @@ static const char *associativity(uint8_t assoc)
 static const char *size(uint32_t size)
 {
 	static char buffer[16];
-	if (size > 1024) {
+	if (size >= 1024) {
 		sprintf(buffer, "%dMB", size / 1024);
 	} else {
 		sprintf(buffer, "%dKB", size);
@@ -313,13 +313,12 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 			ADD_LINE("%17s: %s",
 				temp1,
 				page_types(desc->attrs));
-			indent += 19;
 		} else {
-			ADD_LINE("%15s: %s",
+			ADD_LINE("%17s: %s",
 				type(desc->type),
 				page_types(desc->attrs));
-			indent += 17;
 		}
+		indent += 19;
 		break;
 	case CODE:
 	case DATA:
@@ -338,7 +337,7 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 				size(desc->size),
 				level(desc->level),
 				type(desc->type));
-			indent += 8;
+			indent += 6;
 		}
 		break;
 	case TRACE:
@@ -535,7 +534,7 @@ void print_intel_caches(struct cpu_regs_t *regs, const struct cpu_signature_t *s
 	/* Print the entries. */
 	eptr = entries;
 	while (*eptr) {
-		printf("  %s\n", *eptr);
+		printf("%s\n", *eptr);
 		free(*eptr);
 		eptr++;
 	}
