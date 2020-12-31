@@ -957,7 +957,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x80000008, 0, REG_EBX, 0x00400000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000008, 0, REG_EBX, 0x00800000,                VENDOR_AMD                   , "Protected Processor Inventory Number (PPIN)"},
 	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD                   , "Speculative Store Bypass Disable (SSBD)"},
-	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , "VIRT_SPEC_CTL "},
+	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD                   , "VIRT_SPEC_CTL"},
 	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD                   , "SSBD no longer needed"},
 /*	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD                   , ""}, */   /* Reserved */
