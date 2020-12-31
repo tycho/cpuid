@@ -1,7 +1,5 @@
 AMD features
   * Leaf 0x8000 0019  L1 TLB 1G Identifiers
-  * Leaf 0x8000 001A  Performance Optimization Identifiers
-  * Leaf 0x8000 001B  Instruction Based Sampling Identifiers
   * Leaf 0x8000 001F  AMD Secure Encryption
   * Leaf 0x8000 0020  Platform QoS Enforcement for Memory Bandwidth
 
