@@ -75,7 +75,13 @@ DECLARE_HANDLER(std_tsc);
 DECLARE_HANDLER(std_cpufreq);
 //DECLARE_HANDLER(std_soc);
 //DECLARE_HANDLER(std_tlb);
+//DECLARE_HANDLER(std_keylocker);
+//DECLARE_HANDLER(std_hybrid);
 //DECLARE_HANDLER(std_pconfig);
+//DECLARE_HANDLER(std_tile);
+//DECLARE_HANDLER(std_tmul);
+//DECLARE_HANDLER(std_x2apic_v2);
+//DECLARE_HANDLER(std_hreset);
 
 DECLARE_HANDLER(ext_base);
 DECLARE_HANDLER(ext_pname);
@@ -160,7 +166,13 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	/* TODO, when I have hardware that I can develop/test these on. */
 	//{0x00000017, handle_std_soc},
 	//{0x00000018, handle_std_tlb},
+	//{0x00000019, handle_std_keylocker},
+	//{0x0000001a, handle_std_hybrid},
 	//{0x0000001b, handle_std_pconfig},
+	//{0x0000001d, handle_std_tile},
+	//{0x0000001e, handle_std_tmul},
+	//{0x0000001f, handle_std_x2apic_v2},
+	//{0x00000020, handle_std_hreset},
 
 	/* Hypervisor levels */
 	{0x40000000, handle_vmm_base},
