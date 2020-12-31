@@ -257,7 +257,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , "Read Processor ID (RDPID)"},
-/*	{ 0x00000007, 0, REG_ECX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00800000, VENDOR_INTEL                                , "Key locker (KL)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_ECX, 0x02000000, VENDOR_INTEL                                , "Cache Line Demote (CLDEMOTE)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -340,7 +340,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000014, 0, REG_EBX, 0x00000008, VENDOR_INTEL                                , "MTC timing packet, suppression of COFI-based packets"},
 	{ 0x00000014, 0, REG_EBX, 0x00000010, VENDOR_INTEL                                , "PTWRITE"},
 	{ 0x00000014, 0, REG_EBX, 0x00000020, VENDOR_INTEL                                , "Power Event Trace"},
-/*	{ 0x00000014, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000014, 0, REG_EBX, 0x00000040, VENDOR_INTEL                                , "PSB and PMI preservation MSRs"},
 /*	{ 0x00000014, 0, REG_EBX, 0x00000080, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000014, 0, REG_EBX, 0x00000100, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000014, 0, REG_EBX, 0x00000200, VENDOR_INTEL                                , ""}, */   /* Reserved */
@@ -1142,6 +1142,12 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			case 0x00000007:
 				printf("Structured extended feature flags (ecx=%d), %s:\n",
 				       state->last_leaf.ecx, reg_name(last_reg));
+
+				/* Clear "value of MAWAU used by the BNDLDX and BNDSTX
+				 * instructions in 64-bit mode"
+				 */
+				if (state->last_leaf.ecx == 0)
+					accounting.ecx &= ~0x3e0000;
 				break;
 			case 0x00000014:
 				accounting.eax = 0;
