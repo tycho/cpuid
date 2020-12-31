@@ -149,6 +149,12 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 	{0x8000001D, handle_dump_ext_1D},
 	{0x80000020, handle_dump_ext_20},
 
+	/* Transmeta leaves */
+	{0x80860000, handle_dump_base},
+
+	/* Centaur leaves */
+	{0xc0000000, handle_dump_base},
+
 	{0, 0}
 };
 
