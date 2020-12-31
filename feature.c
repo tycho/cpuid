@@ -152,11 +152,11 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000006, 0, REG_EAX, 0x00010000, VENDOR_INTEL                                , "HWP PECI override"},
 	{ 0x00000006, 0, REG_EAX, 0x00020000, VENDOR_INTEL                                , "Flexible HWP"},
 	{ 0x00000006, 0, REG_EAX, 0x00040000, VENDOR_INTEL                                , "Fast access mode for IA32_HWP_REQUEST MSR"},
-/*	{ 0x00000006, 0, REG_EAX, 0x00080000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00080000, VENDOR_INTEL                                , "Hardware feedback MSRs"},
 	{ 0x00000006, 0, REG_EAX, 0x00100000, VENDOR_INTEL                                , "Ignoring Idle Logical Processor HWP request"},
 /*	{ 0x00000006, 0, REG_EAX, 0x00200000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x00400000, VENDOR_INTEL                                , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00800000, VENDOR_INTEL                                , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00800000, VENDOR_INTEL                                , "Enhanced hardware feedback MSRs"},
 /*	{ 0x00000006, 0, REG_EAX, 0x01000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x02000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x04000000, VENDOR_INTEL                                , ""}, */   /* Reserved */
@@ -169,7 +169,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000006, 0, REG_ECX, 0x00000001, VENDOR_INTEL | VENDOR_AMD                   , "Hardware Coordination Feedback Capability (APERF and MPERF)"},
 /*	{ 0x00000006, 0, REG_ECX, 0x00000002, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_ECX, 0x00000004, VENDOR_INTEL                                , ""}, */   /* Reserved */
-	{ 0x00000006, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Performance-energy bias perference"},
+	{ 0x00000006, 0, REG_ECX, 0x00000008, VENDOR_INTEL                                , "Performance-energy bias preference"},
 /*	{ 0x00000006, 0, REG_ECX, 0x00000010, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_ECX, 0x00000020, VENDOR_INTEL                                , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_ECX, 0x00000040, VENDOR_INTEL                                , ""}, */   /* Reserved */
@@ -289,10 +289,10 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00100000, VENDOR_INTEL                                , "CET indirect branch tracking (CET_IBT)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 0, REG_EDX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00400000, VENDOR_INTEL                                , "Tile computation on bfloat16 (AMX-BF16)"},
+	{ 0x00000007, 0, REG_EDX, 0x00800000, VENDOR_INTEL                                , "AVX512 FP16"},
+	{ 0x00000007, 0, REG_EDX, 0x01000000, VENDOR_INTEL                                , "Tile architecture (AMX-TILE)"},
+	{ 0x00000007, 0, REG_EDX, 0x02000000, VENDOR_INTEL                                , "Tile computation on 8-bit integers (AMX-INT8)"},
 	{ 0x00000007, 0, REG_EDX, 0x04000000, VENDOR_INTEL                                , "Speculation Control (IBRS and IBPB)"},
 	{ 0x00000007, 0, REG_EDX, 0x08000000, VENDOR_INTEL                                , "Single Thread Indirect Branch Predictors (STIBP)"},
 	{ 0x00000007, 0, REG_EDX, 0x10000000, VENDOR_INTEL                                , "L1 Data Cache (L1D) Flush"},
@@ -304,15 +304,15 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 1, REG_EAX, 0x00000002, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00000004, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00000008, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000010, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00000010, VENDOR_INTEL                                , "AVX Vector Neural Network Instructions (AVX-VNNI)"},
 	{ 0x00000007, 1, REG_EAX, 0x00000020, VENDOR_INTEL                                , "Vector Neural Network BFLOAT16 (AVX512_BF16)"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00000040, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00000080, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00000200, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000400, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000800, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00001000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00000400, VENDOR_INTEL                                , "Fast zero-length MOVSB"},
+	{ 0x00000007, 1, REG_EAX, 0x00000800, VENDOR_INTEL                                , "Fast short STOSB"},
+	{ 0x00000007, 1, REG_EAX, 0x00001000, VENDOR_INTEL                                , "Fast short CMPSB, SCASB"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00002000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00008000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -322,11 +322,11 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 1, REG_EAX, 0x00080000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00200000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00400000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00400000, VENDOR_INTEL                                , "History reset (HRESET)"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00800000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x01000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x02000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x04000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x04000000, VENDOR_INTEL                                , "Linear Address Masking (LAM)"},
 /*	{ 0x00000007, 1, REG_EAX, 0x08000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x10000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x20000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */

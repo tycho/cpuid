@@ -721,12 +721,15 @@ static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		{0x00000010, "Last-level cache miss"},
 		{0x00000020, "Branches retired"},
 		{0x00000040, "Branches mispredicted"},
+		{0x00000080, "Top-down slots event"},
 		{0x00000000, NULL}
 	};
 	struct perfmon_edx_t {
 		unsigned count_ff:5;
 		unsigned bit_width_ff:8;
-		unsigned reserved:19;
+		unsigned reserved:2;
+		unsigned anythread_deprecated:1;
+		unsigned reserved2:16;
 	};
 
 	struct perfmon_eax_t *eax = (struct perfmon_eax_t *)&regs->eax;
@@ -743,8 +746,10 @@ static void handle_std_perfmon(struct cpu_regs_t *regs, struct cpuid_state_t *st
 	printf("  Version: %u\n", eax->version);
 	printf("  Counters per logical processor: %u\n", eax->pmc_per_logical);
 	printf("  Counter bit width: %u\n", eax->bit_width_pmc);
-	printf("  Number of fixed-function counters: %u\n", edx->count_ff);
+	printf("  Number of contiguous fixed-function counters: %u\n", edx->count_ff);
 	printf("  Bit width of fixed-function counters: %u\n", edx->bit_width_ff);
+	if (edx->anythread_deprecated)
+		printf("  AnyThread deprecated\n");
 
 	printf("  Supported performance counters:\n");
 	for (feat = features; feat->name; feat++)
@@ -916,7 +921,16 @@ static const char *xsave_leaf_name(uint32_t bit)
 		"512-bit AVX ZMM_Hi256",
 		"512-bit AVX ZMM_Hi16",
 		"IA32_XSS",
-		"Protected keys"
+		"Protected keys",
+		NULL,
+		NULL,
+		NULL, /* IA32_XSS */
+		NULL, /* IA32_XSS */
+		NULL,
+		NULL, /* IA32_XSS */
+		"XTILECFG",
+		"XTILEDATA",
+
 	};
 	if (bit < NELEM(bits))
 		return bits[bit];
@@ -929,7 +943,8 @@ static const char *xsave_feature_name(uint32_t bit)
 		"XSAVEOPT",
 		"XSAVEC and compacted XRSTOR",
 		"XGETBV with ECX=1",
-		"XSAVES/XRSTORS and IA32_XSS"
+		"XSAVES/XRSTORS and IA32_XSS",
+		"Extended feature disable (XFD)",
 	};
 	if (bit < NELEM(bits))
 		return bits[bit];
