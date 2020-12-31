@@ -883,15 +883,15 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000001, 0, REG_ECX, 0x00000040,                VENDOR_AMD                   , "SSE4A instructions"},
 	{ 0x80000001, 0, REG_ECX, 0x00000080,                VENDOR_AMD                   , "mis-aligned SSE support"},
 	{ 0x80000001, 0, REG_ECX, 0x00000100, VENDOR_INTEL | VENDOR_AMD                   , "3DNow! prefetch instructions"},
-	{ 0x80000001, 0, REG_ECX, 0x00000200,                VENDOR_AMD                   , "os-visible workaround"},
-	{ 0x80000001, 0, REG_ECX, 0x00000400,                VENDOR_AMD                   , "instruction-based sampling"},
-	{ 0x80000001, 0, REG_ECX, 0x00000800,                VENDOR_AMD                   , "extended operations"},
+	{ 0x80000001, 0, REG_ECX, 0x00000200,                VENDOR_AMD                   , "os-visible workaround (OSVW)"},
+	{ 0x80000001, 0, REG_ECX, 0x00000400,                VENDOR_AMD                   , "instruction-based sampling (IBS)"},
+	{ 0x80000001, 0, REG_ECX, 0x00000800,                VENDOR_AMD                   , "extended operation (XOP)"},
 	{ 0x80000001, 0, REG_ECX, 0x00001000,                VENDOR_AMD                   , "SKINIT/STGI instructions"},
-	{ 0x80000001, 0, REG_ECX, 0x00002000,                VENDOR_AMD                   , "watchdog timer"},
+	{ 0x80000001, 0, REG_ECX, 0x00002000,                VENDOR_AMD                   , "watchdog timer (WDT)"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00004000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
-	{ 0x80000001, 0, REG_ECX, 0x00008000,                VENDOR_AMD                   , "lightweight profiling"},
-	{ 0x80000001, 0, REG_ECX, 0x00010000,                VENDOR_AMD                   , "4-operand FMA instructions"},
-	{ 0x80000001, 0, REG_ECX, 0x00020000,                VENDOR_AMD                   , "Translation cache extension"},
+	{ 0x80000001, 0, REG_ECX, 0x00008000,                VENDOR_AMD                   , "lightweight profiling (LWP)"},
+	{ 0x80000001, 0, REG_ECX, 0x00010000,                VENDOR_AMD                   , "4-operand FMA instructions (FMA4)"},
+	{ 0x80000001, 0, REG_ECX, 0x00020000,                VENDOR_AMD                   , "Translation cache extension (TCE)"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 	{ 0x80000001, 0, REG_ECX, 0x00080000,                VENDOR_AMD                   , "node ID support"},
 /*	{ 0x80000001, 0, REG_ECX, 0x00100000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
@@ -904,7 +904,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000001, 0, REG_ECX, 0x08000000,                VENDOR_AMD                   , "performance timestamp counter"},
 	{ 0x80000001, 0, REG_ECX, 0x10000000,                VENDOR_AMD                   , "performance counter extensions"},
 	{ 0x80000001, 0, REG_ECX, 0x20000000,                VENDOR_AMD                   , "MONITORX/MWAITX instructions"},
-/*	{ 0x80000001, 0, REG_ECX, 0x40000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
+	{ 0x80000001, 0, REG_ECX, 0x40000000,                VENDOR_AMD                   , "address mask extension for instruction breakpoint"},
 /*	{ 0x80000001, 0, REG_ECX, 0x80000000, VENDOR_INTEL | VENDOR_AMD                   , ""}, */   /* Reserved */
 
 /*  RAS Capabilities (8000_0007h) */
