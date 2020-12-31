@@ -1099,6 +1099,7 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	int leaf_checked = 0;
 	int flags_found = 0;
+	int ignore_vendor = state->ignore_vendor;
 	const struct cpu_feature_t *p = features;
 	struct cpu_regs_t accounting;
 	cpu_register_t last_reg = REG_NULL;
@@ -1227,9 +1228,19 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 			}
 		}
 
+		if (state->last_leaf.eax < 0x40000000 || state->last_leaf.eax > 0x4fff0000) {
+			/* Non-hypervisor leaves */
+			if (state->vendor != VENDOR_AMD && state->vendor != VENDOR_INTEL) {
+				/* Unusual CPU vendor, just ignore vendor matching and print
+				 * any matching feature flags
+				 */
+				ignore_vendor = 1;
+			}
+		}
+
 		leaf_checked = 1;
 
-		if (state->ignore_vendor) {
+		if (ignore_vendor) {
 			if ((*acct_reg & p->m_bitmask) != 0)
 			{
 				char feat[96], vendorlist[32];
