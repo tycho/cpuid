@@ -1067,6 +1067,22 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x8000001B, 0, REG_EAX, 0x40000000,                VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x8000001B, 0, REG_EAX, 0x80000000,                VENDOR_AMD, ""}, */   /* Reserved */
 
+/* Centaur features (c000_0001h) */
+	{ 0xc0000001, 0, REG_EDX, 0x00000001, VENDOR_CENTAUR           , "Alternate Instruction Set available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000002, VENDOR_CENTAUR           , "Alternate Instruction Set enabled"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000004, VENDOR_CENTAUR           , "Random Number Generator available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000008, VENDOR_CENTAUR           , "Random Number Generator enabled"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000010, VENDOR_CENTAUR           , "LongHaul MSR 0000_110Ah"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000020, VENDOR_CENTAUR           , "FEMMS"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000040, VENDOR_CENTAUR           , "Advanced Cryptography Engine (ACE) available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000080, VENDOR_CENTAUR           , "Advanced Cryptography Engine (ACE) enabled"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000100, VENDOR_CENTAUR           , "Montgomery Multiplier and Hash Engine (ACE2) available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000200, VENDOR_CENTAUR           , "Montgomery Multiplier and Hash Engine (ACE2) enabled"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000400, VENDOR_CENTAUR           , "Padlock hash engine (PHE) available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00000800, VENDOR_CENTAUR           , "Padlock hash engine (PHE) enabled"},
+	{ 0xc0000001, 0, REG_EDX, 0x00001000, VENDOR_CENTAUR           , "Padlock montgomery multiplier (PMM) available"},
+	{ 0xc0000001, 0, REG_EDX, 0x00002000, VENDOR_CENTAUR           , "Padlock montgomery multiplier (PMM) enabled"},
+
 	{ 0, 0, REG_NULL, 0, 0, NULL}
 };
 
@@ -1090,6 +1106,12 @@ static const char *vendors(char *buffer, uint32_t mask)
 		if (multi)
 			strcat(buffer, ", ");
 		strcat(buffer, "Transmeta");
+		multi = 1;
+	}
+	if (mask & VENDOR_CENTAUR) {
+		if (multi)
+			strcat(buffer, ", ");
+		strcat(buffer, "Centaur");
 		multi = 1;
 	}
 	return buffer;

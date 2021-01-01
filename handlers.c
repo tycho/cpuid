@@ -113,6 +113,8 @@ DECLARE_HANDLER(vmware_leaf10);
 DECLARE_HANDLER(tmta_base);
 DECLARE_HANDLER(tmta_cmsinfo);
 
+DECLARE_HANDLER(centaur_base);
+
 DECLARE_HANDLER(dump_base);
 DECLARE_HANDLER(dump_until_eax);
 DECLARE_HANDLER(dump_std_04);
@@ -233,6 +235,10 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80860005, handle_tmta_cmsinfo},
 	{0x80860006, handle_tmta_cmsinfo},
 
+	/* Centaur levels */
+	{0xc0000000, handle_centaur_base},
+	{0xc0000001, handle_features},
+
 	{0, 0}
 };
 
@@ -255,6 +261,7 @@ vendor_map_t vendors[] = {
 	{ "GenuineTMx86", VENDOR_TRANSMETA },
 	{ "CyrixInstead", VENDOR_CYRIX },
 	{ "HygonGenuine", VENDOR_HYGON },
+	{ "CentaurHauls", VENDOR_CENTAUR },
 	{ NULL, VENDOR_UNKNOWN },
 };
 
@@ -1966,6 +1973,17 @@ static void handle_tmta_cmsinfo(struct cpu_regs_t *regs, struct cpuid_state_t *s
 		squeeze(state->cmsinfo);
 		printf("CMS Information: %s\n\n", state->cmsinfo);
 	}
+}
+
+/* EAX = c000 0000 */
+static void handle_centaur_base(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	state->curmax = regs->eax;
+
+	if (!(state->vendor & VENDOR_CENTAUR))
+		return;
+
+	printf("Maximum Centaur CPUID leaf: 0x%08x\n\n", state->curmax);
 }
 
 /* EAX = 4000 0000 */
