@@ -27,18 +27,18 @@ typedef enum
 	VENDOR_UNKNOWN      = 0x0,
 	VENDOR_INTEL        = 0x1,
 	VENDOR_AMD          = 0x2,
-	VENDOR_CYRIX        = 0x4 | VENDOR_INTEL,
+	VENDOR_CYRIX        = 0x4,
 	VENDOR_TRANSMETA    = 0x8,
-	VENDOR_HV_XEN       = 0x10,
-	VENDOR_HV_VMWARE    = 0x20,
-	VENDOR_HV_KVM       = 0x40,
-	VENDOR_HV_HYPERV    = 0x80,
-	VENDOR_HV_PARALLELS = 0x100,
-	VENDOR_HV_BHYVE     = 0x200,
-	VENDOR_HV_GENERIC   = 0x400,
+	VENDOR_HYGON        = 0x10, /* Chinese-manufactured AMD EPYC clone. */
+	VENDOR_CENTAUR      = 0x20,
 
-	/* Chinese-manufactured AMD EPYC clone. */
-	VENDOR_HYGON        = 0x800 | VENDOR_AMD,
+	VENDOR_HV_XEN       = 0x100,
+	VENDOR_HV_VMWARE    = 0x200,
+	VENDOR_HV_KVM       = 0x400,
+	VENDOR_HV_HYPERV    = 0x800,
+	VENDOR_HV_PARALLELS = 0x1000,
+	VENDOR_HV_BHYVE     = 0x2000,
+	VENDOR_HV_GENERIC   = 0x4000,
 
 	VENDOR_ANY          = (int)-1
 } cpu_vendor_t;
