@@ -3,7 +3,7 @@
  *
  * A simple and small tool to dump/decode CPUID information.
  *
- * Copyright (c) 2010-2020, Steven Noonan <steven@uplinklabs.net>
+ * Copyright (c) 2010-2021, Steven Noonan <steven@uplinklabs.net>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
