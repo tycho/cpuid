@@ -320,6 +320,10 @@ static void handle_std_base(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	printf("CPU vendor string: '%s'", buf);
 	if (state->vendor == VENDOR_UNKNOWN) {
 		state->vendor = vendor_id(buf);
+
+		/* Hygon is an AMD EPYC clone, let's allow decoding AMD-specific CPUID leaves */
+		if (state->vendor == VENDOR_HYGON)
+			state->vendor |= VENDOR_AMD;
 	} else if (state->vendor_override) {
 		printf(" (overridden as '%s')", vendor_name(state->vendor));
 	}
