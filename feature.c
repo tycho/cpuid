@@ -1251,8 +1251,9 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 		}
 
 		if (state->last_leaf.eax < 0x40000000 || state->last_leaf.eax > 0x4fff0000) {
+			int cpu_vendor = state->vendor & VENDOR_CPU_MASK;
 			/* Non-hypervisor leaves */
-			if (state->vendor != VENDOR_AMD && state->vendor != VENDOR_INTEL) {
+			if (cpu_vendor != VENDOR_AMD && cpu_vendor != VENDOR_INTEL) {
 				/* Unusual CPU vendor, just ignore vendor matching and print
 				 * any matching feature flags
 				 */
