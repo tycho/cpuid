@@ -808,7 +808,7 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	uint32_t i;
 	uint32_t total_logical = state->thread_count(state);
 
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return 1;
 
 	/* Check if x2APIC is supported. Early exit if not. */
@@ -911,7 +911,7 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	uint32_t total_logical = state->thread_count(state);
 	struct x2apic_state_t x2apic;
 
-	if ((state->vendor & VENDOR_INTEL) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 
 	if (probe_std_x2apic(regs, state, &x2apic))
@@ -941,9 +941,9 @@ static void handle_dump_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *st
 		regs->eax = eax;
 		regs->ecx = i;
 		state->cpuid_call(regs, state);
-		state->cpuid_print(regs, state, TRUE);
-		if (!(regs->eax || regs->ebx))
+		if (i > 0 && !(regs->eax || regs->ebx))
 			break;
+		state->cpuid_print(regs, state, TRUE);
 		i++;
 	}
 }
