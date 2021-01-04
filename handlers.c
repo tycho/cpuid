@@ -1430,25 +1430,10 @@ static void handle_ext_pname(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 	}
 }
 
-static const char *amd_associativity(char *buffer, uint8_t assoc)
-{
-	switch (assoc) {
-	case 0x00:
-		return "Reserved";
-	case 0x01:
-		return "direct mapped";
-	case 0xFF:
-		return "fully associative";
-	default:
-		sprintf(buffer, "%d-way associative", assoc);
-		return buffer;
-	}
-}
-
 /* EAX = 8000 0005 */
 static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
-	char buffer[20];
+	char desc_str[256];
 	struct amd_l1_tlb_t {
 		uint8_t itlb_ent;
 		uint8_t itlb_assoc;
@@ -1463,47 +1448,95 @@ static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable
 	};
 	struct amd_l1_tlb_t *tlb;
 	struct amd_l1_cache_t *cache;
+	struct cache_desc_t desc;
+
+	struct cpu_regs_t feat_check;
+	int has_extended_topology;
 
 	/* This is an AMD-only leaf. */
 	if ((state->vendor & VENDOR_AMD) == 0)
 		return;
 
-	tlb = (struct amd_l1_tlb_t *)&regs->eax;
-	printf("L1 TLBs:\n");
+	ZERO_REGS(&feat_check);
+	feat_check.eax = 0x80000001;
+	state->cpuid_call(&feat_check, state);
+	has_extended_topology = (feat_check.ecx & 0x400000) ? 1 : 0;
 
-	if (tlb->dtlb_ent)
-		printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->dtlb_ent, amd_associativity(buffer, tlb->dtlb_assoc));
-	if (tlb->itlb_ent)
-		printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-		       tlb->itlb_ent, amd_associativity(buffer, tlb->itlb_assoc));
+	if (regs->ebx || regs->eax)
+		printf("L1 TLBs:\n");
 
 	tlb = (struct amd_l1_tlb_t *)&regs->ebx;
-	if (tlb->dtlb_ent)
-		printf("  Data TLB (4KB pages): %d entries, %s\n",
-		       tlb->dtlb_ent, amd_associativity(buffer, tlb->dtlb_assoc));
-	if (tlb->itlb_ent)
-		printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-		       tlb->itlb_ent, amd_associativity(buffer, tlb->itlb_assoc));
+	if (tlb->dtlb_ent) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = DATA_TLB;
+		desc.assoc = tlb->dtlb_assoc;
+		desc.size = tlb->dtlb_ent;
+		desc.attrs = PAGES_4K;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
+	if (tlb->itlb_ent) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = CODE_TLB;
+		desc.assoc = tlb->itlb_assoc;
+		desc.size = tlb->itlb_ent;
+		desc.attrs = PAGES_4K;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
 
-	printf("\n");
+	tlb = (struct amd_l1_tlb_t *)&regs->eax;
+	if (tlb->dtlb_ent) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = DATA_TLB;
+		desc.assoc = tlb->dtlb_assoc;
+		desc.size = tlb->dtlb_ent;
+		desc.attrs = PAGES_2M | PAGES_4M;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
+	if (tlb->itlb_ent) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = CODE_TLB;
+		desc.assoc = tlb->itlb_assoc;
+		desc.size = tlb->itlb_ent;
+		desc.attrs = PAGES_2M | PAGES_4M;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
+
+	if (has_extended_topology) {
+		/* This leaf cannot contain all the relevant information because of
+		 * the limited expressiveness of its design. Skip printing this in
+		 * favor of extended topology when available.
+		 */
+		return;
+	}
+
+	if (regs->ecx || regs->edx)
+		printf("L1 Caches:\n");
 
 	cache = (struct amd_l1_cache_t *)&regs->ecx;
-	if (cache->size)
-		printf("L1 caches:\n"
-		       "  Data: %dKB, %s, %d lines per tag, %d byte line size\n",
-		       cache->size,
-		       amd_associativity(buffer, cache->assoc),
-		       cache->linespertag,
-		       cache->linesize);
+	if (cache->size) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = DATA;
+		desc.assoc = cache->assoc;
+		desc.size = cache->size;
+		desc.linesize = cache->linesize;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
 
 	cache = (struct amd_l1_cache_t *)&regs->edx;
-	if (cache->size)
-		printf("  Instruction: %dKB, %s, %d lines per tag, %d byte line size\n",
-		       cache->size,
-		       amd_associativity(buffer, cache->assoc),
-		       cache->linespertag,
-		       cache->linesize);
+	if (cache->size) {
+		memset(&desc, 0, sizeof(struct cache_desc_t));
+		desc.level = 1;
+		desc.type = CODE;
+		desc.assoc = cache->assoc;
+		desc.size = cache->size;
+		desc.linesize = cache->linesize;
+		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+	}
 
 	printf("\n");
 }
@@ -1555,25 +1588,24 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 	}
 
 	if (state->vendor & VENDOR_AMD) {
-		static const char *assoc[] = {
-			/* 0x00 */ "Disabled",
-			/* 0x01 */ "Direct mapped",
-			/* 0x02 */ "2-way",
-			/* 0x03 */ NULL,
-			/* 0x04 */ "4-way",
-			/* 0x05 */ NULL,
-			/* 0x06 */ "8-way",
-			/* 0x07 */ NULL,
-			/* 0x08 */ "16-way",
-			/* 0x09 */ NULL,
-			/* 0x0A */ "32-way",
-			/* 0x0B */ "48-way",
-			/* 0x0C */ "64-way",
-			/* 0x0D */ "96-way",
-			/* 0x0E */ "128-way",
-			/* 0x0F */ "Fully associative"
+		static uint8_t l2l3_assoc_map[] = {
+			/* 0x00 */ 0,
+			/* 0x01 */ 1,
+			/* 0x02 */ 2,
+			/* 0x03 */ 0,
+			/* 0x04 */ 4,
+			/* 0x05 */ 0,
+			/* 0x06 */ 8,
+			/* 0x07 */ 0,
+			/* 0x08 */ 16,
+			/* 0x09 */ 0,
+			/* 0x0A */ 32,
+			/* 0x0B */ 48,
+			/* 0x0C */ 64,
+			/* 0x0D */ 96,
+			/* 0x0E */ 128,
+			/* 0x0F */ 0xff
 		};
-		char buffer[20];
 
 		struct l2_tlb_t {
 			unsigned itlb_size:12;
@@ -1599,38 +1631,83 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 		struct l2_cache_t *l2_cache;
 		struct l3_cache_t *l3_cache;
 
+		struct cache_desc_t desc;
+		char desc_str[256];
+
+		struct cpu_regs_t feat_check;
+		int has_extended_topology;
+
+		ZERO_REGS(&feat_check);
+		feat_check.eax = 0x80000001;
+		state->cpuid_call(&feat_check, state);
+		has_extended_topology = (feat_check.ecx & 0x400000) ? 1 : 0;
+
 		printf("L2 TLBs:\n");
 
-		tlb = (struct l2_tlb_t *)&regs->eax;
-		if (tlb->dtlb_size)
-			printf("  Data TLB (2MB and 4MB pages): %d entries, %s\n",
-			       tlb->dtlb_size, amd_associativity(buffer, tlb->dtlb_assoc));
-		if (tlb->itlb_size)
-			printf("  Instruction TLB (2MB and 4MB pages): %d entries, %s\n",
-			       tlb->itlb_size, amd_associativity(buffer, tlb->itlb_assoc));
-
 		tlb = (struct l2_tlb_t *)&regs->ebx;
-		if (tlb->dtlb_size)
-			printf("  Data TLB (4KB pages): %d entries, %s\n",
-			       tlb->dtlb_size, amd_associativity(buffer, tlb->dtlb_assoc));
-		if (tlb->itlb_size)
-			printf("  Instruction TLB (4KB pages): %d entries, %s\n",
-			       tlb->itlb_size, amd_associativity(buffer, tlb->itlb_assoc));
+		if (tlb->dtlb_size) {
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 2;
+			desc.type = DATA_TLB;
+			desc.assoc = tlb->dtlb_assoc;
+			desc.size = tlb->dtlb_size;
+			desc.attrs = PAGES_4K;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
+		if (tlb->itlb_size) {
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 2;
+			desc.type = CODE_TLB;
+			desc.assoc = tlb->itlb_assoc;
+			desc.size = tlb->itlb_size;
+			desc.attrs = PAGES_4K;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
 
+		tlb = (struct l2_tlb_t *)&regs->eax;
+		if (tlb->dtlb_size) {
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 2;
+			desc.type = DATA_TLB;
+			desc.assoc = tlb->dtlb_assoc;
+			desc.size = tlb->dtlb_size;
+			desc.attrs = PAGES_2M | PAGES_4M;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
+		if (tlb->itlb_size) {
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 2;
+			desc.type = CODE_TLB;
+			desc.assoc = tlb->itlb_assoc;
+			desc.size = tlb->itlb_size;
+			desc.attrs = PAGES_2M | PAGES_4M;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
 		printf("\n");
 
+		if (has_extended_topology) {
+			/* This leaf cannot contain all the relevant information because of
+			 * the limited expressiveness of its design. Skip printing this in
+			 * favor of extended topology when available.
+			 */
+			return;
+		}
+
+		printf("L2 and L3 caches:\n");
+
 		l2_cache = (struct l2_cache_t *)&regs->ecx;
-		if (l2_cache->size)
-			printf("L2 cache: %d%cB, %s, %d lines per tag, %d byte line size\n",
-			       l2_cache->size > 1024 ? l2_cache->size / 1024 : l2_cache->size,
-			       l2_cache->size > 1024 ? 'M' : 'K',
-			       assoc[l2_cache->assoc] ? assoc[l2_cache->assoc] : "unknown associativity",
-			       l2_cache->linespertag,
-			       l2_cache->linesize);
+		if (l2_cache->size) {
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 2;
+			desc.type = UNIFIED;
+			desc.size = l2_cache->size;
+			desc.assoc = l2_cache->assoc < NELEM(l2l3_assoc_map) ? l2l3_assoc_map[l2_cache->assoc] : 0;
+			desc.linesize = l2_cache->linesize;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
 
 		l3_cache = (struct l3_cache_t *)&regs->edx;
 		if (l3_cache->size) {
-			char associativity[32];
 			uint32_t size = l3_cache->size * 512;
 			if ( l3_cache->size == 0x0003 ||
 			    (l3_cache->size >= 0x0005 && l3_cache->size <= 0x0007) ||
@@ -1639,16 +1716,13 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			{
 				size /= 2;
 			}
-			if (l3_cache->assoc == 0x9)
-				associativity[0] = 0;
-			else
-				sprintf(associativity, ", %s", assoc[l3_cache->assoc] ? assoc[l3_cache->assoc] : "unknown associativity");
-			printf("L3 cache: %u%cB%s, %d lines per tag, %d byte line size\n",
-			       size > 1024 ? size / 1024 : size,
-			       size > 1024 ? 'M' : 'K',
-			       associativity,
-			       l3_cache->linespertag,
-			       l3_cache->linesize);
+			memset(&desc, 0, sizeof(struct cache_desc_t));
+			desc.level = 3;
+			desc.type = UNIFIED;
+			desc.size = size;
+			desc.assoc = l3_cache->assoc < NELEM(l2l3_assoc_map) ? l2l3_assoc_map[l3_cache->assoc] : 0;
+			desc.linesize = l3_cache->linesize;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 		}
 		printf("\n");
 	}
