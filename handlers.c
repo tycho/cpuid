@@ -89,7 +89,7 @@ DECLARE_HANDLER(ext_amdl1cachefeat);
 DECLARE_HANDLER(ext_l2cachefeat);
 DECLARE_HANDLER(ext_0008);
 DECLARE_HANDLER(ext_svm);
-//DECLARE_HANDLER(ext_amd_tlb);
+DECLARE_HANDLER(ext_amd_1g_tlb);
 DECLARE_HANDLER(ext_perf_opt_feat);
 DECLARE_HANDLER(ext_ibs_feat);
 DECLARE_HANDLER(ext_cacheprop);
@@ -220,7 +220,7 @@ const struct cpuid_leaf_handler_index_t decode_handlers[] =
 	{0x80000007, handle_features},
 	{0x80000008, handle_ext_0008},
 	{0x8000000A, handle_ext_svm},
-	//{0x80000019, handle_ext_amd_tlb},
+	{0x80000019, handle_ext_amd_1g_tlb},
 	{0x8000001A, handle_ext_perf_opt_feat},
 	{0x8000001B, handle_ext_ibs_feat},
 	{0x8000001D, handle_ext_cacheprop},
@@ -1541,6 +1541,25 @@ static void handle_ext_amdl1cachefeat(struct cpu_regs_t *regs, __unused_variable
 	printf("\n");
 }
 
+static const uint8_t amd_assoc_map[] = {
+	/* 0x00 */ 0,
+	/* 0x01 */ 1,
+	/* 0x02 */ 2,
+	/* 0x03 */ 0,
+	/* 0x04 */ 4,
+	/* 0x05 */ 0,
+	/* 0x06 */ 8,
+	/* 0x07 */ 0,
+	/* 0x08 */ 16,
+	/* 0x09 */ 0,
+	/* 0x0A */ 32,
+	/* 0x0B */ 48,
+	/* 0x0C */ 64,
+	/* 0x0D */ 96,
+	/* 0x0E */ 128,
+	/* 0x0F */ 0xff
+};
+
 /* EAX = 8000 0006 */
 static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
 {
@@ -1588,24 +1607,6 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 	}
 
 	if (state->vendor & VENDOR_AMD) {
-		static uint8_t l2l3_assoc_map[] = {
-			/* 0x00 */ 0,
-			/* 0x01 */ 1,
-			/* 0x02 */ 2,
-			/* 0x03 */ 0,
-			/* 0x04 */ 4,
-			/* 0x05 */ 0,
-			/* 0x06 */ 8,
-			/* 0x07 */ 0,
-			/* 0x08 */ 16,
-			/* 0x09 */ 0,
-			/* 0x0A */ 32,
-			/* 0x0B */ 48,
-			/* 0x0C */ 64,
-			/* 0x0D */ 96,
-			/* 0x0E */ 128,
-			/* 0x0F */ 0xff
-		};
 
 		struct l2_tlb_t {
 			unsigned itlb_size:12;
@@ -1683,7 +1684,6 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			desc.attrs = PAGES_2M | PAGES_4M;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 		}
-		printf("\n");
 
 		if (has_extended_topology) {
 			/* This leaf cannot contain all the relevant information because of
@@ -1701,7 +1701,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			desc.level = 2;
 			desc.type = UNIFIED;
 			desc.size = l2_cache->size;
-			desc.assoc = l2_cache->assoc < NELEM(l2l3_assoc_map) ? l2l3_assoc_map[l2_cache->assoc] : 0;
+			desc.assoc = l2_cache->assoc < NELEM(amd_assoc_map) ? amd_assoc_map[l2_cache->assoc] : 0;
 			desc.linesize = l2_cache->linesize;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 		}
@@ -1720,7 +1720,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			desc.level = 3;
 			desc.type = UNIFIED;
 			desc.size = size;
-			desc.assoc = l3_cache->assoc < NELEM(l2l3_assoc_map) ? l2l3_assoc_map[l3_cache->assoc] : 0;
+			desc.assoc = l3_cache->assoc < NELEM(amd_assoc_map) ? amd_assoc_map[l3_cache->assoc] : 0;
 			desc.linesize = l3_cache->linesize;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
 		}
@@ -1817,6 +1817,49 @@ static void handle_ext_svm(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	printf("  Features:\n");
 	print_features(regs, state);
 	printf("\n");
+}
+
+/* EAX = 8000 0005 */
+static void handle_ext_amd_1g_tlb(struct cpu_regs_t *regs, __unused_variable struct cpuid_state_t *state)
+{
+	char desc_str[256];
+	struct amd_1g_tlb_t {
+		unsigned itlb_ent:12;
+		unsigned itlb_assoc:4;
+		unsigned dtlb_ent:12;
+		unsigned dtlb_assoc:4;
+	};
+	struct amd_1g_tlb_t *tlb;
+	struct cache_desc_t desc;
+	int i;
+
+	/* This is an AMD-only leaf. */
+	if ((state->vendor & VENDOR_AMD) == 0)
+		return;
+
+	memset(&desc, 0, sizeof(struct cache_desc_t));
+	desc.attrs = PAGES_1G;
+
+	if (regs->eax || regs->ebx)
+		printf("1GB page TLBs:\n");
+
+	for (i = 0; i < 2; i++) {
+		tlb = (struct amd_1g_tlb_t *)&regs->regs[i];
+		if (tlb->dtlb_ent) {
+			desc.level = i + 1;
+			desc.type = DATA_TLB;
+			desc.assoc = tlb->dtlb_assoc < NELEM(amd_assoc_map) ? amd_assoc_map[tlb->dtlb_assoc] : 0;
+			desc.size = tlb->dtlb_ent;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
+		if (tlb->itlb_ent) {
+			desc.level = i + 1;
+			desc.type = CODE_TLB;
+			desc.assoc = tlb->itlb_assoc < NELEM(amd_assoc_map) ? amd_assoc_map[tlb->itlb_assoc] : 0;
+			desc.size = tlb->itlb_ent;
+			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
+		}
+	}
 }
 
 /* EAX = 8000 001A */
