@@ -1650,7 +1650,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			memset(&desc, 0, sizeof(struct cache_desc_t));
 			desc.level = 2;
 			desc.type = DATA_TLB;
-			desc.assoc = tlb->dtlb_assoc;
+			desc.assoc = tlb->dtlb_assoc == 0x6 ? 8 : 0;
 			desc.size = tlb->dtlb_size;
 			desc.attrs = PAGES_4K;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
@@ -1659,7 +1659,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			memset(&desc, 0, sizeof(struct cache_desc_t));
 			desc.level = 2;
 			desc.type = CODE_TLB;
-			desc.assoc = tlb->itlb_assoc;
+			desc.assoc = tlb->itlb_assoc == 0x6 ? 8 : 0;
 			desc.size = tlb->itlb_size;
 			desc.attrs = PAGES_4K;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
@@ -1670,7 +1670,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			memset(&desc, 0, sizeof(struct cache_desc_t));
 			desc.level = 2;
 			desc.type = DATA_TLB;
-			desc.assoc = tlb->dtlb_assoc;
+			desc.assoc = tlb->dtlb_assoc == 0x4 ? 4 : 0;
 			desc.size = tlb->dtlb_size;
 			desc.attrs = PAGES_2M | PAGES_4M;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
@@ -1679,7 +1679,7 @@ static void handle_ext_l2cachefeat(struct cpu_regs_t *regs, __unused_variable st
 			memset(&desc, 0, sizeof(struct cache_desc_t));
 			desc.level = 2;
 			desc.type = CODE_TLB;
-			desc.assoc = tlb->itlb_assoc;
+			desc.assoc = tlb->itlb_assoc == 0x6 ? 8 : 0;
 			desc.size = tlb->itlb_size;
 			desc.attrs = PAGES_2M | PAGES_4M;
 			printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
