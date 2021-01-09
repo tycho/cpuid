@@ -477,8 +477,6 @@ static void handle_std_cache(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 {
 	uint8_t i, m = regs->eax & 0xFF;
 	struct cpu_regs_t *rvec = NULL;
-	if ((state->vendor & (VENDOR_INTEL | VENDOR_CYRIX)) == 0)
-		return;
 
 	/* I don't think this ever happens, but just in case... */
 	if (m < 1)
