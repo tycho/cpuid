@@ -8,6 +8,17 @@ set -ex
 
 rm -rf build-{a,ub,t}san build-meson
 
+case $COMPILER in
+gcc)
+	export CC=gcc
+	export CXX=g++
+	;;
+clang)
+	export CC=clang
+	export CXX=clang++
+esac
+
+
 MESON_ARGS=()
 BUILD_VARIANTS=(meson)
 

@@ -1,4 +1,7 @@
-## CPUID
+CPUID
+=======
+
+[![Build status](https://github.com/tycho/cpuid/workflows/CI/badge.svg)](https://github.com/tycho/cpuid/actions)
 
 "cpuid" is a very simple C program, designed to dump and extract information
 from the x86 CPUID instruction.
@@ -9,7 +12,8 @@ certain leaves, but this functionality will be expanded as the CPUID
 specifications provided by AMD and Intel change.
 
 
-### Building
+Building
+--------
 
 The build process is simplified compared to a plethora of other open source
 projects out there. You don't need autoconf/automake or any of the headaches
@@ -40,7 +44,8 @@ $ make
 And you should have a new executable called 'cpuid' in a few seconds.
 
 
-### Usage
+Usage
+-----
 
 Since the usage will likely change over time, I recommend that you take a look
 at the output of:
@@ -50,7 +55,8 @@ $ ./cpuid --help
 ```
 
 
-### Reporting Bugs
+Reporting Bugs
+--------------
 
 If you find a bug in CPUID, please submit details about it to the [issue
 tracker](https://github.com/tycho/cpuid/issues) on GitHub.
@@ -71,7 +77,8 @@ $ ./cpuid --version
 ```
 
 
-### Reference Documentation
+Reference Documentation
+-----------------------
 
 You can find current Intel and AMD CPUID specifications at these locations:
 
@@ -84,8 +91,9 @@ uptake. Please notify me if you notice any inconsistencies or if features you
 find relevant are not being decoded.
 
 
-### Contact
+Contact
+-------
 
-I'm contactable via email and respond frequently.
+I'm reachable via email and respond frequently.
 
 [Steven Noonan \<steven@uplinklabs.net>](mailto:steven@uplinklabs.net)
