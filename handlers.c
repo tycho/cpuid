@@ -806,9 +806,6 @@ static int probe_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *state
 	uint32_t i;
 	uint32_t total_logical = state->thread_count(state);
 
-	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
-		return 1;
-
 	/* Check if x2APIC is supported. Early exit if not. */
 	ZERO_REGS(regs);
 	regs->eax = 0xb;
