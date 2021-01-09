@@ -1014,6 +1014,8 @@ static void handle_std_ext_state(struct cpu_regs_t *regs, struct cpuid_state_t *
 			if (!regs->eax)
 				continue;
 
+			printf("  Size of XSAVE area containing all enabled states: %d\n", regs->ebx);
+
 			printf("  Features available:\n");
 			for (j = 0; j < 32; j++) {
 				const char *name;
