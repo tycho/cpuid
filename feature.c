@@ -1247,6 +1247,11 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 					accounting.eax = accounting.ebx = accounting.ecx = 0;
 				}
 				break;
+			case 0xC0000001:
+				if (p->m_reg == REG_EDX) {
+					printf("Centaur Feature Flags:\n");
+					accounting.eax = 0;
+				}
 			}
 		}
 
