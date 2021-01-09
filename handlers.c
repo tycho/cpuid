@@ -906,9 +906,6 @@ static void handle_std_x2apic(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 	uint32_t total_logical = state->thread_count(state);
 	struct x2apic_state_t x2apic;
 
-	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
-		return;
-
 	if (probe_std_x2apic(regs, state, &x2apic))
 		return;
 
