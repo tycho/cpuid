@@ -13,6 +13,7 @@ PACKAGES=(
 	gcc
 	g++
 	ccache
+	make
 	meson
 	ninja
 	pkgconf
