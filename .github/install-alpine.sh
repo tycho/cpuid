@@ -10,6 +10,7 @@ apk update
 PACKAGES=(
 	clang
 	clang-dev
+	llvm-dev
 	gcc
 	g++
 	ccache
