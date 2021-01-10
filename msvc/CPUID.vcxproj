@@ -92,7 +92,7 @@
       <Command>set PATH=%25PATH%25%3bc:\perl\bin%3bc:\perl64\bin%3bC:\msysgit\bin%3bC:\msysgit\mingw\bin%3bC:\cygwin\bin
 cd $(ProjectDir)\..
 perl tools/build.pl build.h
-perl tools/license.pl COPYING license.h
+perl tools/license.pl LICENSE license.h
 </Command>
     </PreBuildEvent>
     <ClCompile>
@@ -121,7 +121,7 @@ perl tools/license.pl COPYING license.h
       <Command>set PATH=%25PATH%25%3bc:\perl\bin%3bc:\perl64\bin%3bC:\msysgit\bin%3bC:\msysgit\mingw\bin%3bC:\cygwin\bin
 cd $(ProjectDir)\..
 perl tools/build.pl build.h
-perl tools/license.pl COPYING license.h
+perl tools/license.pl LICENSE license.h
 </Command>
     </PreBuildEvent>
     <Midl>
@@ -155,7 +155,7 @@ perl tools/license.pl COPYING license.h
       <Command>set PATH=%25PATH%25%3bc:\perl\bin%3bc:\perl64\bin%3bC:\msysgit\bin%3bC:\msysgit\mingw\bin%3bC:\cygwin\bin
 cd $(ProjectDir)\..
 perl tools/build.pl build.h
-perl tools/license.pl COPYING license.h
+perl tools/license.pl LICENSE license.h
 </Command>
     </PreBuildEvent>
     <ClCompile>
@@ -186,7 +186,7 @@ perl tools/license.pl COPYING license.h
       <Command>set PATH=%25PATH%25%3bc:\perl\bin%3bc:\perl64\bin%3bC:\msysgit\bin%3bC:\msysgit\mingw\bin%3bC:\cygwin\bin
 cd $(ProjectDir)\..
 perl tools/build.pl build.h
-perl tools/license.pl COPYING license.h
+perl tools/license.pl LICENSE license.h
 </Command>
     </PreBuildEvent>
     <Midl>

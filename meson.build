@@ -15,7 +15,7 @@ gen_build_h = custom_target('build.h',
                             command : [perl, meson.current_source_dir() + '/tools/build.pl', '@OUTPUT@'])
 
 gen_license_h = custom_target('license.h',
-                              input : ['COPYING'],
+                              input : ['LICENSE'],
                               output : ['license.h'],
                               command : [perl, meson.current_source_dir() + '/tools/license.pl', '@INPUT@', '@OUTPUT@'])
 
