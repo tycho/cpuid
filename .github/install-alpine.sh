@@ -17,6 +17,7 @@ PACKAGES=(
 	ninja
 	pkgconf
 	git
+	perl
 	linux-headers
 )
 
