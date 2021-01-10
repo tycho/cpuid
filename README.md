@@ -1,7 +1,5 @@
-CPUID
+CPUID [![Build status](https://github.com/tycho/cpuid/workflows/CI/badge.svg)](https://github.com/tycho/cpuid/actions) [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 =======
-
-[![Build status](https://github.com/tycho/cpuid/workflows/CI/badge.svg)](https://github.com/tycho/cpuid/actions)
 
 "cpuid" is a very simple C program, designed to dump and extract information
 from the x86 CPUID instruction.
