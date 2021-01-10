@@ -24,6 +24,7 @@ BUILD_VARIANTS=(meson)
 
 BUILD_SANITIZERS=1
 [[ $(uname -s) == MINGW* ]] && BUILD_SANITIZERS=0
+[[ "${IMAGE}" == "alpine" ]] && BUILD_SANITIZERS=0
 
 if lsb_release -c | grep -q bionic$; then
 	export ASAN_OPTIONS=detect_odr_violation=0
