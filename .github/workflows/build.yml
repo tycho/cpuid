@@ -7,9 +7,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [ubuntu-latest, ubuntu-rolling, fedora-latest]
+        build: [alpine-latest, ubuntu-latest, ubuntu-rolling, fedora-latest]
         compiler: [gcc, clang]
         include:
+          - build: alpine-latest
+            os: ubuntu-latest
+            docker_image: alpine
+            docker_tag: latest
           - build: ubuntu-latest
             os: ubuntu-latest
             docker_image: ubuntu
