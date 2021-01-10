@@ -36,6 +36,7 @@ jobs:
       run: |
         docker run -d --rm --name github-docker-builder -e LC_ALL="C" -e LANG="C" -v ${{ github.workspace }}:/build -w /build ${{ matrix.docker_image }}:${{ matrix.docker_tag }} tail -f /dev/null
         docker ps
+        docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder sh .github/preinstall.sh
     - name: Install dependencies
       run: |
         docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder bash .github/install.sh
