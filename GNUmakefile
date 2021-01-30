@@ -93,6 +93,7 @@ LDFLAGS += -pthread -lrt
 endif
 
 ifeq ($(uname_S),FreeBSD)
+CC := clang
 CFLAGS += -pthread
 LDFLAGS += -pthread
 endif
