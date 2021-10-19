@@ -44,6 +44,11 @@
 #undef MAX_CPUS
 #define MAX_CPUS CPU_MAXSIZE
 
+#elif defined(TARGET_OS_NETBSD)
+
+#include <pthread.h>
+#include <sched.h>
+
 #elif defined(TARGET_OS_SOLARIS)
 #include <string.h>
 #include <unistd.h>
@@ -236,6 +241,27 @@ int thread_bind_native(__unused_variable struct cpuid_state_t *state, uint32_t i
 		state->cpu_bound_index = id;
 
 	return (ret == 0) ? 0 : 1;
+
+#elif defined (TARGET_OS_NETBSD)
+
+	cpuset_t *set;
+	int ret;
+
+	set = cpuset_create();
+	if (set == NULL)
+		return 1;
+	
+	cpuset_zero(set);
+	ret = cpuset_set(id, set);
+	if (ret == -1)
+		return 1;
+	ret = pthread_setaffinity_np(pthread_self(), cpuset_size(set), set);
+	cpuset_destroy(set);
+
+	if (state && ret == 0)
+		state->cpu_bound_index = id;
+
+	return ret == 0 ? 0 : 1;
 
 #elif defined(TARGET_OS_SOLARIS)
 
