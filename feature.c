@@ -992,8 +992,8 @@ static const struct cpu_feature_t features [] = {
 	{ 0x80000008, 0, REG_EBX, 0x01000000,                VENDOR_AMD, "Speculative Store Bypass Disable (SSBD)"},
 	{ 0x80000008, 0, REG_EBX, 0x02000000,                VENDOR_AMD, "VIRT_SPEC_CTL"},
 	{ 0x80000008, 0, REG_EBX, 0x04000000,                VENDOR_AMD, "SSBD no longer needed"},
-/*	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x80000008, 0, REG_EBX, 0x08000000,                VENDOR_AMD, "Collaborative Processor Performance Control (CPPC)"},
+	{ 0x80000008, 0, REG_EBX, 0x10000000,                VENDOR_AMD, "Predictive Store Forward Disable (PSFD)"},
 /*	{ 0x80000008, 0, REG_EBX, 0x20000000,                VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x40000000,                VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x80000008, 0, REG_EBX, 0x80000000,                VENDOR_AMD, ""}, */   /* Reserved */
@@ -1022,7 +1022,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x8000000A, 0, REG_EDX, 0x00100000,                VENDOR_AMD, "SPEC_CTRL virtualization"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x00200000,                VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x00400000,                VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x8000000A, 0, REG_EDX, 0x00800000,                VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x8000000A, 0, REG_EDX, 0x00800000,                VENDOR_AMD, "Host MCE override"},
 	{ 0x8000000A, 0, REG_EDX, 0x01000000,                VENDOR_AMD, "INVLPGB/TLBSYNC hypervisor enable"},
 /*	{ 0x8000000A, 0, REG_EDX, 0x02000000,                VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x8000000A, 0, REG_EDX, 0x04000000,                VENDOR_AMD, ""}, */   /* Reserved */
