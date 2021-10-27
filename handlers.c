@@ -351,17 +351,17 @@ static const struct amd_package_match_t
 	uint32_t package_id;
 	const char *name;
 } amd_package_match [] = {
-	{ 0x10, 0, 0, "F" },
-	{ 0x10, 0, 1, "AM" },
-	{ 0x10, 0, 2, "S1" },
-	{ 0x10, 0, 3, "G34" },
-	{ 0x10, 0, 4, "ASB2" },
-	{ 0x10, 0, 5, "C32" },
-	{ 0x11, 0, 2, "S1g2" },
-	{ 0x12, 0, 1, "FS1 (µPGA)" },
-	{ 0x12, 0, 2, "FM1 (PGA)" },
-	{ 0x14, 0, 0, "FT1 (BGA)" },
-	{ 0x14, 0,15, "FT1 (BGA)" },
+	{ 0x10, 0xFFFFFFFF, 0, "F" },
+	{ 0x10, 0xFFFFFFFF, 1, "AM" },
+	{ 0x10, 0xFFFFFFFF, 2, "S1" },
+	{ 0x10, 0xFFFFFFFF, 3, "G34" },
+	{ 0x10, 0xFFFFFFFF, 4, "ASB2" },
+	{ 0x10, 0xFFFFFFFF, 5, "C32" },
+	{ 0x11, 0xFFFFFFFF, 2, "S1g2" },
+	{ 0x12, 0xFFFFFFFF, 1, "FS1 (µPGA)" },
+	{ 0x12, 0xFFFFFFFF, 2, "FM1 (PGA)" },
+	{ 0x14, 0xFFFFFFFF, 0, "FT1 (BGA)" },
+	{ 0x14, 0xFFFFFFFF,15, "FT1 (BGA)" },
 	{ 0x15, 0, 1, "AM3" },
 	{ 0x15, 0, 3, "G34" },
 	{ 0x15, 0, 5, "C32" },
@@ -393,7 +393,8 @@ static const struct amd_package_match_t
 	{ 0x17, 6, 0, "FP6"},
 	{ 0x17, 7, 2, "AM4"},
 	{ 0x17, 8, 0, "FP5"},
-	{ 0x19, 2, 2, "AM4"},
+	{ 0x19, 0xFFFFFFFF, 0, "FP6 (µPGA)" },
+	{ 0x19, 0xFFFFFFFF, 2, "AM4"},
 
 	{ 0, 0, 0, NULL },
 };
@@ -454,7 +455,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		for (match = amd_package_match; match->name != NULL; match++) {
 			BOOL matches = TRUE;
 			matches &= (match->family == state->family);
-			if (state->family >= 0x15)
+			if (match->extmodel != 0xFFFFFFFF)
 				matches &= (match->extmodel == state->sig.extmodel);
 			matches &= (match->package_id == package_id);
 			if (matches)
