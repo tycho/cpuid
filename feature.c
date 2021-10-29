@@ -247,10 +247,10 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_ECX, 0x00000400, VENDOR_INTEL | VENDOR_AMD, "VEX-encoded PCLMUL (VPCL)"},
 	{ 0x00000007, 0, REG_ECX, 0x00000800, VENDOR_INTEL             , "AVX512 Vector Neural Network Instructions (AVX512VNNI)"},
 	{ 0x00000007, 0, REG_ECX, 0x00001000, VENDOR_INTEL             , "AVX512 Bitwise Algorithms (AVX515BITALG)"},
-/*	{ 0x00000007, 0, REG_ECX, 0x00002000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x00002000, VENDOR_INTEL             , "Total Memory Encryption (TME_EN)"},
 	{ 0x00000007, 0, REG_ECX, 0x00004000, VENDOR_INTEL             , "AVX512 VPOPCNTDQ"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00008000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-	{ 0x00000007, 0, REG_ECX, 0x00010000, VENDOR_INTEL             , "5-level paging (VA57)"},
+	{ 0x00000007, 0, REG_ECX, 0x00010000, VENDOR_INTEL             , "5-level paging (LA57)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x00020000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00040000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_ECX, 0x00080000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
@@ -272,7 +272,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EDX, 0x00000004, VENDOR_INTEL             , "AVX512_4VNNIW"},
 	{ 0x00000007, 0, REG_EDX, 0x00000008, VENDOR_INTEL             , "AVX512_4FMAPS"},
 	{ 0x00000007, 0, REG_EDX, 0x00000010, VENDOR_INTEL | VENDOR_AMD, "Fast Short REP MOV"}, /* Undocumented on AMD */
-/*	{ 0x00000007, 0, REG_EDX, 0x00000020, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00000020, VENDOR_INTEL             , "User interrupts (UINTR)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00000040, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 0, REG_EDX, 0x00000080, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00000100, VENDOR_INTEL             , "AVX512_VP2INTERSECT"},
