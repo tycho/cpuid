@@ -1243,23 +1243,36 @@ static void handle_std_trace(struct cpu_regs_t *regs, struct cpuid_state_t *stat
 /* EAX = 0000 0015 */
 static void handle_std_tsc(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if ((state->vendor & (VENDOR_INTEL)) == 0)
+	uint32_t crystal_khz;
+
+	if (!regs->eax || !regs->ebx)
 		return;
 
-	if (!regs->ebx && !regs->ecx)
-		return;
+	crystal_khz = regs->ecx / 1000;
 
 	printf("Time Stamp Counter and Core Crystal Clock Information\n");
+
+	if (!crystal_khz && state->curmax >= 0x16) {
+		/* Skylake and Kaby Lake do not report the crystal Hz value, but we can
+		 * infer it from the crystal ratio and CPU speed
+		 */
+		struct cpu_regs_t leaf16;
+		ZERO_REGS(&leaf16);
+		leaf16.eax = 0x16;
+		state->cpuid_call(&leaf16, state);
+
+		crystal_khz = leaf16.eax * 1000 * regs->eax / regs->ebx;
+	}
+
 	if (regs->ecx)
 		printf("  Core crystal clock: %u Hz\n", regs->ecx);
 	else
 		printf("  Core crystal clock not enumerated\n");
 
-	if (regs->ebx)
-		printf("  TSC to core crystal clock ratio: %u / %d\n", regs->ebx, regs->eax);
+	printf("  TSC to core crystal clock ratio: %u / %d\n", regs->ebx, regs->eax);
 
-	if (regs->eax && regs->ebx && regs->ecx)
-		printf("  TSC frequency: %"PRIu64" kHz\n", (uint64_t)regs->ecx * regs->ebx / regs->eax / 1000);
+	if (crystal_khz)
+		printf("  TSC frequency: %u kHz\n", crystal_khz * regs->ebx / regs->eax);
 
 	printf("\n");
 }
