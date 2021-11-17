@@ -1105,7 +1105,7 @@ static void handle_std_qos_monitor(struct cpu_regs_t *regs, struct cpuid_state_t
 	struct edx_qos_feature *feat;
 	uint32_t unaccounted;
 
-	if ((state->vendor & (VENDOR_INTEL)) == 0)
+	if ((state->vendor & (VENDOR_INTEL | VENDOR_AMD)) == 0)
 		return;
 
 	if (!regs->edx)
