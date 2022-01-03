@@ -343,7 +343,7 @@ char *describe_cache(uint32_t ncpus, const struct cache_desc_t *desc, char *buff
 	case TRACE:
 		ADD_LINE("%dK-uops trace cache",
 			desc->size);
-		indent += 11;
+		indent += 6;
 		break;
 	default:
 		abort();
