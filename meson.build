@@ -8,7 +8,7 @@ project('cpuid', 'c',
 
 compiler = meson.get_compiler('c')
 perl = find_program('perl')
-
+is_sanitize = get_option('b_sanitize')
 
 gen_build_h = custom_target('build.h',
                             output : ['build.h'],
@@ -20,6 +20,15 @@ gen_license_h = custom_target('license.h',
                               command : [perl, meson.current_source_dir() + '/tools/license.pl', '@INPUT@', '@OUTPUT@'])
 
 src = ['cache.c', 'clock.c', 'cpuid.c', 'feature.c', 'handlers.c', 'main.c', 'sanity.c', 'threads.c', 'util.c', 'version.c']
+
+c_flags = []
+if is_sanitize != 'none'
+    c_flags += [
+        compiler.first_supported_argument([
+            '-fno-sanitize-recover=all'
+        ])
+    ]
+endif
 
 incdirs = [include_directories('.')]
 
@@ -44,6 +53,7 @@ executable('cpuid',
            src,
            gen_build_h,
            gen_license_h,
+           c_args : c_flags,
            include_directories : incdirs,
            dependencies : dependencies)
 
