@@ -4,7 +4,7 @@
 # similar in here. Add any package installation gunk into the appropriate
 # install script instead.
 #
-set -ex
+set -uexo pipefail
 
 rm -rf build-{a,ub,t}san build-meson
 
@@ -25,10 +25,6 @@ BUILD_VARIANTS=(meson)
 BUILD_SANITIZERS=1
 [[ $(uname -s) == MINGW* ]] && BUILD_SANITIZERS=0
 [[ "${IMAGE}" == "alpine" ]] && BUILD_SANITIZERS=0
-
-if lsb_release -c | grep -q bionic$; then
-	export ASAN_OPTIONS=detect_odr_violation=0
-fi
 
 meson . build-meson -Dwerror=true -Dbuildtype=release -Ddebug=false -Db_lto=true
 
@@ -67,3 +63,5 @@ for BUILD_VARIANT in . ${BUILD_VARIANTS[@]}; do
 	popd
 	[[ "$BUILD_VARIANT" != "." ]] && rm -rf build-$BUILD_VARIANT
 done
+
+exit 0
