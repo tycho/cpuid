@@ -1,46 +1,59 @@
 name: CI
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: sh
+
 jobs:
-  test:
-    name: BuildAndTest
-    runs-on: ${{ matrix.os }}
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         build: [alpine-latest, archlinux-latest, ubuntu-latest, ubuntu-rolling, fedora-latest]
         compiler: [gcc, clang]
         include:
           - build: alpine-latest
-            os: ubuntu-latest
             docker_image: alpine
             docker_tag: latest
           - build: archlinux-latest
-            os: ubuntu-latest
             docker_image: archlinux
             docker_tag: latest
           - build: ubuntu-latest
-            os: ubuntu-latest
             docker_image: ubuntu
             docker_tag: latest
           - build: ubuntu-rolling
-            os: ubuntu-latest
             docker_image: ubuntu
             docker_tag: rolling
           - build: fedora-latest
-            os: ubuntu-latest
             docker_image: fedora
             docker_tag: latest
     steps:
     - uses: actions/checkout@master
+    - name: Prepare environment
+      run: |
+        echo -n "container_name=" >> "$GITHUB_ENV"
+        echo "${{ github.repository }}-builder-${{ matrix.compiler }}-${{ matrix.docker_image }}-${{ matrix.docker_tag }}" | sed -r 's/[^A-Za-z0-9-]/-/g' >> "$GITHUB_ENV"
+    - name: Destroy old container
+      run: |
+        docker rm -f ${{ env.container_name }}
     - name: Launch container
       run: |
-        docker run -d --rm --name github-docker-builder -e LC_ALL="C" -e LANG="C" -v ${{ github.workspace }}:/build -w /build ${{ matrix.docker_image }}:${{ matrix.docker_tag }} tail -f /dev/null
+        docker run -d --rm --name ${{ env.container_name }} -e LC_ALL="C" -e LANG="C" ${{ matrix.docker_image }}:${{ matrix.docker_tag }} tail -f /dev/null
         docker ps
-        docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder sh .github/preinstall.sh
+    - name: Copy source tree
+      run: |
+        docker cp ${{ github.workspace }} ${{ env.container_name }}:/build
     - name: Install dependencies
       run: |
-        docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder bash .github/install.sh
-        docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder bash .github/install-post.sh
+        docker exec -w /build -e ACT=${{ env.ACT }} -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t ${{ env.container_name }} sh .github/preinstall.sh
+        docker exec -w /build -e ACT=${{ env.ACT }} -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t ${{ env.container_name }} bash .github/install.sh
+        docker exec -w /build -e ACT=${{ env.ACT }} -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t ${{ env.container_name }} bash .github/install-post.sh
     - name: Build and run project
       run: |
-        docker exec -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t github-docker-builder bash .github/script.sh
+        docker exec -w /build -e ACT=${{ env.ACT }} -e COMPILER=${{ matrix.compiler }} -e IMAGE=${{ matrix.docker_image }} -e IMAGE_TAG=${{ matrix.docker_tag }} -t ${{ env.container_name }} bash .github/script.sh
+    - name: Destroy container
+      run: |
+        docker rm -f ${{ env.container_name }}
