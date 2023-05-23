@@ -426,7 +426,7 @@ static void handle_features(struct cpu_regs_t *regs, struct cpuid_state_t *state
 		state->family = state->sig.family + state->sig.extfamily;
 		state->model = model;
 
-		if (regs->ecx & (1 << 31)) {
+		if (regs->ecx & (1U << 31U)) {
 			state->vendor |= VENDOR_HV_GENERIC;
 		}
 
