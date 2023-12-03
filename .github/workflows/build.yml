@@ -36,6 +36,9 @@ jobs:
       run: |
         echo -n "container_name=" >> "$GITHUB_ENV"
         echo "${{ github.repository }}-builder-${{ matrix.compiler }}-${{ matrix.docker_image }}-${{ matrix.docker_tag }}" | sed -r 's/[^A-Za-z0-9-]/-/g' >> "$GITHUB_ENV"
+    - name: Install Docker (if not present)
+      run: |
+        apt-get -q -o=Dpkg::Use-Pty=0 update && apt-get -q -o=Dpkg::Use-Pty=0 -y dist-upgrade && apt-get -q -o=Dpkg::Use-Pty=0 -y install docker.io || true
     - name: Destroy old container
       run: |
         docker rm -f ${{ env.container_name }}
