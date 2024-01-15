@@ -1,0 +1,44 @@
+# Try to enforce LF line endings wherever possible
+*                         text=auto  eol=lf
+
+# MSVC files
+cpp.hint                  text eol=crlf
+*.dsp                     text eol=crlf
+*.dsw                     text eol=crlf
+*.sln                     text eol=crlf
+*.vcxproj                 text eol=crlf
+*.vcxproj.filters         text eol=crlf
+*.vcxproj.user            text eol=crlf
+*.manifest                text eol=crlf
+*.props                   text eol=crlf
+*.bat                     text eol=crlf
+*.cmd                     text eol=crlf
+*.rc                      text eol=crlf
+
+# C/C++ source files
+*.cpp                     text whitespace=fix
+*.c                       text whitespace=fix
+*.h                       text whitespace=fix
+*.inl                     text whitespace=fix
+*.hpp                     text whitespace=fix
+*.cxx                     text whitespace=fix
+*.cc                      text whitespace=fix
+*.hxx                     text whitespace=fix
+
+# Scripts and other misc stuff
+*.pl                      text
+*.sh                      text
+*.py                      text
+meson.build               text
+Makefile                  text
+Makefile.files            text
+Makefile.universal        text
+
+# Preserve legacy files in junk as-is
+*.eml                     -text
+*.iss                     -text
+*.url                     -text
+
+# Don't mangle patch files
+*.patch                   -text -whitespace
+*.diff                    -text -whitespace
