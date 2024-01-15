@@ -12,12 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [alpine-latest, archlinux-latest, ubuntu-latest, ubuntu-rolling, fedora-latest]
+        build: [archlinux-latest, ubuntu-latest, ubuntu-rolling, fedora-latest]
         compiler: [gcc, clang]
         include:
-          - build: alpine-latest
-            docker_image: alpine
-            docker_tag: latest
           - build: archlinux-latest
             docker_image: archlinux
             docker_tag: latest
