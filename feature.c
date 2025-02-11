@@ -155,9 +155,9 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000006, 0, REG_EAX, 0x00080000, VENDOR_INTEL             , "Hardware feedback MSRs"},
 	{ 0x00000006, 0, REG_EAX, 0x00100000, VENDOR_INTEL             , "Ignoring Idle Logical Processor HWP request"},
 /*	{ 0x00000006, 0, REG_EAX, 0x00200000, VENDOR_INTEL             , ""}, */   /* Reserved */
-/*	{ 0x00000006, 0, REG_EAX, 0x00400000, VENDOR_INTEL             , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x00400000, VENDOR_INTEL             , "HWP control MSR"},
 	{ 0x00000006, 0, REG_EAX, 0x00800000, VENDOR_INTEL             , "Enhanced hardware feedback MSRs"},
-/*	{ 0x00000006, 0, REG_EAX, 0x01000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+	{ 0x00000006, 0, REG_EAX, 0x01000000, VENDOR_INTEL             , "Thermal interrupt MSR bit 25"},
 /*	{ 0x00000006, 0, REG_EAX, 0x02000000, VENDOR_INTEL             , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x04000000, VENDOR_INTEL             , ""}, */   /* Reserved */
 /*	{ 0x00000006, 0, REG_EAX, 0x08000000, VENDOR_INTEL             , ""}, */   /* Reserved */
@@ -258,7 +258,7 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 0, REG_ECX, 0x00200000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_ECX, 0x00400000, VENDOR_INTEL | VENDOR_AMD, "Read Processor ID (RDPID)"},
 	{ 0x00000007, 0, REG_ECX, 0x00800000, VENDOR_INTEL             , "Key locker (KL)"},
-/*	{ 0x00000007, 0, REG_ECX, 0x01000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_ECX, 0x01000000, VENDOR_INTEL             , "OS bus-lock detection"},
 	{ 0x00000007, 0, REG_ECX, 0x02000000, VENDOR_INTEL             , "Cache Line Demote (CLDEMOTE)"},
 /*	{ 0x00000007, 0, REG_ECX, 0x04000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_ECX, 0x08000000, VENDOR_INTEL             , "32-bit Direct Stores (MOVDIRI)"},
@@ -286,7 +286,7 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EDX, 0x00010000, VENDOR_INTEL             , "TSX suspend load address tracking"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00020000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00040000, VENDOR_INTEL             , "PCONFIG"},
-/*	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 0, REG_EDX, 0x00080000, VENDOR_INTEL             , "Architectural LBRs"},
 	{ 0x00000007, 0, REG_EDX, 0x00100000, VENDOR_INTEL             , "CET indirect branch tracking (CET_IBT)"},
 /*	{ 0x00000007, 0, REG_EDX, 0x00200000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 0, REG_EDX, 0x00400000, VENDOR_INTEL             , "Tile computation on bfloat16 (AMX-BF16)"},
@@ -300,15 +300,15 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 0, REG_EDX, 0x40000000, VENDOR_INTEL             , "IA32_CORE_CAPABILITIES MSR"},
 	{ 0x00000007, 0, REG_EDX, 0x80000000, VENDOR_INTEL             , "Speculative Store Bypass Disable (SSBD)"},
 
-/*	{ 0x00000007, 1, REG_EAX, 0x00000001, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000002, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000004, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00000001, VENDOR_INTEL             , "SHA512 instructions"},
+	{ 0x00000007, 1, REG_EAX, 0x00000002, VENDOR_INTEL             , "SM3 instructions"},
+	{ 0x00000007, 1, REG_EAX, 0x00000004, VENDOR_INTEL             , "SM4 instructions"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00000008, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 1, REG_EAX, 0x00000010, VENDOR_INTEL | VENDOR_AMD, "AVX Vector Neural Network Instructions (AVX-VNNI)"},
 	{ 0x00000007, 1, REG_EAX, 0x00000020, VENDOR_INTEL | VENDOR_AMD, "Vector Neural Network BFLOAT16 (AVX512_BF16)"},
-/*	{ 0x00000007, 1, REG_EAX, 0x00000040, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000080, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00000100, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00000040, VENDOR_INTEL             , "Linear Address Space Separation"},
+	{ 0x00000007, 1, REG_EAX, 0x00000080, VENDOR_INTEL             , "CMPccXADD instruction"},
+	{ 0x00000007, 1, REG_EAX, 0x00000100, VENDOR_INTEL             , "Architectural Performance Monitoring Extended leaf valid"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00000200, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 1, REG_EAX, 0x00000400, VENDOR_INTEL             , "Fast zero-length MOVSB"},
 	{ 0x00000007, 1, REG_EAX, 0x00000800, VENDOR_INTEL             , "Fast short STOSB"},
@@ -319,19 +319,52 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x00000007, 1, REG_EAX, 0x00010000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00020000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x00040000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00080000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00080000, VENDOR_INTEL             , "WRMSRNS instruction"},
 /*	{ 0x00000007, 1, REG_EAX, 0x00100000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x00200000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00200000, VENDOR_INTEL             , "AMX-FP16 instructions"},
 	{ 0x00000007, 1, REG_EAX, 0x00400000, VENDOR_INTEL             , "History reset (HRESET)"},
-/*	{ 0x00000007, 1, REG_EAX, 0x00800000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x00800000, VENDOR_INTEL             , "AVX-IFMA instructions"},
 /*	{ 0x00000007, 1, REG_EAX, 0x01000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x02000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 	{ 0x00000007, 1, REG_EAX, 0x04000000, VENDOR_INTEL             , "Linear Address Masking (LAM)"},
-/*	{ 0x00000007, 1, REG_EAX, 0x08000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x08000000, VENDOR_INTEL             , "RDMSRLIST and WRMSRLIST and IA32_BARRIER MSR"},
 /*	{ 0x00000007, 1, REG_EAX, 0x10000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 /*	{ 0x00000007, 1, REG_EAX, 0x20000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
-/*	{ 0x00000007, 1, REG_EAX, 0x40000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EAX, 0x40000000, VENDOR_INTEL             , "Supports INVD after BIOS done"},
 /*	{ 0x00000007, 1, REG_EAX, 0x80000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
+
+	{ 0x00000007, 2, REG_EDX, 0x00000001, VENDOR_INTEL             , "Fast store forwarding disable without spec store bypass (PSFD)"},
+	{ 0x00000007, 2, REG_EDX, 0x00000002, VENDOR_INTEL             , "IPRED control"},
+	{ 0x00000007, 2, REG_EDX, 0x00000004, VENDOR_INTEL             , "RRSBA control"},
+	{ 0x00000007, 2, REG_EDX, 0x00000008, VENDOR_INTEL             , "Data dependeng prefetcher control"},
+	{ 0x00000007, 2, REG_EDX, 0x00000010, VENDOR_INTEL             , "BHI control"},
+	{ 0x00000007, 2, REG_EDX, 0x00000020, VENDOR_INTEL             , "MXCSR Configuration Dependent Timing control"},
+	{ 0x00000007, 2, REG_EDX, 0x00000040, VENDOR_INTEL             , "UC-lock disable feature"},
+	{ 0x00000007, 2, REG_EDX, 0x00000080, VENDOR_INTEL             , "MONITOR/UMONITOR unaffected by overflow"},
+/*	{ 0x00000007, 2, REG_EDX, 0x00000100, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00000200, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00000400, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00000800, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00001000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00002000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00004000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00008000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00010000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00020000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00040000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00080000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00100000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00200000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00400000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x00800000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x01000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x02000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x04000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x08000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x10000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x20000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x40000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 2, REG_EDX, 0x80000000, VENDOR_INTEL             , ""}, */   /* Reserved */
 
 /*  Processor Trace Enumeration (0000_0014h) */
 	{ 0x00000014, 0, REG_EBX, 0x00000001, VENDOR_INTEL             , "CR3 filtering"},
@@ -1211,10 +1244,21 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 				break;
 			case 0x00000006:
 				accounting.ebx = accounting.edx = 0;
+
+				/* Bits 15-08 are the number of Intel thread director classes
+				 * supported by the processor
+				 */
+				accounting.ecx &= ~0xff00;
 				break;
 			case 0x00000007:
 				printf("Structured extended feature flags (ecx=%d), %s:\n",
 				       state->last_leaf.ecx, reg_name(last_reg));
+
+				/* Clear EAX, which indicates the highest-supported leaf 0x7
+				 * subleaf
+				 */
+				if (state->last_leaf.ecx == 0)
+					accounting.eax = 0;
 
 				/* Clear "value of MAWAU used by the BNDLDX and BNDSTX
 				 * instructions in 64-bit mode"
