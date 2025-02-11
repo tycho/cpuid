@@ -616,17 +616,17 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000006, 0, REG_EAX, 0x00000800,                          , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x00001000,                          , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x00002000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00004000,                          , ""}, */   /* Reserved */
+	{ 0x40000006, 0, REG_EAX, 0x00004000, VENDOR_HV_HYPERV         , "Physical destination mode required"},
 /*	{ 0x40000006, 0, REG_EAX, 0x00008000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00010000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00020000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00040000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00080000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00100000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00200000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00400000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x00800000,                          , ""}, */   /* Reserved */
-/*	{ 0x40000006, 0, REG_EAX, 0x01000000,                          , ""}, */   /* Reserved */
+	{ 0x40000006, 0, REG_EAX, 0x00010000, VENDOR_HV_HYPERV         , "Hardware memory zeroing"},
+	{ 0x40000006, 0, REG_EAX, 0x00020000, VENDOR_HV_HYPERV         , "Unrestricted guest support"},
+	{ 0x40000006, 0, REG_EAX, 0x00040000, VENDOR_HV_HYPERV         , "Resource allocation (RDT-A, PQOS-A)"},
+	{ 0x40000006, 0, REG_EAX, 0x00080000, VENDOR_HV_HYPERV         , "Resource monitoring (RDT-M, PQOS-M)"},
+	{ 0x40000006, 0, REG_EAX, 0x00100000, VENDOR_HV_HYPERV         , "Guest virtual PMU"},
+	{ 0x40000006, 0, REG_EAX, 0x00200000, VENDOR_HV_HYPERV         , "Guest virtual LBR"},
+	{ 0x40000006, 0, REG_EAX, 0x00400000, VENDOR_HV_HYPERV         , "Guest virtual IPT"},
+	{ 0x40000006, 0, REG_EAX, 0x00800000, VENDOR_HV_HYPERV         , "APIC emulation"},
+	{ 0x40000006, 0, REG_EAX, 0x01000000, VENDOR_HV_HYPERV         , "ACPI WDAT table in use"},
 /*	{ 0x40000006, 0, REG_EAX, 0x02000000,                          , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x04000000,                          , ""}, */   /* Reserved */
 /*	{ 0x40000006, 0, REG_EAX, 0x08000000,                          , ""}, */   /* Reserved */
