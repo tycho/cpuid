@@ -333,6 +333,39 @@ static const struct cpu_feature_t features [] = {
 	{ 0x00000007, 1, REG_EAX, 0x40000000, VENDOR_INTEL             , "Supports INVD after BIOS done"},
 /*	{ 0x00000007, 1, REG_EAX, 0x80000000, VENDOR_INTEL | VENDOR_AMD, ""}, */   /* Reserved */
 
+	{ 0x00000007, 1, REG_EBX, 0x00000001, VENDOR_INTEL             , "IA32_PPIN and IA32_PPIN_CTL"},
+/*	{ 0x00000007, 1, REG_EBX, 0x00000002, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000004, VENDOR_INTEL             , ""}, */   /* Reserved */
+	{ 0x00000007, 1, REG_EBX, 0x00000008, VENDOR_INTEL             , "CPUID max val limit removed"},
+/*	{ 0x00000007, 1, REG_EBX, 0x00000010, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000020, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000040, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000080, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000100, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000200, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000400, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00000800, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00001000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00002000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00004000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00008000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00010000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00020000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00040000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00080000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00100000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00200000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00400000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x00800000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x01000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x02000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x04000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x08000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x10000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x20000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x40000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+/*	{ 0x00000007, 1, REG_EBX, 0x80000000, VENDOR_INTEL             , ""}, */   /* Reserved */
+
 	{ 0x00000007, 2, REG_EDX, 0x00000001, VENDOR_INTEL             , "Fast store forwarding disable without spec store bypass (PSFD)"},
 	{ 0x00000007, 2, REG_EDX, 0x00000002, VENDOR_INTEL             , "IPRED control"},
 	{ 0x00000007, 2, REG_EDX, 0x00000004, VENDOR_INTEL             , "RRSBA control"},
