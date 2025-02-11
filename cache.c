@@ -421,11 +421,11 @@ static char *create_description(const struct cache_desc_index_t *idx)
 
 	/* Special cases. */
 	switch(idx->descriptor) {
-	case 0x40: return strdup("  No L2 cache, or if L2 cache exists, no L3 cache\n");
-	case 0xF0: return strdup("  64-byte prefetching\n");
-	case 0xF1: return strdup("  128-byte prefetching\n");
-	case 0xFE: return strdup("  [NOTICE] For TLB data, see Deterministic Address Translation leaf instead\n");
-	case 0xFF: return strdup("  [NOTICE] For cache data, see Deterministic Cache Parameters leaf instead\n");
+	case 0x40: return strdup("  No L2 cache, or if L2 cache exists, no L3 cache");
+	case 0xF0: return strdup("  64-byte prefetching");
+	case 0xF1: return strdup("  128-byte prefetching");
+	case 0xFE: return strdup("  [NOTICE] For TLB data, see Deterministic Address Translation leaf instead");
+	case 0xFF: return strdup("  [NOTICE] For cache data, see Deterministic Cache Parameters leaf instead");
 	}
 
 	describe_cache(0, desc, buffer, sizeof(buffer), 2);
