@@ -1336,6 +1336,9 @@ static void handle_std_tlb(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 	if ((state->vendor & VENDOR_INTEL) == 0)
 		return;
 
+	if ((regs->edx & 0xf) == 0)
+		return;
+
 	printf("Deterministic Address Translation Parameters:\n");
 
 	for (i = 0; i <= max_ecx; i++) {
