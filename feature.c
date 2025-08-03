@@ -634,12 +634,19 @@ static const struct cpu_feature_t features [] = {
 /*	{ 0x40000003, 0, REG_EDX, 0x80000000,                          , ""}, */   /* Reserved */
 
 /*  Hypervisor implementation recommendations (4000_0004h) */
+	{ 0x40000004, 0, REG_EAX, 0x00000001, VENDOR_HV_XEN            , "Virtualized APIC registers"},
 	{ 0x40000004, 0, REG_EAX, 0x00000001, VENDOR_HV_HYPERV         , "Hypercall for address space switches"},
+	{ 0x40000004, 0, REG_EAX, 0x00000002, VENDOR_HV_XEN            , "Virtualized x2APIC accesses"},
 	{ 0x40000004, 0, REG_EAX, 0x00000002, VENDOR_HV_HYPERV         , "Hypercall for local TLB flushes"},
+	{ 0x40000004, 0, REG_EAX, 0x00000004, VENDOR_HV_XEN            , "IOMMU mappings"},
 	{ 0x40000004, 0, REG_EAX, 0x00000004, VENDOR_HV_HYPERV         , "Hypercall for remote TLB flushes"},
+	{ 0x40000004, 0, REG_EAX, 0x00000008, VENDOR_HV_XEN            , "VCPU ID present in 40000004:EBX"},
 	{ 0x40000004, 0, REG_EAX, 0x00000008, VENDOR_HV_HYPERV         , "MSRs for accessing APIC registers"},
+	{ 0x40000004, 0, REG_EAX, 0x00000010, VENDOR_HV_XEN            , "Domain ID present in 40000004:ECX"},
 	{ 0x40000004, 0, REG_EAX, 0x00000010, VENDOR_HV_HYPERV         , "Hypervisor MSR for system RESET"},
+	{ 0x40000004, 0, REG_EAX, 0x00000020, VENDOR_HV_XEN            , "Extended APIC destination ID"},
 	{ 0x40000004, 0, REG_EAX, 0x00000020, VENDOR_HV_HYPERV         , "Relaxed timing"},
+	{ 0x40000004, 0, REG_EAX, 0x00000040, VENDOR_HV_XEN            , "Per-vCPU event channel upcalls with PIRQs"},
 	{ 0x40000004, 0, REG_EAX, 0x00000040, VENDOR_HV_HYPERV         , "DMA remapping"},
 	{ 0x40000004, 0, REG_EAX, 0x00000080, VENDOR_HV_HYPERV         , "Interrupt remapping"},
 	{ 0x40000004, 0, REG_EAX, 0x00000100, VENDOR_HV_HYPERV         , "x2APIC MSRs"},
@@ -1312,16 +1319,26 @@ int print_features(const struct cpu_regs_t *regs, struct cpuid_state_t *state)
 					   reg_name(last_reg));
 				break;
 			case 0x40000004:
-				printf("Hyper-V implementation recommendations, %s:\n",
-					   reg_name(last_reg));
+				if (state->vendor & VENDOR_HV_XEN) {
+					printf("Xen HVM-specific features, %s:\n", reg_name(last_reg));
 
-				/* EBX doesn't contain feature bits. We should zero these
-				 * out so they don't appear to be unaccounted for.
-				 */
-				accounting.ebx = 0;
+					/* We only look at EAX for this leaf. */
+					accounting.ebx = 0;
+					accounting.ecx = 0;
+					accounting.edx = 0;
+				} else if (state->vendor & VENDOR_HV_HYPERV) {
+					printf("Hyper-V implementation recommendations, %s:\n",
+						   reg_name(last_reg));
 
-				/* ECX[0:6] are not feature bits. */
-				accounting.ecx &= ~0x3f;
+					/* EBX doesn't contain feature bits. We should zero these
+					 * out so they don't appear to be unaccounted for.
+					 */
+					accounting.ebx = 0;
+
+					/* ECX[0:6] are not feature bits. */
+					accounting.ecx &= ~0x3f;
+				}
+
 				break;
 			case 0x40000006:
 				printf("Hyper-V hardware features detected and in use, %s:\n",

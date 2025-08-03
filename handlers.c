@@ -2315,8 +2315,10 @@ static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 				break;
 			case 1:
 				printf("  TSC offset: 0x%08x%08x\n", regs->ebx, regs->eax);
-				if (regs->ecx && regs->edx)
-					printf("  TSC ns conversion: (n * 0x%0x) >> %08x\n", regs->ecx, regs->edx);
+				if (regs->ecx)
+					printf("  TSC multiplier for ns conversion: 0x%08x\n", regs->ecx);
+				if (regs->edx)
+					printf("  TSC shift for ns conversion: 0x%08x\n", regs->edx);
 				break;
 			case 2:
 				if (regs->eax)
@@ -2336,7 +2338,17 @@ static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 /* EAX = 4000 0004 */
 static void handle_vmm_leaf04(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
-	if (state->vendor & VENDOR_HV_HYPERV) {
+	if (state->vendor & VENDOR_HV_XEN) {
+		print_features(regs, state);
+		if (regs->eax & ((1u << 3) | (1u << 4))) {
+			printf("Xen HVM domain info:\n");
+			if (regs->eax & (1u << 3))
+				printf("  VCPU ID: %d\n", regs->ebx);
+			if (regs->eax & (1u << 4))
+				printf("  Domain ID: %d\n", regs->ecx);
+		}
+		printf("\n");
+	} else if (state->vendor & VENDOR_HV_HYPERV) {
 		struct ecx_addressing {
 			unsigned physbits:7;
 			unsigned reserved:25;
