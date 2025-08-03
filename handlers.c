@@ -117,6 +117,7 @@ DECLARE_HANDLER(centaur_base);
 
 DECLARE_HANDLER(dump_base);
 DECLARE_HANDLER(dump_until_eax);
+DECLARE_HANDLER(dump_vmm_leaf03);
 DECLARE_HANDLER(dump_std_04);
 DECLARE_HANDLER(dump_x2apic);
 DECLARE_HANDLER(dump_std_0D);
@@ -149,6 +150,7 @@ const struct cpuid_leaf_handler_index_t dump_handlers[] =
 
 	/* Hypervisor levels */
 	{0x40000000, handle_dump_base},
+	{0x40000003, handle_dump_vmm_leaf03},
 
 	/* Extended levels */
 	{0x80000000, handle_dump_base},
@@ -2226,10 +2228,105 @@ static void handle_vmm_leaf02(struct cpu_regs_t *regs, struct cpuid_state_t *sta
 }
 
 /* EAX = 4000 0003 */
+static void handle_dump_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
+{
+	char buf[13];
+	struct cpu_regs_t hv_vendor_regs;
+	uint32_t i, eax, max_ecx;
+
+	/* First, detect whether this is Xen or not, as that will affect whether we
+	 * use ecx indexing for this leaf.
+	 */
+	ZERO_REGS(&hv_vendor_regs);
+	hv_vendor_regs.eax = 0x40000000;
+	state->cpuid_call(&hv_vendor_regs, state);
+
+	*(uint32_t *)(&buf[0]) = hv_vendor_regs.ebx;
+	*(uint32_t *)(&buf[4]) = hv_vendor_regs.ecx;
+	*(uint32_t *)(&buf[8]) = hv_vendor_regs.edx;
+
+	for (i = 0; i < sizeof(buf); i++) {
+		/* End of vendor string */
+		if (buf[i] == 0)
+			break;
+
+		/* Character outside printable range */
+		if (buf[i] < 0x20 || buf[i] > 0x7E)
+			buf[i] = '.';
+	}
+
+	buf[12] = 0;
+
+	if (strcmp(buf, "XenVMMXenVMM") == 0)
+		state->vendor |= VENDOR_HV_XEN;
+
+	/*
+	 * If it's Xen, we use a fixed max subleaf index of 2.
+	 */
+	eax = 0x40000003;
+	max_ecx = (state->vendor & VENDOR_HV_XEN) ? 2 : 0;
+	i = 0;
+	while (i <= max_ecx) {
+		ZERO_REGS(regs);
+		regs->eax = eax;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+		i++;
+	}
+}
+
+static const char *xen_tsc_mode_name(uint32_t _val)
+{
+	switch (_val) {
+	case 0:
+		return "emulate if necessary";
+	case 1:
+		return "emulate";
+	case 2:
+		return "no emulation";
+	case 3:
+		return "no emulation + TSC_AUX support";
+	default:
+		return "unknown";
+	}
+}
+
+/* EAX = 4000 0003 */
 static void handle_vmm_leaf03(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	if (state->vendor & VENDOR_HV_XEN) {
-		printf("Host CPU clock frequency: %dMHz\n\n", regs->eax / 1000);
+		uint32_t eax = state->last_leaf.eax;
+		uint32_t max_ecx = (state->vendor & VENDOR_HV_XEN) ? 2 : 0;
+		uint32_t i = 0;
+		printf("Xen TSC configuration:\n");
+		while (i <= max_ecx) {
+			ZERO_REGS(regs);
+			regs->eax = eax;
+			regs->ecx = i;
+			state->cpuid_call(regs, state);
+
+			switch(i) {
+			case 0:
+				printf("  TSC mode: %d (%s)\n", regs->ebx, xen_tsc_mode_name(regs->ebx));
+				if (regs->ecx)
+					printf("  Guest TSC frequency: %dMHz\n", regs->ecx / 1000);
+				printf("  Guest TSC incarnation: %d\n", regs->edx);
+				break;
+			case 1:
+				printf("  TSC offset: 0x%08x%08x\n", regs->ebx, regs->eax);
+				if (regs->ecx && regs->edx)
+					printf("  TSC ns conversion: (n * 0x%0x) >> %08x\n", regs->ecx, regs->edx);
+				break;
+			case 2:
+				if (regs->eax)
+					printf("  Host TSC frequency: %dMHz\n", regs->eax / 1000);
+				break;
+			}
+
+			i++;
+		}
+		printf("\n");
 	} else if (state->vendor & VENDOR_HV_HYPERV) {
 		print_features(regs, state);
 		printf("\n");
