@@ -79,7 +79,7 @@ static DWORD WINAPI apic_nonsensical_worker_thread(LPVOID flagptr)
 	uint8_t *flag = (uint8_t *)flagptr;
 	uint32_t hwthreads = thread_count_native(NULL);
 	while (*flag) {
-		SetThreadAffinityMask(GetCurrentThread(), 1 << (rand() % hwthreads));
+		SetThreadAffinityMask(GetCurrentThread(), 1ULL << (rand() % hwthreads));
 		Sleep(1);
 	}
 	return 0;
@@ -111,7 +111,7 @@ struct apic_validate_t {
 static DWORD WINAPI apic_validation_thread(LPVOID ptr)
 {
 	struct apic_validate_t *meta = (struct apic_validate_t *)ptr;
-	SetThreadAffinityMask(GetCurrentThread(), 1 << meta->index);
+	SetThreadAffinityMask(GetCurrentThread(), 1ULL << meta->index);
 	while (!meta->failed && *meta->worker_flag) {
 		Sleep(5);
 		if (get_apicid(meta->state) != meta->expected) {
@@ -347,8 +347,8 @@ static int sane_performance(struct cpuid_state_t *state)
 		{ 0x40000000, 0x1a },
 		{ 0x80000000, 0x1a }
 	};
-	size_t leaf_count = sizeof(leaves) / sizeof(leaves[0]);
-	size_t i, j;
+	uint32_t leaf_count = sizeof(leaves) / sizeof(leaves[0]);
+	uint32_t i, j;
 	for (i = 0; i < leaf_count; i++)
 	{
 		for (j = 0; j <= leaves[i].max; j++)
@@ -371,7 +371,7 @@ int sanity_run(struct cpuid_state_t *state)
 #endif
 	while (*p) {
 		if ((*p++)(state) != 0)
-			ret = p - handlers;
+			ret = (unsigned int)(p - handlers);
 	}
 #ifdef TARGET_OS_WINDOWS
 	timeEndPeriod(tc.wPeriodMin);

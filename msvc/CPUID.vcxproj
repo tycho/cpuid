@@ -119,7 +119,7 @@ perl tools/license.pl LICENSE license.h
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
       <Message>Generating build.h and license.h</Message>
-      <Command>set PATH="%PATH%;$(CommonExecutablePath);C:\Strawberry\perl\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\cmd"
+      <Command>set PATH=%PATH%;$(CommonExecutablePath);C:\Strawberry\perl\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\cmd
 cd "$(ProjectDir).."
 perl tools/build.pl build.h
 perl tools/license.pl LICENSE license.h

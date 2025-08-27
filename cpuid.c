@@ -218,7 +218,7 @@ BOOL cpuid_native(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 BOOL cpuid_load_from_file(const char *filename, struct cpuid_state_t *state)
 {
 	struct cpuid_leaf_t *leaf;
-	size_t i, cpucount, leafcount, leafcount_tmp;
+	uint32_t i, cpucount, leafcount, leafcount_tmp;
 	uint32_t last_eax = (uint32_t)-1, infer_ecx = 0;
 	BOOL zero_based = TRUE;
 	FILE *file = fopen(filename, "rb");

@@ -74,7 +74,7 @@ static uint32_t get_cycles_per_usec(void)
 		}
 	} while (1);
 
-	return (c_e - c_s + 127) >> 7;
+	return (uint32_t)((c_e - c_s + 127ULL) >> 7ULL);
 }
 
 #define NR_TIME_ITERS 10
@@ -105,7 +105,7 @@ static void calibrate_cpu_clock(void)
 		if ((fmax(elem, mean) - fmin(elem, mean)) > S)
 			continue;
 		samples++;
-		avg += elem;
+		avg += (uint32_t)elem;
 	}
 
 	S /= (double)NR_TIME_ITERS;
