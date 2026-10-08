@@ -1900,30 +1900,38 @@ static void handle_ext_ibs_feat(struct cpu_regs_t *regs, struct cpuid_state_t *s
 	printf("\n");
 }
 
+/* A bound on the 0x8000001D walk, in case type 0 never comes. */
+#define EXT_CACHE_MAX_SUBLEAF 64
+
 /* EAX = 8000 001D */
 static void handle_dump_ext_1D(struct cpu_regs_t *regs, struct cpuid_state_t *state)
 {
 	struct cpu_regs_t feat_check;
-	uint32_t i = 0, has_extended_topology = 0;
+	uint32_t i;
 
+	/* The subleaves are defined only with the TopologyExtensions bit. */
 	ZERO_REGS(&feat_check);
 	feat_check.eax = 0x80000001;
 	state->cpuid_call(&feat_check, state);
-	has_extended_topology = (feat_check.ecx & 0x400000) ? 1 : 0;
-
-	if (!has_extended_topology)
+	if (!(feat_check.ecx & 0x400000)) {
+		/* Re-read subleaf 0: the line is labelled with the last leaf called. */
+		ZERO_REGS(regs);
+		regs->eax = 0x8000001D;
+		state->cpuid_call(regs, state);
 		state->cpuid_print(regs, state, TRUE);
-	else
-		while (1) {
-			ZERO_REGS(regs);
-			regs->eax = 0x8000001D;
-			regs->ecx = i;
-			state->cpuid_call(regs, state);
-			if (regs->eax == 0)
-				break;
-			state->cpuid_print(regs, state, TRUE);
-			i++;
-		}
+		return;
+	}
+
+	/* Up to and including the first subleaf with cache type 0. */
+	for (i = 0; i < EXT_CACHE_MAX_SUBLEAF; i++) {
+		ZERO_REGS(regs);
+		regs->eax = 0x8000001D;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+		state->cpuid_print(regs, state, TRUE);
+		if ((regs->eax & 0x1f) == 0)
+			break;
+	}
 }
 
 /* EAX = 8000 001D */
@@ -1951,9 +1959,9 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 	struct ebx_cache *ebx = (struct ebx_cache *)&regs->ebx;
 	struct ecx_cache *ecx = (struct ecx_cache *)&regs->ecx;
 	struct cpu_regs_t feat_check;
-	unsigned int i = 1;
+	unsigned int i;
 
-	if (!(state->vendor & VENDOR_AMD))
+	if (!(state->vendor & (VENDOR_AMD | VENDOR_HYGON)))
 		return;
 
 	/* First check for Extended Topology feature bit. */
@@ -1964,20 +1972,30 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		return;
 
 	printf("AMD Extended Cache Topology:\n");
-	while (1) {
+	for (i = 0; i < EXT_CACHE_MAX_SUBLEAF; i++) {
 		struct cache_desc_t desc;
 		char desc_str[512];
-		uint32_t size;
+		uint64_t size;
 
+		ZERO_REGS(regs);
+		regs->eax = 0x8000001D;
+		regs->ecx = i;
+		state->cpuid_call(regs, state);
+
+		/* Type 0 ends the list; types above 3 are reserved. */
 		if (eax->type == 0)
 			break;
+		if (eax->type > 3)
+			continue;
 
-		size = (ebx->partitions + 1) * (ebx->linesize + 1) * (ebx->ways + 1) * (ecx->sets + 1);
+		/* In bytes, then kilobytes. */
+		size = (uint64_t)(ebx->partitions + 1) * (ebx->linesize + 1) *
+		       (ebx->ways + 1) * ((uint64_t)ecx->sets + 1);
 		size /= 1024;
 
 		desc.level = eax->level + L0;
 		desc.type = eax->type + DATA - 1;
-		desc.size = size;
+		desc.size = size > UINT32_MAX ? UINT32_MAX : (uint32_t)size;
 		desc.attrs = (eax->selfinit ? SELF_INIT : 0) |
 		             ((regs->edx & 0x01) ? WBINVD_NOT_INCLUSIVE : 0) |
 		             ((regs->edx & 0x02) ? INCLUSIVE : 0);
@@ -1987,14 +2005,6 @@ static void handle_ext_cacheprop(struct cpu_regs_t *regs, struct cpuid_state_t *
 		desc.max_threads_sharing = eax->sharing + 1;
 
 		printf("%s\n", describe_cache(state->logical_in_socket, &desc, desc_str, sizeof(desc_str), 2));
-
-		ZERO_REGS(regs);
-		regs->eax = 0x8000001D;
-		regs->ecx = i;
-		state->cpuid_call(regs, state);
-		i++;
-		if (!regs->eax)
-			break;
 	}
 }
 
